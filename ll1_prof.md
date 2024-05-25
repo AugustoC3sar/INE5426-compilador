@@ -1,9 +1,13 @@
-# LL1 Grammar Prof
+# Prova de que a gramática está em LL1
 
-In order for a grammar to be considered LL1, for all pairs of productions A -> B, A -> C the following must be true:
+Neste documento iremos descrever a nossa prova de que a gramática que possuímos está em LL1.
+
+De forma a provar que uma gramática está em LL1 devemos ter as seguintes regras matemáticas cumpridas:
 
 ```math
-FIRST(B) \cap FIRST(C) = NULL_SET
-if FIRST(B) \contains \epsilon, then FIRST(C) \intersect LAST(A) = NULL_SET
-if FIRST(C) \contains \epsilon, then FIRST(B) \intersect LAST(A) = NULL_SET
+FIRST(B) \cap FIRST(C) = \emptyset
+
+se FIRST(B) \superset \epsilon, então FIRST(C) \cap LAST(A) = \emptyset
+
+se FIRST(C) \superset \epsilon, então FIRST(B) \cap LAST(A) = \emptyset
 ```
