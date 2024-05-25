@@ -3,7 +3,8 @@ FUNCLIST -> FUNCDEF FUNCLIST'
 FUNCLIST' -> FUNCLIST | &
 FUNCDEF -> def ident(PARAMLIST){STATELIST}
 TYPE -> int | float | string | bool
-PARAMLIST -> TYPE ident, PARAMLIST | TYPE ident | &
+PARAMLIST -> TYPE identPARAMLIST' | &
+PARAMLIST' -> , PARAMLIST | &
 STATEMENT -> VARDECL; | ATRIBSTAT; | PRINSTAT; | READSTAT; | RETURNSTAT; | IFSTAT | FORSTAT | {STATELIST} | break; | ;
 VARDECL -> TYPE ident INT_LIST | TYPE ident | tTYPE ident TUPLE
 INT_LIST -> [int_constant]INT_LIST | [int_constant] | &
