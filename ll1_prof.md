@@ -432,7 +432,7 @@ Temos entre os FIRST:
 FIRST(EXPRESSION) \cap FIRST(FUNCCALL) = {ident}
 ```
 
-> Sugestão: (TODO)
+> Sugestão: Adicionar um valor a frente da produção FUNCCALL parece que resolverá o problema, entretanto, todas nossas chamadas de função serão feitas com algo do tipo `call ident(PARAMLISTCALL). (TODO)
 
 ### FUNCCALL
 
@@ -522,11 +522,11 @@ e
 FIRST(else STATEMENT) \cap FOLLOW(ELSESTAT) = {else}
 ```
 
-> Sugestão: (TODO)
+> Sugestão: Provavelmente adicionar {} nas produções de IFSTAT e ELSESTAT resolverá o problema, teremos daí blocos de if e else. (TODO)
 
 ### FORSTAT
 
-FIRST(for (ATRIBSTAT; EXPRESSION; ATRBISTAT) STATEMENT) = {for}
+FIRST(for ((ATRIBSTAT); EXPRESSION; ATRBISTAT) STATEMENT) = {for}
 
 Só possui uma produção, não precisamos verificar.
 
@@ -621,7 +621,6 @@ e
 ```math
 FIRST(BOOLEXPRESSION) \cap FOLLOW(EXPRESSION) = \emptyset 
 ```
-
 
 Verificado para as produções do não terminal EXPRESSION.
 
@@ -857,7 +856,7 @@ Temos que:
 FIRST((BOLLEXPRESSION) BOOLEXPRESSION_OP BOOLEXPRESSION') \cap FIRST(NUMEXPRESSION BOOLEXPRESSION') = {(}
 ```
 
-> Sugestão: não tenho sugestão.
+> Sugestão: O problema principal seguindo a árvore de derivação é eventualmente NUMEXPRESSION BOOLEXPRESSION' derivar para (NUMEXPRESSION), podemos editar a gramática para aceitar nesse caso coisas apenas do tipo [(NUMEXPRESSION)], a primeira vista pode ser estranho, mas, torna a gramática LL1. (TODO)
 
 ### BOOLEXPRESSION'
 
@@ -871,7 +870,7 @@ Temos que:
 FIRST(BOLLEXPRESSION_OP BOOLEXPRESSION') \cap FIRST(&) = {&}
 ```
 
-> Sugestão: possivelmente remover a & produção em BOOLEXPRESSION_OP já deve ser o suficiente.
+> Sugestão: talvez unir as produções em BOOLEXPRESSION' e BOOLEXPRESSION_OP para formar apenas uma classe. (FEITO)
 
 ### BOOLEXPRESSION_OP
 
@@ -883,4 +882,4 @@ FIRST(&) = {&}
 
 Temos que nenhum FIRST tem intersecção e com FOLLOW(BOOLEXPRESSION_OP) = {;, ), and, or}, temos uma intersecção entre tanto FIRST(and BOOLEXPRESSION) e FIRST(or BOOLEXPRESSION).
 
-> Sugestão: talvez unir as produções em BOOLEXPRESSION' e BOOLEXPRESSION_OP para formar apenas uma classe.
+> Sugestão: talvez unir as produções em BOOLEXPRESSION' e BOOLEXPRESSION_OP para formar apenas uma classe. (FEITO)
