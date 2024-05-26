@@ -376,7 +376,7 @@ Temos que:
 FIRST(INT_LIST) \cap FIRST(&) = {&}
 ```
 
-> Sugestão: remover o & deste não terminal deve ser o suficiente.
+> Sugestão: remover o & deste não terminal deve ser o suficiente. (FEITO)
 
 ### INT_LIST
 
@@ -410,7 +410,7 @@ Temos que:
 FIRST(INT_LIST) \cap FIRST(&) = {&}
 ```
 
-> Sugestão: remover o & deste não terminal deve ser o suficiente.
+> Sugestão: remover o & deste não terminal deve ser o suficiente. (FEITO)
 
 ### ATRIBSTAT
 
@@ -432,7 +432,7 @@ Temos entre os FIRST:
 FIRST(EXPRESSION) \cap FIRST(FUNCCALL) = {ident}
 ```
 
-> Sugestão: 
+> Sugestão: (TODO)
 
 ### FUNCCALL
 
@@ -522,7 +522,7 @@ e
 FIRST(else STATEMENT) \cap FOLLOW(ELSESTAT) = {else}
 ```
 
-> Sugestão:
+> Sugestão: (TODO)
 
 ### FORSTAT
 
@@ -671,7 +671,7 @@ Temos que:
 FIRST(TERM_REC) \cap FIRST(&) = {&}
 ```
 
-> Sugestão: Remover o & e verificar se conseguimos chegar no mesmo resultado por TERM_REC, provavelmente sim.
+> Sugestão: Remover o & e verificar se conseguimos chegar no mesmo resultado por TERM_REC, provavelmente sim. (FEITO)
 
 ### TERM_REC
 
@@ -705,7 +705,7 @@ Temos que:
 FIRST(TERM_REC) \cap TERM(&) = {&}
 ```
 
-> Sugestão: Remover o & das produções e confiar na produção de & em TERM_REC.
+> Sugestão: Remover o & das produções e confiar na produção de & em TERM_REC. (FEITO)
 
 ### OPERATOR
 
@@ -735,7 +735,7 @@ Temos que:
 FIRST(UNARYEXPR_REC) \cap FIRST(&) = {&}
 ```
 
-> Sugestão: remover a produção & e confiar na de UNARYEXPR_REC.
+> Sugestão: remover a produção & e confiar na de UNARYEXPR_REC. (FEITO)
 
 ### UNARYEXPR_REC
 
@@ -769,7 +769,7 @@ Temos que:
 FIRST(UNARYEXPR_REC) \cap FIRST(&) = {&}
 ```
 
-> Sugestão: remover a produção & e confiar em UNARYEXPR_REC para esse resultado.
+> Sugestão: remover a produção & e confiar em UNARYEXPR_REC para esse resultado. (FEITO)
 
 ### FACTOR
 
@@ -807,7 +807,7 @@ Temos que:
 FIRST(NUMEXPRESSION_REC) \cap FIRST(&) = {&}
 ```
 
-> Sugestão: remover a produção & e confiar em NUMEXPRESSION_REC para produzir &;
+> Sugestão: remover a produção & e confiar em NUMEXPRESSION_REC para produzir &. (FEITO)
 
 ### NUMEXPRESSION_REC
 
@@ -841,7 +841,7 @@ Temos que:
 FIRST(NUMEXPRESSION_REC) \cap FIRST(&) = {&}
 ```
 
-> Sugestão: Remover a & produção e produzir ela por NUMEXPRESSION_REC.
+> Sugestão: Remover a & produção e produzir ela por NUMEXPRESSION_REC. (FEITO)
 
 ### BOOLEXPRESSION
 
@@ -871,7 +871,7 @@ Temos que:
 FIRST(BOLLEXPRESSION_OP BOOLEXPRESSION') \cap FIRST(&) = {&}
 ```
 
-> Sugestão: remover & produção em confiar na produção de BOOLEXPRESSION_OP.
+> Sugestão: possivelmente remover a & produção em BOOLEXPRESSION_OP já deve ser o suficiente.
 
 ### BOOLEXPRESSION_OP
 
@@ -883,4 +883,4 @@ FIRST(&) = {&}
 
 Temos que nenhum FIRST tem intersecção e com FOLLOW(BOOLEXPRESSION_OP) = {;, ), and, or}, temos uma intersecção entre tanto FIRST(and BOOLEXPRESSION) e FIRST(or BOOLEXPRESSION).
 
-> Sugestão: não tenho nenhum sugestão.
+> Sugestão: talvez unir as produções em BOOLEXPRESSION' e BOOLEXPRESSION_OP para formar apenas uma classe.
