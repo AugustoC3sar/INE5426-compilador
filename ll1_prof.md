@@ -20,7 +20,7 @@ Dessa forma, asseguramos que a gramática está em LL1 para a construção do no
 
 ## Construção dos FIRST das produções
 
-FIRST(PROGRAM) = {{, break, ;, int, float, string, bool, print, read, return, if, for, def, ident, &}
+FIRST(PROGRAM) = {{, break, ;, int, float, string, print, read, return, if, for, def, ident, &}
 
 FIRST(FUNCLIST) = {def}
 
@@ -28,17 +28,17 @@ FIRST(FUNCLIST') = {def, &}
 
 FIRST(FUNCDEF) = {def}
 
-FIRST(TYPE) = {int, float, string, bool}
+FIRST(TYPE) = {int, float, string}
 
-FIRST(PARAMLIST) = {int, float, string, bool, &}
+FIRST(PARAMLIST) = {int, float, string, &}
 
 FIRST(PARAMLIST') = {,, &}
 
-FIRST(STATEMENT) = {{, break, ;, int, float, string, bool, print, read, return, if, for, ident}
+FIRST(STATEMENT) = {{, break, ;, int, float, string, print, read, return, if, for, ident}
 
-FIRST(VARDECL) = {int, float, string, bool}
+FIRST(VARDECL) = {int, float, string}
 
-FIRST(VARDECL') = {[, &}
+FIRST(ARRAY_VARDECL) = {int, float, string}
 
 FIRST(INT_LIST) = {[, &}
 
@@ -46,9 +46,9 @@ FIRST(INT_LIST') = {[, &}
 
 FIRST(ATRIBSTAT) = {ident}
 
-FIRST(ATRIBSTAT') = {new, ident, (, not, +, -, int_constant, float_constant, string_constant, null}
+FIRST(ATRIBSTAT') = {new, call, +, -, int_constant, float_constant, string_constant, null, (, ident}
 
-FIRST(FUNCCALL) = {ident}
+FIRST(FUNCCALL) = {call}
 
 FIRST(PARAMLISTCALL) = {ident, &}
 
@@ -66,9 +66,9 @@ FIRST(ELSESTAT) = {else}
 
 FIRST(FORSTAT) = {for}
 
-FIRST(STATELIST) = {{, break, ;, int, float, string, bool, print, read, return, if, for, ident}
+FIRST(STATELIST) = {{, break, ;, int, float, string, print, read, return, if, for, ident}
 
-FIRST(STATELIST') = {{, break, ;, int, float, string, bool, print, read, return, if, for, ident, &}
+FIRST(STATELIST') = {{, break, ;, int, float, string, print, read, return, if, for, ident, &}
 
 FIRST(ALLOCEXPRESSION) = {new}
 
@@ -86,7 +86,7 @@ FIRST(SIGNAL) = {+, -}
 
 FIRST(NUMEXPRESSION) = {+, -, int_constant, float_constant, string_constant, null, (, ident}
 
-FIRST(NUMEXPRESSION') = {+, -, &&}
+FIRST(NUMEXPRESSION') = {+, -, &}
 
 FIRST(TERM_REC) = {+, -, &}
 
@@ -114,12 +114,6 @@ FIRST(NUMEXPRESSION_REC) = {[, &}
 
 FIRST(NUMEXPRESSION_REC') = {[, &}
 
-FIRST(BOOLEXPRESSION) = {(, not, +, -, int_constant, float_constant, string_constant, null, ident}
-
-FIRST(BOOLEXPRESSION') = {and, or, &}
-
-FIRST(BOOLEXPRESSION_OP) = {and, or, &}
-
 ## Construção dos FOLLOW das produções
 
 FOLLOW(PROGRAM) = {$}
@@ -136,11 +130,11 @@ FOLLOW(PARAMLIST) = {)}
 
 FOLLOW(PARAMLIST') = {)}
 
-FOLLOW(STATEMENT) = {else, }, {, break, ;, int, float, string, bool, print, read,return, if, for, ident, $}
+FOLLOW(STATEMENT) = {}, {, break, ;, int, float, string, print, read,return, if, for, ident, $}
 
 FOLLOW(VARDECL) = {;}
 
-FOLLOW(VARDECL') = {;}
+FOLLOW(ARRAYVARDECL) = {;}
 
 FOLLOW(INT_LIST) = {;}
 
@@ -162,11 +156,11 @@ FOLLOW(READSTAT) = {;}
 
 FOLLOW(RETURNSTAT) = {;}
 
-FOLLOW(IFSTAT) = {else, }, {, break, ;, int, float, string, bool, print, read, return, if, for, ident, $}
+FOLLOW(IFSTAT) = {}, {, break, ;, int, float, string, print, read, return, if, for, ident, $}
 
-FOLLOW(ELSESTAT) = {else, }, {, break, ;, int, float, string, bool, print, read, return, if, for, ident, $}
+FOLLOW(ELSESTAT) = {}, {, break, ;, int, float, string, print, read, return, if, for, ident, $}
 
-FOLLOW(FORSTAT) = {else, }, {, break, ;, int, float, string, bool, print, read, return, if, for, ident, $}
+FOLLOW(FORSTAT) = {}, {, break, ;, int, float, string, print, read, return, if, for, ident, $}
 
 FOLLOW(STATELIST) = {}}
 
@@ -186,61 +180,55 @@ FOLLOW(EXPRESSION') = {;, )}
 
 FOLLOW(SIGNAL) = {+, -, int_constant, float_constant, string_constant, null, (, ident}
 
-FOLLOW(NUMEXPRESSION) = {], ;, ), <, >, <=, >=, ==, !=, and, or}
+FOLLOW(NUMEXPRESSION) = {], ;, ), <, >, <=, >=, ==, !=}
 
-FOLLOW(NUMEXPRESSION') = {], ;, ), <, >, <=, >=, ==, !=, and, or}
+FOLLOW(NUMEXPRESSION') = {], ;, ), <, >, <=, >=, ==, !=}
 
-FOLLOW(TERM_REC) = {], ;, ), <, >, <=, >=, ==, !=, and, or}
+FOLLOW(TERM_REC) = {], ;, ), <, >, <=, >=, ==, !=}
 
-FOLLOW(TERM_REC') = {], ;, ), <, >, <=, >=, ==, !=, and, or}
+FOLLOW(TERM_REC') = {], ;, ), <, >, <=, >=, ==, !=}
 
 FOLLOW(OPERATOR) = {+, -, int_constant, float_constant, string_constant, null, (, ident}
 
-FOLLOW(TERM) = {], ;, ), <, >, <=, >=, ==, !=, +, -, and, or}
+FOLLOW(TERM) = {], ;, ), <, >, <=, >=, ==, !=, +, -}
 
-FOLLOW(TERM') = {], ;, ), <, >, <=, >=, ==, !=, +, -, and, or}
+FOLLOW(TERM') = {], ;, ), <, >, <=, >=, ==, !=, +, -}
 
-FOLLOW(UNARYEXPR_REC) = {], ;, ), <, >, <=, >=, ==, !=, +, -, and, or}
+FOLLOW(UNARYEXPR_REC) = {], ;, ), <, >, <=, >=, ==, !=, +, -}
 
-FOLLOW(UNARYEXPR_REC') = {], ;, ), <, >, <=, >=, ==, !=, +, -, and, or}
+FOLLOW(UNARYEXPR_REC') = {], ;, ), <, >, <=, >=, ==, !=, +, -}
 
-FOLLOW(UNARYEXPR) = {], ;, ), <, >, <=, >=, ==, !=, +, -, *, /, %, and, or}
+FOLLOW(UNARYEXPR) = {], ;, ), <, >, <=, >=, ==, !=, +, -, *, /, %}
 
-FOLLOW(FACTOR) = {], ;, ), <, >, <=, >=, ==, !=, +, -, *, /, %, and, or}
+FOLLOW(FACTOR) = {], ;, ), <, >, <=, >=, ==, !=, +, -, *, /, %}
 
-FOLLOW(LVALUE) = {=, ;, ], ), <, >, <=, >=, ==, !=, +, -, *, /, %, and, or}
+FOLLOW(LVALUE) = {=, ;, ], ), <, >, <=, >=, ==, !=, +, -, *, /, %}
 
-FOLLOW(LVALUE') = {=, ;, ], ), <, >, <=, >=, ==, !=, +, -, *, /, %, and, or}
+FOLLOW(LVALUE') = {=, ;, ], ), <, >, <=, >=, ==, !=, +, -, *, /, %}
 
-FOLLOW(NUMEXPRESSION_REC) = {=, ;, ], ), <, >, <=, >=, ==, !=, +, -, *, /, %, and, or}
+FOLLOW(NUMEXPRESSION_REC) = {=, ;, ], ), <, >, <=, >=, ==, !=, +, -, *, /, %}
 
-FOLLOW(NUMEXPRESSION_REC') = {=, ;, ], ), <, >, <=, >=, ==, !=, +, -, *, /, %, and, or}
-
-FOLLOW(BOOLEXPRESSION) = {;, ), and, or}
-
-FOLLOW(BOOLEXPRESSION') = {;, ), and, or}
-
-FOLLOW(BOOLEXPRESSION_OP) = {;, ), and, or}
+FOLLOW(NUMEXPRESSION_REC') = {=, ;, ], ), <, >, <=, >=, ==, !=, +, -, *, /, %}
 
 ## Corpos das produções
 
 ### PROGRAM
 
-FIRST(STATEMENT) = {{, break, ;, int, float, string, bool, print, read, return, if, for, ident}
+FOLLOW(PROGRAM) = {$}
 
+PROGRAM -> STATEMENT
+PROGRAM -> FUNCLIST
+PROGRAM -> &
+
+FIRST(STATEMENT) = {{, break, ;, int, float, string, print, read, return, if, for, ident}
 FIRST(FUNCLIST) = {def}
-
 FIRST(&) = {&}
 
-Para o par PROGRAM -> STATEMENT e PROGRAM -> FUNCLIST:
+Vamos tomar PROGRAM -> STATEMENT e PROGRAM -> FUNCLIST:
 
-```math
-FIRST(STATEMENT) \cap FIRST(FUNCLIST) = \emptyset
-```
+Não temos intersecção entre FIRST e nenhum FIRST possui &.
 
-Nenhum das produções tem & no FIRST, logo, não precisamos verificar mais nada.
-
-Para o par PROGRAM -> STATEMENT e PROGRAM -> &:
+Agora PROGRAM -> STATEMENT e PROGRAM -> &:
 
 ```math
 FIRST(STATEMENT) \cap FIRST(&) = \emptyset
@@ -248,25 +236,11 @@ FIRST(STATEMENT) \cap FIRST(&) = \emptyset
 
 e
 
-```
+```math
 FIRST(STATEMENT) \cap FOLLOW(PROGRAM) = \emptyset
 ```
 
-Verificado para as produções do não terminal PROGRAM.
-
-### FUNCLIST
-
-FIRST(FUNCDEF FUNCLIST') = {def}
-
-Só possui uma produção, não precisamos verificar.
-
-### FUNCLIST'
-
-FIRST(FUNCLIST) = {def}
-
-FIRST(&) = {&}
-
-Temos que:
+Agora, finalmente, tomamos PROGRAM -> FUNCLIST e PROGRAM -> &:
 
 ```math
 FIRST(FUNCLIST) \cap FIRST(&) = \emptyset
@@ -275,54 +249,88 @@ FIRST(FUNCLIST) \cap FIRST(&) = \emptyset
 e
 
 ```math
-FIRST(FUNCLIST) \cap FOLLOW(FUNCLIST') = \emptyset
+FIRST(FUNCLIST) \cap FIRST(&) = \emptylist
 ```
 
-Verificado para as produções do não terminal FUNCLIST'.
+Verificado para o não terminal PROGRAM.
+
+### FUNCLIST
+
+FOLLOW(FUNCLIST) = {$}
+
+FUNCLIST -> FUNCDEF FUNCLIST'
+
+Só possui uma produção, não precisamos verificar.
+
+### FUNCLIST'
+
+FOLLOW(FUNCLIST') = {$}
+
+FUNCLIST' -> FUNCLIST
+FUNCLIST' -> &
+
+FIRST(FUNCLIST) = {def}
+FIRST(&) = {&}
+
+Podemos ver que não possui intersecção entre os FIRST e nem entre FIRST(FUNCLIST) e FOLLOW(FUNCLIST'), logo está verificado.
 
 ### FUNCDEF
 
-FIRST(def ident(PARAMLIST){STATELIST}) = {def}
+FOLLOW(FUNCDEF) = {def, $}
+
+FUNCDEF -> def ident(PARAMLIST){STATELIST}
 
 Só possui uma produção, não precisamos verificar.
 
 ### TYPE
 
+FOLLOW(TYPE) = {ident, [}
+
+TYPE -> int
+TYPE -> float
+TYPE -> string
+
 FIRST(int) = {int}
-
 FIRST(float) = {float}
-
 FIRST(string) = {string}
 
-FIRST(bool) = {bool}
-
-Todas as produções não possuem intersecção e também não há & em nenhum FIRST.
+Podemos ver que não possui intersecção entre FIRST e nem um FIRST possui &, logo está verificado.
 
 ### PARAMLIST
 
-FIRST(TYPE ident PARAMLIST') = {int, float, string, bool}
+FOLLOW(PARAMLIST) = {)}
 
-FIRST(&) = {&}
+PARAMLIST -> TYPE identPARAMLIST'
+PARAMLIST -> &
 
-Temos que:
+FIRST(TYPE identPARAMLIST') = {int, float, string}
+FIRST(&)
+
+Temos:
 
 ```math
-FIRST(TYPE ident PARAMLIST') \cap FIRST(&) = \emptyset
+FIRST(TYPE identPARAMLIST') \cap FIRST(&) = \emptyset
 ```
 
 e
 
 ```math
-FIRST(TYPE ident PARAMLIST') \cap FOLLOW(PARAMLIST) = \emptyset
+FIRST(TYPE identPARAMLIST') \cap FOLLOW(PARAMLIST) = \emptyset
 ```
+
+Verificado para o não terminal PARAMLIST.
 
 ### PARAMLIST'
 
-FIRST(, PARAMLIST) = {,}
+FOLLOW(PARAMLIST') = {)}
 
+PARAMLIST' -> , PARAMLIST
+PARAMLIST' -> &
+
+FIRST(, PARAMLIST) = {,}
 FIRST(&) = {&}
 
-Temos que:
+Temos:
 
 ```math
 FIRST(, PARAMLIST) \cap FIRST(&) = \emptyset
@@ -331,555 +339,441 @@ FIRST(, PARAMLIST) \cap FIRST(&) = \emptyset
 e
 
 ```math
-FIRST(, PARAMLIST) \cap FOLLOW(PARAMLIST') =  \emptyset
+FIRST(, PARAMLIST) \cap FOLLOW(PARAMLIST') = \emptyset
 ```
+
+Verificado para o não terminal PARAMLIST.
 
 ### STATEMENT
 
-FIRST(VARDECL;) = {int, float, string, bool}
+FOLLOW(STATEMENT) = {}, {, break, ;, int, float, string, print, read,return, if, for, ident, $}
 
+STATEMENT -> VARDECL;
+STATEMENT -> ATRIBSTAT;
+STATEMENT -> PRINTSTAT;
+STATEMENT -> READSTAT;
+STATEMENT -> RETURNSTAT;
+STATEMENT -> IFSTAT
+STATEMENT -> FORSTAT
+STATEMENT -> {STATELIST}
+STATEMENT -> break;
+STATEMENT -> ;
+
+FIRST(VARDECL;) = {int, float, string}
 FIRST(ATRIBSTAT;) = {ident}
-
 FIRST(PRINTSTAT;) = {print}
-
 FIRST(READSTAT;) = {read}
-
 FIRST(RETURNSTAT;) = {return}
-
 FIRST(IFSTAT) = {if}
-
 FIRST(FORSTAT) = {for}
-
 FIRST({STATELIST}) = {{}
-
 FIRST(break;) = {break}
-
 FIRST(;) = {;}
 
-Nenhum FIRST tem intersecção como podemos ver e nenhum possui &.
+Como podemos ver não possui nenhuma intersecção entre os FIRST e nenhum FIRST possui &, logo, está verificado.
 
 ### VARDECL
 
-FIRST(TYPE ident VARDECL') = {int, float, string, bool}
+FOLLOW(VARDECL) = {;}
 
-Só possui uma produção, não precisamos verificar.
+VARDECL -> TYPE ident
+VARDECL -> ARRAYVARDECL
 
-### VARDECL'
+FIRST(TYPE ident) = {int, float, string}
+FIRST(ARRAYVARDECL) = {[, &}
 
-FIRST(INT_LIST) = {[, &}
-
-FIRST(&) = {&}
-
-Temos que:
+Temos:
 
 ```math
-FIRST(INT_LIST) \cap FIRST(&) = {&}
-```
-
-> Sugestão: remover o & deste não terminal deve ser o suficiente. (FEITO)
-
-### INT_LIST
-
-FIRST([int_constant]INT_LIST') = {[}
-
-FIRST(&) = {&}
-
-Temos que:
-
-```math
-FIRST([int_constant]INT_LIST') \cap FIRST(&) = \emptyset
+FIRST(TYPE ident) \cap FIRST(ARRAYVARDECL) = \emptyset
 ```
 
 e
 
 ```math
-FIRST([int_constant]INT_LIST') \cap FOLLOW(INT_LIST) = \emptyset
+FIRST(TYPE ident) \cap FOLLOW(VARDECL) = \emptyset
 ```
 
-Verificado para as produções do não terminal INT_LIST.
+Verificado para o não terminal VARDECL.
 
-### INT_LIST'
+### ARRAYVARDECL
 
-FIRST(INT_LIST) = {[, &}
+FOLLOW(ARRAYVARDECL) = {;}
 
+ARRAYVARDECL -> [int_constant] ARRAYVARDECL
+ARRAYVARDECL -> &
+
+FIRST([int_constant] ARRAYVARDECL) = {[}
 FIRST(&) = {&}
 
-Temos que:
+Temos:
 
 ```math
-FIRST(INT_LIST) \cap FIRST(&) = {&}
+FIRST([int_constant] ARRAYVARDECL) \cap FIRST(&) = \emptyset
 ```
 
-> Sugestão: remover o & deste não terminal deve ser o suficiente. (FEITO)
+e
+
+```math
+FIRST([int_constant] ARRAYVARDECL) \cap FOLLOW(ARRAYVARDECL) = \emptyset
+```
+
+Verificado para o não terminal ARRAYVARDECL.
 
 ### ATRIBSTAT
 
-FIRST(LVALUE = ATRIBSTAT') = {ident}
+FOLLOW(ATRIBSTAT) = {;, )}
+
+ATRIBSTAT -> LVALUE = ATRIBSTAT'
 
 Só possui uma produção, não precisamos verificar.
 
 ### ATRIBSTAT'
 
-FIRST(EXPRESSION) = {(, not, +, -, int_constant, float_constant, string_constant, null, ident, &}
+FOLLOW(ATRIBSTAT') = {;, )}
 
+ATRIBSTAT' -> EXPRESSION
+ATRIBSTAT' -> ALLOCEXPRESSION
+ATRIBSTAT' -> FUNCCALL
+
+FIRST(EXPRESSION) =  {(, not, +, -, int_constant, float_constant, string_constant, null, ident, &}
 FIRST(ALLOCEXPRESSION) = {new}
+FIRST(FUNCCALL) = {call}
 
-FIRST(FUNCCALL) = {ident}
+Claramente não há nenhum problema entre FIRST(ALLOCEXPRESSION) e FIRST(FUNCCALL).
 
-Temos entre os FIRST:
+Para ATRIBSTAT' -> EXPRESSION e ATRIBSTAT' -> FUNCCALL, temos:
 
 ```math
-FIRST(EXPRESSION) \cap FIRST(FUNCCALL) = {ident}
+FIRST(EXPRESSION) \cap FIRST(FUNCCALL) = \emptyset
 ```
 
-> Sugestão: Adicionar um valor a frente da produção FUNCCALL parece que resolverá o problema, entretanto, todas nossas chamadas de função serão feitas com algo do tipo `call ident(PARAMLISTCALL). (TODO)
+e
+
+```math
+FIRST(FUNCCALL) \cap FOLLOW(ATRIBSTAT') = \emptyset
+```
+
+Agora, para ATRIBSTAT' -> EXPRESSION e ATRIBSTAT' -> ALLOCEXPRESSION, temos:
+
+```math
+FIRST(EXPRESSION) \cap FIRST(ALLOCEXPRESSION) = \emptyset
+```
+
+e
+
+```math
+FIRST(ALLOCEXPRESSOIN) \cap FOLLOW(ATRIBSTAT') = \emptyset
+```
+
+Verificado para o não terminal ATRIBSTAT';
 
 ### FUNCCALL
 
-FIRST(ident(PARAMLISTCALL)) = {ident}
+FOLLOW(FUNCCALL) = {;, )}
+
+FUNCCALL -> call ident(PARAMLISTCALL)
 
 Só possui uma produção, não precisamos verificar.
 
 ### PARAMLISTCALL
 
-FIRST(ident PARAMLISTCALL') = {ident}
+FOLLOW(PARAMLISTCALL) = {)}
 
-FIRST(&) = {&}
+PARAMLISTCALL -> identPARAMLISTCALL'
+PARAMLISTCALL -> &
 
-Temos que:
+FIRST(identPARAMLISTCALL') = {ident}
+FIRST(&) = &
+
+Temos:
 
 ```math
-FIRST(ident PARAMLISTCALL') \cap FIRST(&) = \emptyset
+FIRST(identPARAMLISTCALL') \cap FIRST(&) = \emptyset
 ```
 
 e
 
 ```math
-FIRST(ident PARAMLISTCALL') \capt FOLLOW(PARAMLISTCALL) = \emptyset 
+FIRST(identPARAMLISTCALL') \cap FOLLOW(PARAMLISTCALL) = \emptyset.
 ```
 
-Verificado para as produções do não terminal PARAMLISTCALL.
+Verificado para o não terminal PARAMLISTCALL.
 
 ### PARAMLISTCALL'
 
+FOLLOW(PARAMLISTCALL') = {)}
+
+PARAMLISTCALL' -> , PARAMLISTCALL
+PARAMLISTCALL' -> &
+
 FIRST(, PARAMLISTCALL) = {,}
+FIRST(&)
 
-FIRST(&) = {&}
-
-Temos que:
-
-```math
-FIRST(, PARAMLISTCALL) \cap FIRST(&) = \emptyset
-```
-
-e
-
-```math
-FIRST(, PARAMLISTCALL) \cap FOLLOW(PARAMLISTCALL') = \emptyset 
-```
-
-Verificado para as produções do não terminal PARAMLISTCALL'.
+Não realizaremos o processo, pois claramente não há intersecção entre FIRSTs e nem entre FIRST(, PARAMLISTCALL) e FOLLOW(PARAMLISTCALL').
 
 ### PRINTSTAT
 
-FIRST(print EXPRESSION) = {print}
+PRINTSTAT -> print EXPRESSION
 
 Só possui uma produção, não precisamos verificar.
 
 ### READSTAT
 
-FIRST(read LVALUE) = {read}
+READSTAT -> read LVALUE
 
 Só possui uma produção, não precisamos verificar.
 
 ### RETURNSTAT
 
-FIRST(return ident) = {return}
+RETURNSTAT -> return ident
 
 Só possui uma produção, não precisamos verificar.
 
 ### IFSTAT
 
-FIRST(if (EXPRESSION) STATEMENT ELSESTAT) = {if}
+IFSTAT -> if ( EXPRESSION ) { STATEMENT } ELSESTAT
 
 Só possui uma produção, não precisamos verificar.
 
 ### ELSESTAT
 
-FIRST(else STATEMENT) = {else}
+FOLLOW(ELSESTAT) = {}, {, break, ;, int, float, string, print, read, return, if, for, ident, $}
 
+ELSESTAT -> else { STATEMENT }
+ELSESTAT -> &
+
+FIRST(else { STATEMENT }) = {else}
 FIRST(&) = {&}
 
-Temos que:
-
-```math
-FIRST(else STATEMENT) \cap FIRST(&) = \emptyset
-```
-
-e
-
-```math
-FIRST(else STATEMENT) \cap FOLLOW(ELSESTAT) = {else}
-```
-
-> Sugestão: Provavelmente adicionar {} nas produções de IFSTAT e ELSESTAT resolverá o problema, teremos daí blocos de if e else. (TODO)
+Não há intersecção entre os FIRST e também entre FIRST(else { STATEMENT }) e FOLLOW(ELSESTAT)
 
 ### FORSTAT
 
-FIRST(for ((ATRIBSTAT); EXPRESSION; ATRBISTAT) STATEMENT) = {for}
+FORSTAT -> for(ATRIBSTAT; EXPRESSION; ATRIBSTAT) STATEMENT
 
 Só possui uma produção, não precisamos verificar.
 
 ### STATELIST
 
-FIRST(STATEMENT STATELIST') = {{, break, ;, int, float, string, bool, print, read, return, if, for, ident}
+STATELIST -> STATEMENT STATELIST'
 
 Só possui uma produção, não precisamos verificar.
 
 ### STATELIST'
 
-FIRST(STATELIST) = {{, break, ;, int, float, string, bool, print, read, return, if, for, ident}
+FOLLOW(STATELIST') = {}}
 
+STATELIST' -> STATELIST
+STATELIST' -> &
+
+FIRST(STATELIST) = {{, break, ;, int, float, string, print, read, return, if, for, ident}
 FIRST(&) = {&}
 
-Temos que:
-
-```math
-FIRST(STATELIST) \cap FIRST(&) = \emptyset
-```
-
-e
-
-```math
-FIRST(STATELIST) \cap FOLLOW(STATELIST') = \emptyset
-```
-
-Verificado para as produções do não terminal STATELIST'.
+Não há intersecção entre os FIRST e também entre FIRST(STATELIST) e FOLLOW(STATELIST').
 
 ### ALLOCEXPRESSION
 
-FIRST(new TYPE NUM_LIST) = {new}
+ALLOCEXPRESSION -> new TYPE NUM_LIST
 
 Só possui uma produção, não precisamos verificar.
 
 ### NUM_LIST
 
-FIRST([NUMEXPRESSION]NUM_LIST') = {[}
+NUM_LIST -> [NUMEXPRESSION]NUM_LIST'
 
 Só possui uma produção, não precisamos verificar.
 
 ### NUM_LIST'
 
-FIRST(NUM_LIST) = {[}
+FOLLOW(NUM_LIST') = {;, )}
 
+NUM_LIST' -> NUM_LIST
+NUM_LIST' -> &
+
+FIRST(NUM_LIST) = {[}
 FIRST(&) = {&}
 
-Temos que:
-
-```math
-FIRST(NUM_LIST) \cap FIRST(&) = \emptyset
-```
-
-e
-
-```math
-FIRST(NUM_LIST) \cap FOLLOW(NUM_LIST') = \emptyset
-```
-
-Verificado para as produções do não terminal NUM_LIST'.
+Não há intersecção entre os FIRST e também entre FIRST(NUM_LIST) e FOLLOW(NUM_LIST').
 
 ### RELOP
 
+FOLLOW(RELOP) = {+, -, int_constant, float_constant, string_constant, null, (, ident}
+
+RELOP -> <
+RELOP -> >
+RELOP -> <=
+RELOP -> >=
+RELOP -> ==
+RELOP -> !=
+
 FIRST(<) = {<}
-
 FIRST(>) = {>}
-
 FIRST(<=) = {<=}
-
 FIRST(>=) = {>=}
-
 FIRST(==) = {==}
-
 FIRST(!=) = {!=}
 
-Como podemos ver nenhum dos FIRST possuem intersecção nem mesmo &.
+Não há intersecção entre os FIRST nem & entre eles.
 
 ### EXPRESSION
 
-FIRST(NUMEXPRESSION EXPRESSION') = {[, &}
+EXPRESSION -> NUMEXPRESSION EXPRESSION'
 
-FIRST(BOOLEXPRESSION) = {(, not, +, -, int_constant, float_constant, string_constant, null, ident}
-
-Temos que:
-
-```math
-FIRST(NUMEXPRESSION EXPRESSION') \cap FIRST(BOOLEXPRESSION) = \emptyset
-```
-
-e
-
-```math
-FIRST(BOOLEXPRESSION) \cap FOLLOW(EXPRESSION) = \emptyset 
-```
-
-Verificado para as produções do não terminal EXPRESSION.
+Só possui uma produção, não precisamos verificar.
 
 ### EXPRESSION'
 
+FOLLOW(EXPRESSION') = {;, )}
+
+EXPRESSION' -> RELOP NUMEXPRESSION
+EXPRESSION' -> &
+
 FIRST(RELOP NUMEXPRESSION) = {<, >, <=, >=, ==, !=}
+FIRST(&)
 
-FIRST(&) = {&}
-
-Temos que:
-
-```math
-FIRST(RELOP NUMEXPRESSION) \cap FIRST(&) = \emptyset
-```
-
-e
-
-```math
-FIRST(RELOP NUMEXPRESSION) \cap FOLLOW(EXPRESSION') = \emptyset
-```
-
-Verificado para as produções do não terminal EXPRESSION'.
+Não há intersecção entre FIRST(RELOP NUMEXPRESSION) e FIRST(&), nem entre FIRST(RELOP NUMEXPRESSION) e FOLLOW(EXPRESSION').
 
 ### SIGNAL
 
-FIRST(+) = {+}
+SIGNAL -> +
+SIGNAL -> -
 
+FIRST(+) = {+}
 FIRST(-) = {-}
 
-Podemos ver que não há intersecção entre FIRST e nem &.
+Não há intersecção entre os FIRST nem & entre eles.
 
 ### NUMEXPRESSION
 
-FIRST(TERM NUMEXPRESSION') = {+, -, int_constant, float_constant, string_constant, null, (, ident}
+NUMEXPRESSION ->  TERM NUMEXPRESSION' 
 
 Só possui uma produção, não precisamos verificar.
 
 ### NUMEXPRESSION'
 
-FIRST(TERM_REC) = {+, -, &}
+NUMEXPRESSION' -> TERM_REC
 
-FIRST(&) = {&}
-
-Temos que:
-
-```math
-FIRST(TERM_REC) \cap FIRST(&) = {&}
-```
-
-> Sugestão: Remover o & e verificar se conseguimos chegar no mesmo resultado por TERM_REC, provavelmente sim. (FEITO)
+Só possui uma produção, não precisamos verificar.
 
 ### TERM_REC
 
+FOLLOW(TERM_REC) = {], ;, ), <, >, <=, >=, ==, !=} 
+
+TERM_REC -> SIGNAL TERM TERM_REC'
+TERM_REC -> &
+
 FIRST(SIGNAL TERM TERM_REC') = {+, -}
+FIRST(&)
 
-FIRST(&) = {&}
-
-Temos que:
-
-```math
-FIRST(SIGNAL TERM TERM_REC') \cap FIRST(&) = \emptyset
-```
-
-e
-
-```math
-FIRST(SIGNAL TERM TERM_REC') \cap FOLLOW(TERM_REC) = \emptyset
-```
-
-Verificado para as produções do não terminal TERM_REC.
+Não há intersecção entre FIRST(SIGNAL TERM TERM_REC') e FIRST(&), nem entre FIRST(SIGNAL TERM TERM_REC') e FOLLOW(TERM_REC).
 
 ### TERM_REC'
 
-FIRST(TERM_REC) = {+, -, &}
+TERM_REC' -> TERM_REC
 
-FIRST(&) = {&}
-
-Temos que:
-
-```math
-FIRST(TERM_REC) \cap TERM(&) = {&}
-```
-
-> Sugestão: Remover o & das produções e confiar na produção de & em TERM_REC. (FEITO)
+Só possui uma produção, não precisamos verificar.
 
 ### OPERATOR
 
-FIRST(*) = {*}
+OPERATOR -> *
+OPERATOR -> /
+OPERATOR -> %
 
+FIRST(*) = {\*}
 FIRST(/) = {/}
-
 FIRST(%) = {%}
 
-Como podemos ver, nenhum FIRST pososui intersecção e nem &.
+Não há intersecção entre os FIRST nem & neles.
 
 ### TERM
 
-FIRST(UNARYEXPR TERM') = {+, -, int_constant, float_constant, string_constant, null, (, ident}
+TERM -> UNARYEXPR TERM'
 
 Só possui uma produção, não precisamos verificar.
 
 ### TERM'
 
-FIRST(UNARYEXPR_REC) = {*, /, %, &}
+TERM' -> UNARYEXPR_REC
 
-FIRST(&) = {&}
-
-Temos que:
-
-```math
-FIRST(UNARYEXPR_REC) \cap FIRST(&) = {&}
-```
-
-> Sugestão: remover a produção & e confiar na de UNARYEXPR_REC. (FEITO)
+Só possui uma produção, não precisamos verificar.
 
 ### UNARYEXPR_REC
 
+FOLLOW(UNARYEXPR_REC) = {], ;, ), <, >, <=, >=, ==, !=, +, -}
+
+UNARYEXPR_REC -> OPERATOR UNARYEXPR UNARYEXPR_REC'
+UNARYEXPR_REC -> &
+
 FIRST(OPERATOR UNARYEXPR UNARYEXPR_REC') = {*, /, %}
+FIRST(&)
 
-FIRST(&) = {&}
-
-Temos que:
-
-```math
-FIRST(OPERATOR UNARYEXPR UNARYEXPR_REC') \cap FIRST(&) = \emptyset
-```
-
-e
-
-```math
-FIRST(OPERATOR UNARYEXPR UNARYEXPR_REC') \cap FOLLOW(UNARYEXPR_REC) = \emptyset
-```
-
-Verificado para as produções do não terminal UNARYEXPR_REC.
+Não há intersecção entre FIRST(OPERATOR UNARYEXPR UNARYEXPR_REC') e FIRST(&), nem entre FIRST(OPERATOR UNARYEXPR UNARYEXPR_REC') e FOLLOW(UNARYEXPR_REC).
 
 ### UNARYEXPR_REC'
 
-FIRST(UNARYEXPR_REC) = {*, /, %, &}
+UNARYEXPR_REC' -> UNARYEXPR_REC
 
-FIRST(&) = {&}
+Só possui uma produção, não precisamos verificar.
 
-Temos que:
+### UNARYEXPR
 
-```math
-FIRST(UNARYEXPR_REC) \cap FIRST(&) = {&}
-```
+UNARYEXPR -> SIGNAL FACTOR
+UNARYEXPR -> FACTOR
 
-> Sugestão: remover a produção & e confiar em UNARYEXPR_REC para esse resultado. (FEITO)
+FIRST(SIGNAL FACTOR) = {+, -}
+FIRST(FACTOR) = {int_constant, float_constant, string_constant, null, (, ident}
+
+Não há intersecção entre os FIRST nem & neles.
 
 ### FACTOR
 
-FIRST(SIGNAL FACTOR) = {+, -}
+FACTOR -> int_constant
+FACTOR -> float_constant
+FACTOR -> string_constant
+FACTOR -> null
+FACTOR -> LVALUE
+FACTOR -> (NUMEXPRESSION)
 
 FIRST(int_constant) = {int_constant}
-
 FIRST(float_constant) = {float_constant}
-
 FIRST(string_constant) = {string_constant}
-
 FIRST(null) = {null}
-
 FIRST(LVALUE) = {ident}
-
 FIRST((NUMEXPRESSION)) = {(}
 
-Como podemos ver, nenhum dos FIRST possui intersecção e nem &.
+Não há intersecção entre os FIRST nem & neles.
 
 ### LVALUE
 
-FIRST(ident LVALUE') = {ident}
+LVALUE -> ident LVALUE'
 
 Só possui uma produção, não precisamos verificar.
 
 ### LVALUE'
 
-FIRST(NUMEXPRESSION_REC) = {[, &}
+LVALUE' -> NUMEXPRESSION_REC
 
-FIRST(&) = {&}
-
-Temos que:
-
-```math
-FIRST(NUMEXPRESSION_REC) \cap FIRST(&) = {&}
-```
-
-> Sugestão: remover a produção & e confiar em NUMEXPRESSION_REC para produzir &. (FEITO)
+Só possui uma produção, não precisamos verificar.
 
 ### NUMEXPRESSION_REC
 
-FIRST([NUMEXPRESSION]NUMEXPRESSION_REC') = {[}
+FOLLOW(NUMEXPRESSION_REC) = {=, ;, ], ), <, >, <=, >=, ==, !=, +, -, *, /, %}
 
+NUMEXPRESSION_REC -> [NUMEXPRESSION] NUMEXPRESSION_REC'
+NUMEXPRESSION_REC -> &
+
+FIRST([NUMEXPRESSION] NUMEXPRESSION_REC') = {[}
 FIRST(&) = {&}
 
-Temos que:
-
-```math
-FIRST([NUMEXPRESSION]NUMEXPRESSION_REC') \cap FIRST(&) = \emptyset
-```
-
-e
-
-```math
-FIRST([NUMEXPRESSION]NUMEXPRESSION_REC') \cap FOLLOW(NUMEXPRESSION_REC) = \emptyset
-```
-
-Verificado para as produções do não terminal NUMEXPRESSION_REC'.
+Não há intersecção entre FIRST([NUMEXPRESSION] NUMEXPRESSION_REC') e FIRST(&), nem entre FIRST([NUMEXPRESSION] NUMEXPRESSION_REC') e FOLLOW(NUMEXPRESSION_REC).
 
 ### NUMEXPRESSION_REC'
 
-FIRST(NUMEXPRESSION_REC) = {[, &}
+NUMEXPRESSION_REC' -> NUMEXPRESSION_REC
 
-FIRST(&) = {&}
+Só possui uma produção, não precisamos verificar.
 
-Temos que:
+## Conclusão
 
-```math
-FIRST(NUMEXPRESSION_REC) \cap FIRST(&) = {&}
-```
-
-> Sugestão: Remover a & produção e produzir ela por NUMEXPRESSION_REC. (FEITO)
-
-### BOOLEXPRESSION
-
-FIRST((BOLLEXPRESSION) BOOLEXPRESSION_OP BOOLEXPRESSION') = {(}
-
-FIRST(not (BOOLEXPRESSION) BOOLEXPRESSION') = {not}
-
-FIRST(NUMEXPRESSION BOOLEXPRESSION') = {+, -, int_constant, float_constant, string_constant, null, (, ident}
-
-Temos que:
-
-```math
-FIRST((BOLLEXPRESSION) BOOLEXPRESSION_OP BOOLEXPRESSION') \cap FIRST(NUMEXPRESSION BOOLEXPRESSION') = {(}
-```
-
-> Sugestão: O problema principal seguindo a árvore de derivação é eventualmente NUMEXPRESSION BOOLEXPRESSION' derivar para (NUMEXPRESSION), podemos editar a gramática para aceitar nesse caso coisas apenas do tipo [(NUMEXPRESSION)], a primeira vista pode ser estranho, mas, torna a gramática LL1. (TODO)
-
-### BOOLEXPRESSION'
-
-FIRST(BOLLEXPRESSION_OP BOOLEXPRESSION') = {and, or, &}
-
-FIRST(&) = {&}
-
-Temos que:
-
-```math
-FIRST(BOLLEXPRESSION_OP BOOLEXPRESSION') \cap FIRST(&) = {&}
-```
-
-> Sugestão: talvez unir as produções em BOOLEXPRESSION' e BOOLEXPRESSION_OP para formar apenas uma classe. (FEITO)
-
-### BOOLEXPRESSION_OP
-
-FIRST(and BOOLEXPRESSION) = {and}
-
-FIRST(or BOOLEXPRESSION) = {or}
-
-FIRST(&) = {&}
-
-Temos que nenhum FIRST tem intersecção e com FOLLOW(BOOLEXPRESSION_OP) = {;, ), and, or}, temos uma intersecção entre tanto FIRST(and BOOLEXPRESSION) e FIRST(or BOOLEXPRESSION).
-
-> Sugestão: talvez unir as produções em BOOLEXPRESSION' e BOOLEXPRESSION_OP para formar apenas uma classe. (FEITO)
+Como pudemos ver, para cada par de produções de um não terminal as regras são respeitadas para classificar a gramática como sendo LL1.
