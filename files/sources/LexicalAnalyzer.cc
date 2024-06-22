@@ -4,18 +4,23 @@
 #include <iostream>
 #include <cctype>
 
-bool LexicalAnalyzer::isIdentifier(std::string token) {
+bool LexicalAnalyzer::isIdentifier(std::string token)
+{
     std::regex identifier_pattern("^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9_]+$");
     return std::regex_match(token, identifier_pattern);
 }
 
-bool LexicalAnalyzer::isNumber(std::string token) {
+bool LexicalAnalyzer::isNumber(std::string token)
+{
     long unsigned int numberOfDecimals = 0;
 
-    for (long unsigned int i = 0; i < token.length(); i++) {
+    for (long unsigned int i = 0; i < token.length(); i++)
+    {
         char c = token.at(i);
-        for (char n : numbers) {
-            if (c == n) {
+        for (char n : numbers)
+        {
+            if (c == n)
+            {
                 numberOfDecimals++;
             }
         }
@@ -25,24 +30,35 @@ bool LexicalAnalyzer::isNumber(std::string token) {
     return allCharactersAreDecimals;
 }
 
-bool LexicalAnalyzer::isReservedWord(std::string token) {
-    for (std::string reservedWord : reservedWords) {
+bool LexicalAnalyzer::isReservedWord(std::string token)
+{
+    for (std::string reservedWord : reservedWords)
+    {
         bool tokenIsReservedWord = token.compare(reservedWord) == 0;
-        if (tokenIsReservedWord) {
+        if (tokenIsReservedWord)
+        {
             return true;
         }
     }
     return false;
 }
 
-bool LexicalAnalyzer::isOperator(std::string token) {
-    for (std::string op : operators) {
+bool LexicalAnalyzer::isOperator(std::string token)
+{
+    for (std::string op : operators)
+    {
         bool tokenIsOperator = token.compare(op) == 0;
-        if (tokenIsOperator) {
+        if (tokenIsOperator)
+        {
             return true;
         }
     }
     return false;
+}
+
+bool LexicalAnalyzer::isString(std::string token)
+{
+    return token.at(0) == '"' && token.at(token.length() - 1) == '"';
 }
 
 SymbolTable LexicalAnalyzer::parse(std::string filename)
@@ -52,35 +68,38 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
 
     if (!file.is_open())
     {
-        std::cerr << "Não foi possível abrir o arquivo" << filename << std::endl;
+        std::cerr << "Não foi possível abrir o arquivo " << filename << std::endl;
         return symbolTable;
     }
 
     std::string currentToken;
-    while (file.read(buffer, 16) || file.gcount() > 0)
+    int column = 0;
+    int row = 1;
+    while (file.read(buffer, BUFFER_COUNT) || file.gcount() > 0)
     {
         size_t bytesRead = file.gcount();
         for (size_t i = 0; i < bytesRead; ++i)
         {
             char c = buffer[i];
-            if (isspace(c))
+            ++column;
+            if (isspace(c) || c == '(' || c == ')' || c == '{' || c == '}' || c == ';')
             {
                 if (!currentToken.empty())
                 {
-                    if (isReservedWord(currentToken) || isNumber(currentToken) || isOperator(currentToken))
+                    if (isReservedWord(currentToken) || isNumber(currentToken) || isOperator(currentToken) || isString(currentToken))
                     {
-                        continue;
+                        currentToken.clear();
                     }
                     else if (isIdentifier(currentToken))
                     {
-                        symbolTable.addTokenOccurence(currentToken, 0, 0);
+                        symbolTable.addTokenOccurence(currentToken, column - currentToken.length(), row);
+                        currentToken.clear();
                     }
                     else
                     {
                         std::cerr << "Token não identificado " << currentToken << std::endl;
                         return symbolTable;
                     }
-                    currentToken.clear();
                 }
             }
             else if (isOperator(std::string(1, c)))
@@ -93,7 +112,7 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
                     }
                     else if (isIdentifier(currentToken))
                     {
-                        symbolTable.addTokenOccurence(currentToken, 0, 0);
+                        symbolTable.addTokenOccurence(currentToken, column - currentToken.length(), row);
                     }
                     else
                     {
@@ -111,6 +130,12 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
             else
             {
                 currentToken += c;
+            }
+
+            if (c == '\n')
+            {
+                ++row;
+                column = 0;
             }
         }
     }

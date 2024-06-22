@@ -5,11 +5,13 @@
 #include <string>
 #include <vector>
 
-struct SymbolOccurrence {
+struct SymbolOccurrence
+{
     int column, row;
 };
 
-class SymbolEntry {
+class SymbolEntry
+{
 private:
     std::string token;
     std::vector<SymbolOccurrence> occurrences;
@@ -23,7 +25,8 @@ public:
     void setType(std::string tokenType);
 };
 
-class SymbolTable {
+class SymbolTable
+{
 private:
     std::unordered_map<std::string, SymbolEntry> entries;
 
