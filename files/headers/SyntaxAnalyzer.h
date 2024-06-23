@@ -28,6 +28,9 @@ private:
   std::vector<std::string> stack;
   std::vector<Production> productions;
   std::unordered_map<std::string, std::unordered_map<std::string, int>> parseTable;
+
+public:
+  void parse(std::string filename);
 };
 
 #endif
