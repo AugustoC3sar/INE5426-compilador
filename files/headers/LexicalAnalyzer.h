@@ -26,6 +26,7 @@ private:
     bool isReservedWord(std::string token);
     bool isOperator(std::string token);
     bool isString(std::string token);
+    bool shouldBreakToken(char character);
 
 public:
     LexicalAnalyzer() = default;

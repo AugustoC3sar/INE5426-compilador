@@ -6,7 +6,7 @@
 
 bool LexicalAnalyzer::isIdentifier(std::string token)
 {
-    std::regex identifier_pattern("^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9_]+$");
+    std::regex identifier_pattern("^[a-zA-Z][a-zA-Z0-9_]*$");
     return std::regex_match(token, identifier_pattern);
 }
 
@@ -61,6 +61,19 @@ bool LexicalAnalyzer::isString(std::string token)
     return token.at(0) == '"' && token.at(token.length() - 1) == '"';
 }
 
+bool LexicalAnalyzer::shouldBreakToken(char character)
+{
+    return isspace(character) ||
+           character == '(' ||
+           character == ')' ||
+           character == '{' ||
+           character == '}' ||
+           character == ';' ||
+           character == ',' ||
+           character == '[' ||
+           character == ']';
+}
+
 SymbolTable LexicalAnalyzer::parse(std::string filename)
 {
     std::ifstream file(filename);
@@ -82,7 +95,7 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
         {
             char c = buffer[i];
             ++column;
-            if (isspace(c) || c == '(' || c == ')' || c == '{' || c == '}' || c == ';')
+            if (shouldBreakToken(c))
             {
                 if (!currentToken.empty())
                 {
