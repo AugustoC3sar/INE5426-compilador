@@ -6,28 +6,61 @@
 
 bool LexicalAnalyzer::isIdentifier(std::string token)
 {
-    std::regex identifier_pattern("^[a-zA-Z][a-zA-Z0-9_]*$");
-    return std::regex_match(token, identifier_pattern);
+    std::regex identifierPattern("^[a-zA-Z][a-zA-Z0-9_]*$");
+    return std::regex_match(token, identifierPattern);
 }
 
-bool LexicalAnalyzer::isNumber(std::string token)
+bool LexicalAnalyzer::isFloatConstant(std::string token)
 {
-    long unsigned int numberOfDecimals = 0;
+    std::regex identifierPattern("[+-]?([0-9]*[.])?[0-9]+$");
+    return std::regex_match(token, identifierPattern);
+}
 
-    for (long unsigned int i = 0; i < token.length(); i++)
+bool LexicalAnalyzer::isIntConstant(std::string token)
+{
+    std::regex identifierPattern("[+-]?[0-9]+$");
+    return std::regex_match(token, identifierPattern);
+}
+
+bool LexicalAnalyzer::isStringConstant(std::string token)
+{
+    return token.at(0) == '"' && token.at(token.length() - 1) == '"';
+}
+
+bool LexicalAnalyzer::isPunctuation(std::string token)
+{
+    for (std::string punctuation : punctuations)
     {
-        char c = token.at(i);
-        for (char n : numbers)
+        if (token == punctuation)
         {
-            if (c == n)
-            {
-                numberOfDecimals++;
-            }
+            return true;
         }
     }
+    return false;
+}
 
-    bool allCharactersAreDecimals = token.length() == numberOfDecimals;
-    return allCharactersAreDecimals;
+bool LexicalAnalyzer::isRelop(std::string token)
+{
+    for (std::string relop : relops)
+    {
+        if (token == relop)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool LexicalAnalyzer::isType(std::string token)
+{
+    for (std::string type : types)
+    {
+        if (token == type)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool LexicalAnalyzer::isReservedWord(std::string token)
@@ -54,11 +87,6 @@ bool LexicalAnalyzer::isOperator(std::string token)
         }
     }
     return false;
-}
-
-bool LexicalAnalyzer::isString(std::string token)
-{
-    return token.at(0) == '"' && token.at(token.length() - 1) == '"';
 }
 
 bool LexicalAnalyzer::shouldBreakToken(char character)
@@ -97,35 +125,105 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
             ++column;
             if (shouldBreakToken(c))
             {
+                if (isPunctuation(std::string(1, c)))
+                {
+                    if (currentToken.empty())
+                    {
+                        currentToken += c;
+                    }
+                    else
+                    {
+                        i--;
+                    }
+                }
+
                 if (!currentToken.empty())
                 {
-                    if (isReservedWord(currentToken) || isNumber(currentToken) || isOperator(currentToken) || isString(currentToken))
+                    if (isReservedWord(currentToken))
                     {
-                        currentToken.clear();
+                        tokens.push_back({RESERVED_WORD, currentToken});
+                    }
+                    else if (isIntConstant(currentToken))
+                    {
+                        tokens.push_back({INT_CONSTANT, currentToken});
+                    }
+                    else if (isFloatConstant(currentToken))
+                    {
+                        tokens.push_back({FLOAT_CONSTANT, currentToken});
+                    }
+                    else if (isStringConstant(currentToken))
+                    {
+                        tokens.push_back({STRING_CONSTANT, currentToken});
+                    }
+                    else if (isType(currentToken))
+                    {
+                        tokens.push_back({TYPE, currentToken});
+                    }
+                    else if (isRelop(currentToken))
+                    {
+                        tokens.push_back({RELOP, currentToken});
+                    }
+                    else if (isOperator(currentToken))
+                    {
+                        tokens.push_back({OPERATION, currentToken});
                     }
                     else if (isIdentifier(currentToken))
                     {
                         symbolTable.addTokenOccurence(currentToken, column - currentToken.length(), row);
-                        currentToken.clear();
+                        tokens.push_back({IDENT, currentToken});
+                    }
+                    else if (isPunctuation(currentToken))
+                    {
+                        tokens.push_back({PUNCTUATION, currentToken});
                     }
                     else
                     {
                         std::cerr << "Token não identificado " << currentToken << std::endl;
                         return symbolTable;
                     }
+                    currentToken.clear();
                 }
             }
-            else if (isOperator(std::string(1, c)))
+            else if (isOperator(std::string(1, c)) || isRelop(std::string(1, c)))
             {
                 if (!currentToken.empty())
                 {
-                    if (isReservedWord(currentToken) || isNumber(currentToken))
+                    if (isReservedWord(currentToken))
                     {
-                        continue;
+                        tokens.push_back({RESERVED_WORD, currentToken});
+                    }
+                    else if (isIntConstant(currentToken))
+                    {
+                        tokens.push_back({INT_CONSTANT, currentToken});
+                    }
+                    else if (isFloatConstant(currentToken))
+                    {
+                        tokens.push_back({FLOAT_CONSTANT, currentToken});
+                    }
+                    else if (isStringConstant(currentToken))
+                    {
+                        tokens.push_back({STRING_CONSTANT, currentToken});
+                    }
+                    else if (isType(currentToken))
+                    {
+                        tokens.push_back({TYPE, currentToken});
+                    }
+                    else if (isRelop(currentToken))
+                    {
+                        tokens.push_back({RELOP, currentToken});
+                    }
+                    else if (isOperator(currentToken))
+                    {
+                        tokens.push_back({OPERATION, currentToken});
                     }
                     else if (isIdentifier(currentToken))
                     {
                         symbolTable.addTokenOccurence(currentToken, column - currentToken.length(), row);
+                        tokens.push_back({IDENT, currentToken});
+                    }
+                    else if (isPunctuation(currentToken))
+                    {
+                        tokens.push_back({PUNCTUATION, currentToken});
                     }
                     else
                     {
@@ -135,10 +233,6 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
                     currentToken.clear();
                 }
                 currentToken += c;
-                if (isOperator(currentToken))
-                {
-                    currentToken.clear();
-                }
             }
             else
             {
@@ -155,9 +249,42 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
 
     if (!currentToken.empty())
     {
-        if (isIdentifier(currentToken))
+        if (isReservedWord(currentToken))
         {
-            symbolTable.addTokenOccurence(currentToken, 0, 0);
+            tokens.push_back({RESERVED_WORD, currentToken});
+        }
+        else if (isIntConstant(currentToken))
+        {
+            tokens.push_back({INT_CONSTANT, currentToken});
+        }
+        else if (isFloatConstant(currentToken))
+        {
+            tokens.push_back({FLOAT_CONSTANT, currentToken});
+        }
+        else if (isStringConstant(currentToken))
+        {
+            tokens.push_back({STRING_CONSTANT, currentToken});
+        }
+        else if (isType(currentToken))
+        {
+            tokens.push_back({TYPE, currentToken});
+        }
+        else if (isRelop(currentToken))
+        {
+            tokens.push_back({RELOP, currentToken});
+        }
+        else if (isOperator(currentToken))
+        {
+            tokens.push_back({OPERATION, currentToken});
+        }
+        else if (isIdentifier(currentToken))
+        {
+            symbolTable.addTokenOccurence(currentToken, column - currentToken.length(), row);
+            tokens.push_back({IDENT, currentToken});
+        }
+        else if (isPunctuation(currentToken))
+        {
+            tokens.push_back({PUNCTUATION, currentToken});
         }
         else
         {
@@ -166,6 +293,25 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
         }
     }
 
+    parsedAllFile = true;
+
     file.close();
     return symbolTable;
+}
+
+Token LexicalAnalyzer::getNextToken()
+{
+    if (currentTokenIterator < tokens.size())
+    {
+        Token token = tokens.at(currentTokenIterator);
+        currentTokenIterator++;
+        return token;
+    }
+
+    if (!parsedAllFile)
+    {
+        return {WAITING, "WAITING"};
+    }
+
+    return {END_OF_FILE, "EOF"};
 }
