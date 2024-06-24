@@ -1,14 +1,18 @@
 #include "SyntaxAnalyzer.h"
 
-SyntaxAnalyzer::SyntaxAnalyzer()
+#include <iostream>
+
+SyntaxAnalyzer::SyntaxAnalyzer(LexicalAnalyzer *la)
 {
+    lexicalAnalyzer = la;
+
     stack = {"$", "PROGRAM"};
 
     productions = {
         {0, "PROGRAM", {"STATEMENT"}},
         {1, "PROGRAM", {"FUNCLIST"}},
         {2, "PROGRAM", {"&"}},
-        {3, "FUNCLIST", {"FUNDEF", "FUNCLIST'"}},
+        {3, "FUNCLIST", {"FUNCDEF", "FUNCLIST'"}},
         {4, "FUNCLIST'", {"FUNCLIST"}},
         {5, "FUNCLIST'", {"&"}},
         {6, "FUNCDEF", {"def", "ident", "(", "PARAMLIST", ")", "{", "STATELIST", "}"}},
@@ -115,11 +119,11 @@ SyntaxAnalyzer::SyntaxAnalyzer()
                          {"def", 3},
                      }},
         {"FUNCLIST'", {
-                          {"$", 6},
-                          {"def", 5},
+                          {"$", 5},
+                          {"def", 4},
                       }},
         {"FUNCDEF", {
-                        {"def", 7},
+                        {"def", 6},
                     }},
         {"TYPE", {
                      {"int", 7},
@@ -200,4 +204,49 @@ SyntaxAnalyzer::SyntaxAnalyzer()
         {"NUMEXPRESSION_REC", {{")", 85}, {";", 85}, {"[", 84}, {"]", 85}, {"=", 85}, {"<", 85}, {">", 85}, {"<=", 85}, {">=", 85}, {"==", 85}, {"!=", 85}, {"+", 85}, {"-", 85}, {"*", 85}, {"/", 85}, {"%", 85}}},
         {"NUMEXPRESSION_REC'", {{")", 86}, {";", 86}, {"[", 84}, {"]", 86}, {"=", 86}, {"<", 86}, {">", 86}, {"<=", 86}, {">=", 86}, {"==", 86}, {"!=", 86}, {"+", 86}, {"-", 86}, {"*", 86}, {"/", 86}, {"%", 86}}},
     };
+}
+
+void SyntaxAnalyzer::parse() {
+    Token token = lexicalAnalyzer->getNextToken();
+    while (token.type != END_OF_FILE)
+    {
+        if (token.type == WAITING) continue;
+
+        std::string A = stack.at(stack.size()-1);
+        std::string tokenValue = token.value;
+        if (token.type == INT_CONSTANT) {
+            tokenValue = "int_constant";
+        } else if (token.type == FLOAT_CONSTANT) {
+            tokenValue = "float_constant";
+        } else if (token.type == STRING_CONSTANT) {
+            tokenValue = "string_constant";
+        } else if (token.type == IDENT) {
+            tokenValue = "ident";
+        }
+
+        bool containsEntryInParseTable = !(parseTable.find(A) == parseTable.end());
+        if (tokenValue == A) {
+            stack.pop_back();
+            token = lexicalAnalyzer->getNextToken();
+        } else if (A == "&") {
+            stack.pop_back();
+        } else if (!containsEntryInParseTable) {
+            std::cerr << "Topo da pilha não pode ser encontrado na tabela de parse " << A << std::endl;
+            return;
+        } else {
+            stack.pop_back();
+            std::unordered_map<std::string, int> productionsParseRow = parseTable.at(A);
+            bool containsProductionForToken = !(productionsParseRow.find(tokenValue) == productionsParseRow.end());
+            if (!containsProductionForToken) {
+                std::cerr << "Token " << tokenValue <<  " não reconhecido para a produção " << A << std::endl;
+                return;
+            }
+
+            Production production = productions.at(productionsParseRow.at(tokenValue));
+            for (int i = production.tails.size() - 1; i >= 0; i--) {
+                std::string tokenToAdd = production.tails.at(i);
+                stack.push_back(tokenToAdd);
+            }
+        }
+    }
 }

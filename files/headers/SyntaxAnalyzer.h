@@ -1,19 +1,11 @@
-#ifndef SYMBOL_TABLE_H
-#define SYMBOL_TABLE_H
+#ifndef SYNTAX_ANALYZER_H
+#define SYNTAX_ANALYZER_H
+
+#include "LexicalAnalyzer.h"
 
 #include <unordered_map>
 #include <string>
 #include <vector>
-
-struct Terminal
-{
-  std::string name;
-};
-
-struct Variable
-{
-  std::string name;
-};
 
 struct Production
 {
@@ -28,9 +20,12 @@ private:
   std::vector<std::string> stack;
   std::vector<Production> productions;
   std::unordered_map<std::string, std::unordered_map<std::string, int>> parseTable;
+  LexicalAnalyzer *lexicalAnalyzer;
 
 public:
-  void parse(std::string filename);
+  SyntaxAnalyzer(LexicalAnalyzer *la);
+
+  void parse();
 };
 
 #endif

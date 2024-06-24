@@ -1,10 +1,11 @@
 #ifndef LEXICAL_ANALYZER_H
 #define LEXICAL_ANALYZER_H
 
+#include "SymbolTable.h"
+
 #include <string>
 #include <vector>
 #include <regex>
-#include "SymbolTable.h"
 
 enum TokenType
 {
