@@ -1,5 +1,5 @@
 #include "LexicalAnalyzer.h"
-#include "SymbolTable.h"
+
 #include <fstream>
 #include <iostream>
 #include <cctype>
