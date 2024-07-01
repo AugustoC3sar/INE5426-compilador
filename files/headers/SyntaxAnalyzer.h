@@ -12,6 +12,9 @@ struct Production
   int id;
   std::string head;
   std::vector<std::string> tails;
+
+  std::string type;
+  std::string inh_type;
 };
 
 class SyntaxAnalyzer
