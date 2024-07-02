@@ -6,7 +6,7 @@ SyntaxAnalyzer::SyntaxAnalyzer(LexicalAnalyzer *la)
 {
     lexicalAnalyzer = la;
 
-    stack = {"$", "PROGRAM"};
+    stack = {DollarSign(), Program(NULL)};
 
     parseTable = {
         {"PROGRAM", {
@@ -173,7 +173,7 @@ std::vector<Item> SyntaxAnalyzer::generateNewTokens(int production, NonTerminal 
     case 26:
         return {Epsilon(parent)};
     case 27:
-        return {Lvalue(parent), Equal(parent), Atribstat(parent)};
+        return {Lvalue(parent), Equal(parent), Atribstata(parent)};
     case 28:
         return {Expression(parent)};
     case 29:
@@ -283,7 +283,7 @@ std::vector<Item> SyntaxAnalyzer::generateNewTokens(int production, NonTerminal 
     case 81:
         return {OpenParentheses(parent), Numexpression(parent), CloseParentheses(parent)};
     case 82:
-        return {Ident("", parent), Lvalue(parent)};
+        return {Ident("", parent), Lvaluea(parent)};
     case 83:
         return {Numexpressionrec(parent)};
     case 84:
@@ -304,7 +304,7 @@ void SyntaxAnalyzer::parse() {
     {
         if (token.type == WAITING) continue;
 
-        auto A = stack.at(stack.size()-1);
+        Item A = stack.at(stack.size()-1);
         std::string tokenValue = token.value;
         if (token.type == INT_CONSTANT) {
             tokenValue = "int_constant";
@@ -315,7 +315,7 @@ void SyntaxAnalyzer::parse() {
         } else if (token.type == IDENT) {
             tokenValue = "ident";
         }
-        
+
         bool containsEntryInParseTable = !(parseTable.find(A.value()) == parseTable.end());
         if (tokenValue == A.value()) {
             stack.pop_back();
@@ -335,7 +335,8 @@ void SyntaxAnalyzer::parse() {
             }
 
             int production = productionsParseRow.at(tokenValue);
-            std::vector<Item> tail = generateNewTokens(production, (NonTerminal)A); // TODO: change this so we can use in the generation.
+            NonTerminal *head = A.nonTerminal;
+            std::vector<Item> tail = generateNewTokens(production, head);
             for (int i = tail.size() - 1; i >= 0; i--) {
                 Item item = tail.at(i);
                 stack.push_back(item);
