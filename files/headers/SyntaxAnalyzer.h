@@ -9,24 +9,16 @@
 #include <cstdint>
 #include <variant>
 
-class Item {
-public:
-  virtual std::string value();
-  virtual void execute();
-};
-
-class SemanticAction : public Item {
+class SemanticAction  {
 public:
   std::string name;
 
   std::string value() {
     return name;
   };
-
-  void execute() {}
 };
 
-class NonTerminal : public Item {
+class NonTerminal {
 public:
   std::string name;
   NonTerminal *parent;
@@ -39,11 +31,9 @@ public:
   std::string value() {
     return name;
   };
-
-  void execute() {}
 };
 
-class Terminal : public Item {
+class Terminal {
 public:
   std::string lexicalValue;
   std::string name;
@@ -56,412 +46,707 @@ public:
   }
 
   std::string value() {
-    return name;
+    if (name == "IDENT" || name == "INT_CONSTANT" || name == "FLOAT_CONSTANT" || name == "STRING_CONSTANT") {
+      std::string lowercaseName = ""; 
+      for (char ch : name) { 
+          lowercaseName += tolower(ch); 
+      } 
+      return lowercaseName;
+    }
+    return lexicalValue;
   };
+};
+
+enum ItemType {
+  NON_TERMINAL,
+  TERMINAL,
+  SEMANTIC_ACTION,
+};
+
+class Item {
+public:
+  ItemType type;
+  NonTerminal *nonTerminal;
+  SemanticAction *semanticAction;
+  Terminal *terminal;
+
+  Item() = default;
+
+  std::string value() {
+    if (type == NON_TERMINAL) {
+      return nonTerminal->value();
+    } else if (type == TERMINAL) {
+      return terminal->value();
+    } else {
+      return semanticAction->value();
+    }
+  }
+};
 
-  void execute() {}
+class Epsilon : public Item {
+public:
+  Epsilon(NonTerminal *p)  {
+    terminal = new Terminal("&", "EPSILON", p);
+    type = TERMINAL;
+  }
 };
 
-class Epsilon : public Terminal {
+class Def : public Item {
 public:
-  Epsilon(NonTerminal *p) : Terminal("&", "EPSILON", p) {}
+  Def(NonTerminal *p) {
+    terminal = new Terminal("def", "DEF", p);
+    type = TERMINAL;
+  }
 };
 
-class Def : public Terminal {
+class Ident : public Item {
 public:
-  Def(NonTerminal *p) : Terminal("def", "DEF", p) {}
+  Ident(std::string lexicalValue, NonTerminal *p) {
+    terminal = new Terminal(lexicalValue, "IDENT", p);
+    type = TERMINAL;
+  }
 };
 
-class Ident : public Terminal {
+class OpenParentheses : public Item {
 public:
-  Ident(std::string lexicalValue, NonTerminal *p) : Terminal(lexicalValue, "IDENT", p) {}
+  OpenParentheses(NonTerminal *p) {
+    terminal = new Terminal("(", "OPEN_PARENTHESES", p);
+    type = TERMINAL;
+  }
 };
 
-class OpenParentheses : public Terminal {
+class CloseParentheses : public Item {
 public:
-  OpenParentheses(NonTerminal *p) : Terminal("(", "OPEN_PARENTHESES", p) {}
+  CloseParentheses(NonTerminal *p) {
+    terminal = new Terminal(")", "CLOSE_PARENTHESES", p);
+    type = TERMINAL;
+  }
 };
 
-class CloseParentheses : public Terminal {
+class OpenBrackets : public Item {
 public:
-  CloseParentheses(NonTerminal *p) : Terminal(")", "CLOSE_PARENTHESES", p) {}
+  OpenBrackets(NonTerminal *p) {
+    terminal = new Terminal("{", "OPEN_BRACKETS", p);
+    type = TERMINAL;
+  }
 };
 
-class OpenBrackets : public Terminal {
+class CloseBrackets : public Item {
 public:
-  OpenBrackets(NonTerminal *p) : Terminal("{", "OPEN_BRACKETS", p) {}
+  CloseBrackets(NonTerminal *p) {
+    terminal = new Terminal("}", "CLOSE_BRACKETS", p);
+    type = TERMINAL;
+  }
 };
 
-class CloseBrackets : public Terminal {
+class Int : public Item {
 public:
-  CloseBrackets(NonTerminal *p) : Terminal("}", "CLOSE_BRACKETS", p) {}
+  Int(NonTerminal *p) {
+    terminal = new Terminal("int", "INT", p);
+    type = TERMINAL;
+  }
 };
 
-class Int : public Terminal {
+class Float : public Item {
 public:
-  Int(NonTerminal *p) : Terminal("int", "INT", p) {}
+  Float(NonTerminal *p) {
+    terminal = new Terminal("float", "FLOAT", p);
+    type = TERMINAL;
+  }
 };
 
-class Float : public Terminal {
+class String : public Item {
 public:
-  Float(NonTerminal *p) : Terminal("float", "FLOAT", p) {}
+  String(NonTerminal *p) {
+    terminal = new Terminal("string", "STRING", p);
+    type = TERMINAL;
+  }
 };
 
-class String : public Terminal {
+class Comma : public Item {
 public:
-  String(NonTerminal *p) : Terminal("string", "STRING", p) {}
+  Comma(NonTerminal *p) {
+    terminal = new Terminal(",", "COMMA", p);
+    type = TERMINAL;
+  }
 };
 
-class Comma : public Terminal {
+class Semicolon : public Item {
 public:
-  Comma(NonTerminal *p) : Terminal(",", "COMMA", p) {}
+  Semicolon(NonTerminal *p) {
+    terminal = new Terminal(";", "SEMICOLON", p);
+    type = TERMINAL;
+  }
 };
 
-class Semicolon : public Terminal {
+class Break : public Item {
 public:
-  Semicolon(NonTerminal *p) : Terminal(";", "SEMICOLON", p) {}
+  Break(NonTerminal *p) {
+    terminal = new Terminal("break", "BREAK", p);
+    type = TERMINAL;
+  }
 };
 
-class Break : public Terminal {
+class OpenSquareBrackets : public Item {
 public:
-  Break(NonTerminal *p) : Terminal("break", "BREAK", p) {}
+  OpenSquareBrackets(NonTerminal *p) {
+    terminal = new Terminal("[", "OPEN_SQUARE_BRACKETS", p);
+    type = TERMINAL;
+  }
 };
 
-class OpenSquareBrackets : public Terminal {
+class CloseSquareBrackets : public Item {
 public:
-  OpenSquareBrackets(NonTerminal *p) : Terminal("[", "OPEN_SQUARE_BRACKETS", p) {}
+  CloseSquareBrackets(NonTerminal *p) {
+    terminal = new Terminal("]", "CLOSE_SQUARE_BRACKETS", p);
+    type = TERMINAL;
+  }
 };
 
-class CloseSquareBrackets : public Terminal {
+class Equal : public Item {
 public:
-  CloseSquareBrackets(NonTerminal *p) : Terminal("]", "CLOSE_SQUARE_BRACKETS", p) {}
+  Equal(NonTerminal *p) {
+    terminal = new Terminal("=", "EQUAL", p);
+    type = TERMINAL;
+  }
 };
 
-class Equal : public Terminal {
+class Call : public Item {
 public:
-  Equal(NonTerminal *p) : Terminal("=", "EQUAL", p) {}
+  Call(NonTerminal *p) {
+    terminal = new Terminal("call", "CALL", p);
+    type = TERMINAL;
+  }
 };
 
-class Call : public Terminal {
+class Print : public Item {
 public:
-  Call(NonTerminal *p) : Terminal("call", "CALL", p) {}
+  Print(NonTerminal *p) {
+    terminal = new Terminal("print", "PRINT", p);
+    type = TERMINAL;
+  }
 };
 
-class Print : public Terminal {
+class Read : public Item {
 public:
-  Print(NonTerminal *p) : Terminal("print", "PRINT", p) {}
+  Read(NonTerminal *p) {
+    terminal = new Terminal("read", "READ", p);
+    type = TERMINAL;
+  }
 };
 
-class Read : public Terminal {
+class Return : public Item {
 public:
-  Read(NonTerminal *p) : Terminal("read", "READ", p) {}
+  Return (NonTerminal *p) {
+    terminal = new Terminal("return", "RETURN", p);
+    type = TERMINAL;
+  }
 };
 
-class Return : public Terminal {
+class If : public Item {
 public:
-  Return (NonTerminal *p) : Terminal("return", "RETURN", p) {}
+  If(NonTerminal *p) {
+    terminal = new Terminal("if", "IF", p);
+    type = TERMINAL;
+  }
 };
 
-class If : public Terminal {
+class Else : public Item {
 public:
-  If(NonTerminal *p) : Terminal("if", "IF", p) {}
+  Else(NonTerminal *p) {
+    terminal = new Terminal("else", "ELSE", p);
+    type = TERMINAL;
+  }
 };
 
-class Else : public Terminal {
+class For : public Item {
 public:
-  Else(NonTerminal *p) : Terminal("else", "ELSE", p) {}
+  For(NonTerminal *p) {
+    terminal = new Terminal("for", "FOR", p);
+    type = TERMINAL;
+  }
 };
 
-class For : public Terminal {
+class New : public Item {
 public:
-  For(NonTerminal *p) : Terminal("for", "FOR", p) {}
+  New(NonTerminal *p) {
+    terminal = new Terminal("new", "NEW", p);
+    type = TERMINAL;
+  }
 };
 
-class New : public Terminal {
+class GreaterThan : public Item {
 public:
-  New(NonTerminal *p) : Terminal("new", "NEW", p) {}
+  GreaterThan(NonTerminal *p) {
+    terminal = new Terminal(">", "GREATER_THAN", p);
+    type = TERMINAL;
+  }
 };
 
-class GreaterThan : public Terminal {
+class LessThan : public Item {
 public:
-  GreaterThan(NonTerminal *p) : Terminal(">", "GREATER_THAN", p) {}
+  LessThan(NonTerminal *p) {
+    terminal = new Terminal("<", "LESS_THAN", p);
+    type = TERMINAL;
+  }
 };
 
-class LessThan : public Terminal {
+class LessOrEquals : public Item {
 public:
-  LessThan(NonTerminal *p) : Terminal("<", "LESS_THAN", p) {}
+  LessOrEquals(NonTerminal *p) {
+    terminal = new Terminal("<=", "LESS_OR_EQUALS", p);
+    type = TERMINAL;
+  }
 };
 
-class LessOrEquals : public Terminal {
+class GreaterOrEquals : public Item {
 public:
-  LessOrEquals(NonTerminal *p) : Terminal("<=", "LESS_OR_EQUALS", p) {}
+  GreaterOrEquals(NonTerminal *p) {
+    terminal = new Terminal(">=", "GREATER_OR_EQUALS", p);
+    type = TERMINAL;
+  }
 };
 
-class GreaterOrEquals : public Terminal {
+class Equals : public Item {
 public:
-  GreaterOrEquals(NonTerminal *p) : Terminal(">=", "GREATER_OR_EQUALS", p) {}
+  Equals(NonTerminal *p) {
+    terminal = new Terminal("==", "EQUALS", p);
+    type = TERMINAL;
+  }
 };
 
-class Equals : public Terminal {
+class Different : public Item {
 public:
-  Equals(NonTerminal *p) : Terminal("==", "EQUALS", p) {}
+  Different(NonTerminal *p) {
+    terminal = new Terminal("!=", "DIFFERENT", p);
+    type = TERMINAL;
+  }
 };
 
-class Different : public Terminal {
+class Minus : public Item {
 public:
-  Different(NonTerminal *p) : Terminal("!=", "DIFFERENT", p) {}
+  Minus(NonTerminal *p) {
+    terminal = new Terminal("-", "MINUS", p);
+    type = TERMINAL;
+  }
 };
 
-class Minus : public Terminal {
+class Positive : public Item {
 public:
-  Minus(NonTerminal *p) : Terminal("-", "MINUS", p) {}
+  Positive(NonTerminal *p) {
+    terminal = new Terminal("+", "POSITIVE", p);
+    type = TERMINAL;
+  }
 };
 
-class Positive : public Terminal {
+class Times : public Item {
 public:
-  Positive(NonTerminal *p) : Terminal("+", "POSITIVE", p) {}
+  Times(NonTerminal *p) {
+    terminal = new Terminal("*", "TIMES", p);
+    type = TERMINAL;
+  }
 };
 
-class Times : public Terminal {
+class Divide : public Item {
 public:
-  Times(NonTerminal *p) : Terminal("*", "TIMES", p) {}
+  Divide(NonTerminal *p) {
+    terminal = new Terminal("/", "DIVIDE", p);
+    type = TERMINAL;
+  }
 };
 
-class Divide : public Terminal {
+class Remainder : public Item {
 public:
-  Divide(NonTerminal *p) : Terminal("/", "DIVIDE", p) {}
+  Remainder(NonTerminal *p) {
+    terminal = new Terminal("%", "REMAINDER", p);
+    type = TERMINAL;
+  }
 };
 
-class Remainder : public Terminal {
+class IntConstant : public Item {
 public:
-  Remainder(NonTerminal *p) : Terminal("%", "REMAINDER", p) {}
+  IntConstant(std::string lexicalValue, NonTerminal *p) {
+    terminal = new Terminal(lexicalValue, "INT_CONSTANT", p);
+    type = TERMINAL;
+  }
 };
 
-class IntConstant : public Terminal {
+class FloatConstant : public Item {
 public:
-  IntConstant(std::string lexicalValue, NonTerminal *p) : Terminal(lexicalValue, "INT_CONSTANT", p) {}
+  FloatConstant(std::string lexicalValue, NonTerminal *p) {
+    terminal = new Terminal(lexicalValue, "FLOAT_CONSTANT", p);
+    type = TERMINAL;
+  }
 };
 
-class FloatConstant : public Terminal {
+class StringConstant : public Item {
 public:
-  FloatConstant(std::string lexicalValue, NonTerminal *p) : Terminal(lexicalValue, "FLOAT_CONSTANT", p) {}
+  StringConstant(std::string lexicalValue, NonTerminal *p) {
+    terminal = new Terminal(lexicalValue, "STRING_CONSTANT", p);
+    type = TERMINAL;
+  }
 };
 
-class StringConstant : public Terminal {
+class Null : public Item {
 public:
-  StringConstant(std::string lexicalValue, NonTerminal *p) : Terminal(lexicalValue, "STRING_CONSTANT", p) {}
+  Null(NonTerminal *p) {
+    terminal = new Terminal("null", "NULL", p);
+    type = TERMINAL;
+  }
 };
 
-class Null : public Terminal {
+class Program : public Item {
 public:
-  Null(NonTerminal *p) : Terminal("null", "NULL", p) {}
+  Program(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("PROGRAM", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Program : public NonTerminal {
+class Statement : public Item {
 public:
-  Program(NonTerminal *parent) : NonTerminal("PROGRAM", parent) {}
+  Statement(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("STATEMENT", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Statement : public NonTerminal {
+class Funclist : public Item {
 public:
-  Statement(NonTerminal *parent) : NonTerminal("STATEMENT", parent) {}
+  Funclist(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("FUNCLIST", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Funclist : public NonTerminal {
+class Funcdef : public Item {
 public:
-  Funclist(NonTerminal *parent) : NonTerminal("FUNCLIST", parent) {}
+  Funcdef(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("FUNCDEF", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Funcdef : public NonTerminal {
+class Type : public Item {
 public:
-  Funcdef(NonTerminal *parent) : NonTerminal("FUNCDEF", parent) {}
+  Type(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("TYPE", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Type : public NonTerminal {
+class Paramlist : public Item {
 public:
-  Type(NonTerminal *parent) : NonTerminal("TYPE", parent) {}
+  Paramlist(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("PARAMLIST", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Paramlist : public NonTerminal {
+class Vardecl : public Item {
 public:
-  Paramlist(NonTerminal *parent) : NonTerminal("PARAMLIST", parent) {}
+  Vardecl(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("VARDECL", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Vardecl : public NonTerminal {
+class Arrayvardecl : public Item {
 public:
-  Vardecl(NonTerminal *parent) : NonTerminal("VARDECL", parent) {}
+  Arrayvardecl(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("ARRAYVARDECL", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Arrayvardecl : public NonTerminal {
+class Atribstat : public Item {
 public:
-  Arrayvardecl(NonTerminal *parent) : NonTerminal("ARRAYVARDECL", parent) {}
+  Atribstat(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("ATRIBSTAT", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Atribstat : public NonTerminal {
+class Atribstata : public Item {
 public:
-  Atribstat(NonTerminal *parent) : NonTerminal("ATRIBSTAT", parent) {}
+  Atribstata(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("ATRIBSTAT'", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Funccall : public NonTerminal {
+class Funccall : public Item {
 public:
-  Funccall(NonTerminal *parent) : NonTerminal("FUNCCALL", parent) {}
+  Funccall(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("FUNCCALL", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Paramlistcall : public NonTerminal {
+class Paramlistcall : public Item {
 public:
-  Paramlistcall(NonTerminal *parent) : NonTerminal("PARAMLISTCALL", parent) {}
+  Paramlistcall(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("PARAMLISTCALL", parent);
+    type = NON_TERMINAL;
+  }
 };
 
+
+class Paramlistcalla : public Item {
+public:
+  Paramlistcalla(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("PARAMLISTCALL'", parent);
+    type = NON_TERMINAL;
+  }
+};
 
-class Paramlistcalla : public NonTerminal {
+class Printstat : public Item {
 public:
-  Paramlistcalla(NonTerminal *parent) : NonTerminal("PARAMLISTCALL'", parent) {}
+  Printstat(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("PRINTSTAT", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Printstat : public NonTerminal {
+class ReadStat : public Item {
 public:
-  Printstat(NonTerminal *parent) : NonTerminal("PRINTSTAT", parent) {}
+  ReadStat(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("READSTAT", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class ReadStat : public NonTerminal {
+class ReturnStat : public Item {
 public:
-  ReadStat(NonTerminal *parent) : NonTerminal("READSTAT", parent) {}
+  ReturnStat(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("RETURNSTAT", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class ReturnStat : public NonTerminal {
+class Ifstat : public Item {
 public:
-  ReturnStat(NonTerminal *parent) : NonTerminal("RETURNSTAT", parent) {}
+  Ifstat(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("IFSTAT", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Ifstat : public NonTerminal {
+class Elsestat : public Item {
 public:
-  Ifstat(NonTerminal *parent) : NonTerminal("IFSTAT", parent) {}
+  Elsestat(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("ELSESTAT", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Elsestat : public NonTerminal {
+class Forstat : public Item {
 public:
-  Elsestat(NonTerminal *parent) : NonTerminal("ELSESTAT", parent) {}
+  Forstat(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("FORSTAT", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Forstat : public NonTerminal {
+class Statelist : public Item {
 public:
-  Forstat(NonTerminal *parent) : NonTerminal("FORSTAT", parent) {}
+  Statelist(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("STATELIST", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Statelist : public NonTerminal {
+class Statelista : public Item {
 public:
-  Statelist(NonTerminal *parent) : NonTerminal("STATELIST", parent) {}
+  Statelista(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("STATELIST'", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Statelista : public NonTerminal {
+class Allocexpression : public Item {
 public:
-  Statelista(NonTerminal *parent) : NonTerminal("STATELIST'", parent) {}
+  Allocexpression(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("ALLOCEXPRESION", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Allocexpression : public NonTerminal {
+class Numlist : public Item {
 public:
-  Allocexpression(NonTerminal *parent) : NonTerminal("ALLOCEXPRESION", parent) {}
+  Numlist(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("NUM_LIST", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Numlist : public NonTerminal {
+class Numlista : public Item {
 public:
-  Numlist(NonTerminal *parent) : NonTerminal("NUM_LIST", parent) {}
+  Numlista(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("NUM_LIST'", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Numlista : public NonTerminal {
+class Relop : public Item {
 public:
-  Numlista(NonTerminal *parent) : NonTerminal("NUM_LIST'", parent) {}
+  Relop(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("RELOP", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Relop : public NonTerminal {
+class Expression : public Item {
 public:
-  Relop(NonTerminal *parent) : NonTerminal("RELOP", parent) {}
+  Expression(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("EXPRESSION", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Expression : public NonTerminal {
+class Expressiona : public Item {
 public:
-  Expression(NonTerminal *parent) : NonTerminal("EXPRESSION", parent) {}
+  Expressiona(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("EXPRESSION'", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Expressiona : public NonTerminal {
+class Signal : public Item {
 public:
-  Expressiona(NonTerminal *parent) : NonTerminal("EXPRESSION'", parent) {}
+  Signal(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("SIGNAL", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Signal : public NonTerminal {
+class Numexpression : public Item {
 public:
-  Signal(NonTerminal *parent) : NonTerminal("SIGNAL", parent) {}
+  Numexpression(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("NUMEXPRESSION", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Numexpression : public NonTerminal {
+class Numexpressiona : public Item {
 public:
-  Numexpression(NonTerminal *parent) : NonTerminal("NUMEXPRESSION", parent) {}
+  Numexpressiona(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("NUMEXPRESSION'", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Numexpressiona : public NonTerminal {
+class Termrec : public Item {
 public:
-  Numexpressiona(NonTerminal *parent) : NonTerminal("NUMEXPRESSION'", parent) {}
+  Termrec(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("TERM_REC", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Termrec : public NonTerminal {
+class Termreca : public Item {
 public:
-  Termrec(NonTerminal *parent) : NonTerminal("TERM_REC", parent) {}
+  Termreca(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("TERM_REC'", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Termreca : public NonTerminal {
+class Operator : public Item {
 public:
-  Termreca(NonTerminal *parent) : NonTerminal("TERM_REC'", parent) {}
+  Operator(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("OPERATOR", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Operator : public NonTerminal {
+class Term : public Item {
 public:
-  Operator(NonTerminal *parent) : NonTerminal("OPERATOR", parent) {}
+  Term(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("TERM", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Term : public NonTerminal {
+class Terma : public Item {
 public:
-  Term(NonTerminal *parent) : NonTerminal("TERM", parent) {}
+  Terma(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("TERM'", parent);
+    type = NON_TERMINAL;
+  }
 };
+
 
-class Terma : public NonTerminal {
+class Unaryexprrec : public Item {
 public:
-  Terma(NonTerminal *parent) : NonTerminal("TERM'", parent) {}
+  Unaryexprrec(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("UNARYEXPR_REC", parent);
+    type = NON_TERMINAL;
+  }
 };
 
+class Unaryexprreca : public Item {
+public:
+  Unaryexprreca(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("UNARYEXPR_REC'", parent);
+    type = NON_TERMINAL;
+  }
+};
 
-class Unaryexprrec : public NonTerminal {
+class Unaryexpr : public Item {
 public:
-  Unaryexprrec(NonTerminal *parent) : NonTerminal("UNARYEXPR_REC", parent) {}
+  Unaryexpr(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("UNARYEXPR", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Unaryexprreca : public NonTerminal {
+class Factor : public Item {
 public:
-  Unaryexprreca(NonTerminal *parent) : NonTerminal("UNARYEXPR_REC'", parent) {}
+  Factor(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("FACTOR", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Unaryexpr : public NonTerminal {
+class Lvalue : public Item {
 public:
-  Unaryexpr(NonTerminal *parent) : NonTerminal("UNARYEXPR", parent) {}
+  Lvalue(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("LVALUE", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Factor : public NonTerminal {
+class Lvaluea : public Item {
 public:
-  Factor(NonTerminal *parent) : NonTerminal("FACTOR", parent) {}
+  Lvaluea(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("LVALUE'", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Lvalue : public NonTerminal {
+class Numexpressionrec : public Item {
 public:
-  Lvalue(NonTerminal *parent) : NonTerminal("LVALUE", parent) {}
+  Numexpressionrec(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("NUMEXPRESSION_REC", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Numexpressionrec : public NonTerminal {
+class Numexpressionreca : public Item {
 public:
-  Numexpressionrec(NonTerminal *parent) : NonTerminal("NUMEXPRESSION_REC", parent) {}
+  Numexpressionreca(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("NUMEXPRESSION_REC'", parent);
+    type = NON_TERMINAL;
+  }
 };
 
-class Numexpressionreca : public NonTerminal {
+class DollarSign : public Item {
 public:
-  Numexpressionreca(NonTerminal *parent) : NonTerminal("NUMEXPRESSION_REC'", parent) {}
+  DollarSign() : Item() {
+    nonTerminal = new NonTerminal("$", NULL);
+    type = NON_TERMINAL;
+  }
 };
 
 class Production {
