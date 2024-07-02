@@ -318,6 +318,7 @@ void SyntaxAnalyzer::parse() {
 
         bool containsEntryInParseTable = !(parseTable.find(A.value()) == parseTable.end());
         if (tokenValue == A.value()) {
+            A.terminal->lexicalValue = token.value; 
             stack.pop_back();
             token = lexicalAnalyzer->getNextToken();
         } else if (A.value() == "&") {
