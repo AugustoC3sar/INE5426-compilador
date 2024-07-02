@@ -7,13 +7,26 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <variant>
 
-class SemanticAction {
+class Item {
 public:
-  void apply();
+  virtual std::string value();
+  virtual void execute();
 };
 
-class NonTerminal {
+class SemanticAction : public Item {
+public:
+  std::string name;
+
+  std::string value() {
+    return name;
+  };
+
+  void execute() {}
+};
+
+class NonTerminal : public Item {
 public:
   std::string name;
   NonTerminal *parent;
@@ -22,9 +35,15 @@ public:
     name = n;
     parent = p;
   }
+
+  std::string value() {
+    return name;
+  };
+
+  void execute() {}
 };
 
-class Terminal {
+class Terminal : public Item {
 public:
   std::string lexicalValue;
   std::string name;
@@ -35,409 +54,433 @@ public:
     name = n;
     parent = p;
   }
+
+  std::string value() {
+    return name;
+  };
+
+  void execute() {}
 };
 
-class Epsilon : Terminal {
+class Epsilon : public Terminal {
 public:
   Epsilon(NonTerminal *p) : Terminal("&", "EPSILON", p) {}
 };
 
-class Def : Terminal {
+class Def : public Terminal {
 public:
   Def(NonTerminal *p) : Terminal("def", "DEF", p) {}
 };
 
-class Ident : Terminal {
+class Ident : public Terminal {
 public:
   Ident(std::string lexicalValue, NonTerminal *p) : Terminal(lexicalValue, "IDENT", p) {}
 };
 
-class OpenParentheses : Terminal {
+class OpenParentheses : public Terminal {
 public:
   OpenParentheses(NonTerminal *p) : Terminal("(", "OPEN_PARENTHESES", p) {}
 };
 
-class CloseParentheses : Terminal {
+class CloseParentheses : public Terminal {
 public:
   CloseParentheses(NonTerminal *p) : Terminal(")", "CLOSE_PARENTHESES", p) {}
 };
 
-class OpenBrackets : Terminal {
+class OpenBrackets : public Terminal {
 public:
   OpenBrackets(NonTerminal *p) : Terminal("{", "OPEN_BRACKETS", p) {}
 };
 
-class CloseBrackets : Terminal {
+class CloseBrackets : public Terminal {
 public:
   CloseBrackets(NonTerminal *p) : Terminal("}", "CLOSE_BRACKETS", p) {}
 };
 
-class Int : Terminal {
+class Int : public Terminal {
 public:
   Int(NonTerminal *p) : Terminal("int", "INT", p) {}
 };
 
-class Float : Terminal {
+class Float : public Terminal {
 public:
   Float(NonTerminal *p) : Terminal("float", "FLOAT", p) {}
 };
 
-class String : Terminal {
+class String : public Terminal {
 public:
   String(NonTerminal *p) : Terminal("string", "STRING", p) {}
 };
 
-class Comma : Terminal {
+class Comma : public Terminal {
 public:
   Comma(NonTerminal *p) : Terminal(",", "COMMA", p) {}
 };
 
-class Semicolon : Terminal {
+class Semicolon : public Terminal {
 public:
   Semicolon(NonTerminal *p) : Terminal(";", "SEMICOLON", p) {}
 };
 
-class Break : Terminal {
+class Break : public Terminal {
 public:
   Break(NonTerminal *p) : Terminal("break", "BREAK", p) {}
 };
 
-class OpenSquareBrackets : Terminal {
+class OpenSquareBrackets : public Terminal {
 public:
   OpenSquareBrackets(NonTerminal *p) : Terminal("[", "OPEN_SQUARE_BRACKETS", p) {}
 };
 
-class CloseSquareBrackets : Terminal {
+class CloseSquareBrackets : public Terminal {
 public:
   CloseSquareBrackets(NonTerminal *p) : Terminal("]", "CLOSE_SQUARE_BRACKETS", p) {}
 };
 
-class Equal : Terminal {
+class Equal : public Terminal {
 public:
   Equal(NonTerminal *p) : Terminal("=", "EQUAL", p) {}
 };
 
-class Call : Terminal {
+class Call : public Terminal {
 public:
   Call(NonTerminal *p) : Terminal("call", "CALL", p) {}
 };
 
-class Print : Terminal {
+class Print : public Terminal {
 public:
   Print(NonTerminal *p) : Terminal("print", "PRINT", p) {}
 };
 
-class Read : Terminal {
+class Read : public Terminal {
 public:
   Read(NonTerminal *p) : Terminal("read", "READ", p) {}
 };
 
-class Return : Terminal {
+class Return : public Terminal {
 public:
   Return (NonTerminal *p) : Terminal("return", "RETURN", p) {}
 };
 
-class If : Terminal {
+class If : public Terminal {
 public:
   If(NonTerminal *p) : Terminal("if", "IF", p) {}
 };
 
-class Else : Terminal {
+class Else : public Terminal {
 public:
   Else(NonTerminal *p) : Terminal("else", "ELSE", p) {}
 };
 
-class For : Terminal {
+class For : public Terminal {
 public:
   For(NonTerminal *p) : Terminal("for", "FOR", p) {}
 };
 
-class New : Terminal {
+class New : public Terminal {
 public:
   New(NonTerminal *p) : Terminal("new", "NEW", p) {}
 };
 
-class GreaterThan : Terminal {
+class GreaterThan : public Terminal {
 public:
   GreaterThan(NonTerminal *p) : Terminal(">", "GREATER_THAN", p) {}
 };
 
-class LessThan : Terminal {
+class LessThan : public Terminal {
 public:
   LessThan(NonTerminal *p) : Terminal("<", "LESS_THAN", p) {}
 };
 
-class LessOrEquals : Terminal {
+class LessOrEquals : public Terminal {
 public:
   LessOrEquals(NonTerminal *p) : Terminal("<=", "LESS_OR_EQUALS", p) {}
 };
 
-class GreaterOrEquals : Terminal {
+class GreaterOrEquals : public Terminal {
 public:
   GreaterOrEquals(NonTerminal *p) : Terminal(">=", "GREATER_OR_EQUALS", p) {}
 };
 
-class Equals : Terminal {
+class Equals : public Terminal {
 public:
   Equals(NonTerminal *p) : Terminal("==", "EQUALS", p) {}
 };
 
-class Different : Terminal {
+class Different : public Terminal {
 public:
   Different(NonTerminal *p) : Terminal("!=", "DIFFERENT", p) {}
 };
 
-class Minus : Terminal {
+class Minus : public Terminal {
 public:
   Minus(NonTerminal *p) : Terminal("-", "MINUS", p) {}
 };
 
-class Positive : Terminal {
+class Positive : public Terminal {
 public:
   Positive(NonTerminal *p) : Terminal("+", "POSITIVE", p) {}
 };
 
-class Times : Terminal {
+class Times : public Terminal {
 public:
   Times(NonTerminal *p) : Terminal("*", "TIMES", p) {}
 };
 
-class Divide : Terminal {
+class Divide : public Terminal {
 public:
   Divide(NonTerminal *p) : Terminal("/", "DIVIDE", p) {}
 };
 
-class Remainder : Terminal {
+class Remainder : public Terminal {
 public:
   Remainder(NonTerminal *p) : Terminal("%", "REMAINDER", p) {}
 };
 
-class IntConstant : Terminal {
+class IntConstant : public Terminal {
 public:
   IntConstant(std::string lexicalValue, NonTerminal *p) : Terminal(lexicalValue, "INT_CONSTANT", p) {}
 };
 
-class FloatConstant : Terminal {
+class FloatConstant : public Terminal {
 public:
   FloatConstant(std::string lexicalValue, NonTerminal *p) : Terminal(lexicalValue, "FLOAT_CONSTANT", p) {}
 };
 
-class StringConstant : Terminal {
+class StringConstant : public Terminal {
 public:
   StringConstant(std::string lexicalValue, NonTerminal *p) : Terminal(lexicalValue, "STRING_CONSTANT", p) {}
 };
 
-class Null : Terminal {
+class Null : public Terminal {
 public:
   Null(NonTerminal *p) : Terminal("null", "NULL", p) {}
 };
 
-class PROGRAM : NonTerminal {
+class Program : public NonTerminal {
 public:
-  PROGRAM(NonTerminal *parent) : NonTerminal("PROGRAM", parent) {}
+  Program(NonTerminal *parent) : NonTerminal("PROGRAM", parent) {}
 };
 
-class STATEMENT : NonTerminal {
+class Statement : public NonTerminal {
 public:
-  STATEMENT(NonTerminal *parent) : NonTerminal("STATEMENT", parent) {}
+  Statement(NonTerminal *parent) : NonTerminal("STATEMENT", parent) {}
 };
 
-class FUNCLIST : NonTerminal {
+class Funclist : public NonTerminal {
 public:
-  FUNCLIST(NonTerminal *parent) : NonTerminal("FUNCLIST", parent) {}
+  Funclist(NonTerminal *parent) : NonTerminal("FUNCLIST", parent) {}
 };
 
-class FUNCDEF : NonTerminal {
+class Funcdef : public NonTerminal {
 public:
-  FUNCDEF(NonTerminal *parent) : NonTerminal("FUNCDEF", parent) {}
+  Funcdef(NonTerminal *parent) : NonTerminal("FUNCDEF", parent) {}
 };
 
-class TYPE : NonTerminal {
+class Type : public NonTerminal {
 public:
-  TYPE(NonTerminal *parent) : NonTerminal("TYPE", parent) {}
+  Type(NonTerminal *parent) : NonTerminal("TYPE", parent) {}
 };
 
-class PARAMLIST : NonTerminal {
+class Paramlist : public NonTerminal {
 public:
-  PARAMLIST(NonTerminal *parent) : NonTerminal("PARAMLIST", parent) {}
+  Paramlist(NonTerminal *parent) : NonTerminal("PARAMLIST", parent) {}
 };
 
-class VARDECL : NonTerminal {
+class Vardecl : public NonTerminal {
 public:
-  VARDECL(NonTerminal *parent) : NonTerminal("VARDECL", parent) {}
+  Vardecl(NonTerminal *parent) : NonTerminal("VARDECL", parent) {}
 };
 
-class ARRAYVARDECL : NonTerminal {
+class Arrayvardecl : public NonTerminal {
 public:
-  ARRAYVARDECL(NonTerminal *parent) : NonTerminal("ARRAYVARDECL", parent) {}
+  Arrayvardecl(NonTerminal *parent) : NonTerminal("ARRAYVARDECL", parent) {}
 };
 
-class ATRIBSTAT : NonTerminal {
+class Atribstat : public NonTerminal {
 public:
-  ATRIBSTAT(NonTerminal *parent) : NonTerminal("ATRIBSTAT", parent) {}
+  Atribstat(NonTerminal *parent) : NonTerminal("ATRIBSTAT", parent) {}
 };
 
-class FUNCCALL : NonTerminal {
+class Funccall : public NonTerminal {
 public:
-  FUNCCALL(NonTerminal *parent) : NonTerminal("FUNCCALL", parent) {}
+  Funccall(NonTerminal *parent) : NonTerminal("FUNCCALL", parent) {}
 };
 
-class PARAMLISTCALL : NonTerminal {
+class Paramlistcall : public NonTerminal {
 public:
-  PARAMLISTCALL(NonTerminal *parent) : NonTerminal("PARAMLISTCALL", parent) {}
+  Paramlistcall(NonTerminal *parent) : NonTerminal("PARAMLISTCALL", parent) {}
 };
 
 
-class PARAMLISTCALLA : NonTerminal {
+class Paramlistcalla : public NonTerminal {
 public:
-  PARAMLISTCALLA(NonTerminal *parent) : NonTerminal("PARAMLISTCALL'", parent) {}
+  Paramlistcalla(NonTerminal *parent) : NonTerminal("PARAMLISTCALL'", parent) {}
 };
 
-class PRINTSTAT : NonTerminal {
+class Printstat : public NonTerminal {
 public:
-  PRINTSTAT(NonTerminal *parent) : NonTerminal("PRINTSTAT", parent) {}
+  Printstat(NonTerminal *parent) : NonTerminal("PRINTSTAT", parent) {}
 };
 
-class READSTAT : NonTerminal {
+class ReadStat : public NonTerminal {
 public:
-  READSTAT(NonTerminal *parent) : NonTerminal("READSTAT", parent) {}
+  ReadStat(NonTerminal *parent) : NonTerminal("READSTAT", parent) {}
 };
 
-class RETURNSTAT : NonTerminal {
+class ReturnStat : public NonTerminal {
 public:
-  RETURNSTAT(NonTerminal *parent) : NonTerminal("RETURNSTAT", parent) {}
+  ReturnStat(NonTerminal *parent) : NonTerminal("RETURNSTAT", parent) {}
 };
 
-class IFSTAT : NonTerminal {
+class Ifstat : public NonTerminal {
 public:
-  IFSTAT(NonTerminal *parent) : NonTerminal("IFSTAT", parent) {}
+  Ifstat(NonTerminal *parent) : NonTerminal("IFSTAT", parent) {}
 };
 
-class ELSESTAT : NonTerminal {
+class Elsestat : public NonTerminal {
 public:
-  ELSESTAT(NonTerminal *parent) : NonTerminal("ELSESTAT", parent) {}
+  Elsestat(NonTerminal *parent) : NonTerminal("ELSESTAT", parent) {}
 };
 
-class FORSTAT : NonTerminal {
+class Forstat : public NonTerminal {
 public:
-  FORSTAT(NonTerminal *parent) : NonTerminal("FORSTAT", parent) {}
+  Forstat(NonTerminal *parent) : NonTerminal("FORSTAT", parent) {}
 };
 
-class STATELIST : NonTerminal {
+class Statelist : public NonTerminal {
 public:
-  STATELIST(NonTerminal *parent) : NonTerminal("STATELIST", parent) {}
+  Statelist(NonTerminal *parent) : NonTerminal("STATELIST", parent) {}
 };
 
-class STATELISTA : NonTerminal {
+class Statelista : public NonTerminal {
 public:
-  STATELISTA(NonTerminal *parent) : NonTerminal("STATELIST'", parent) {}
+  Statelista(NonTerminal *parent) : NonTerminal("STATELIST'", parent) {}
 };
 
-class ALLOCEXPRESION : NonTerminal {
+class Allocexpression : public NonTerminal {
 public:
-  ALLOCEXPRESION(NonTerminal *parent) : NonTerminal("ALLOCEXPRESION", parent) {}
+  Allocexpression(NonTerminal *parent) : NonTerminal("ALLOCEXPRESION", parent) {}
 };
 
-class NUMLIST : NonTerminal {
+class Numlist : public NonTerminal {
 public:
-  NUMLIST(NonTerminal *parent) : NonTerminal("NUM_LIST", parent) {}
+  Numlist(NonTerminal *parent) : NonTerminal("NUM_LIST", parent) {}
 };
 
-class NUMLISTA : NonTerminal {
+class Numlista : public NonTerminal {
 public:
-  NUMLISTA(NonTerminal *parent) : NonTerminal("NUM_LIST'", parent) {}
+  Numlista(NonTerminal *parent) : NonTerminal("NUM_LIST'", parent) {}
 };
 
-class RELOP : NonTerminal {
+class Relop : public NonTerminal {
 public:
-  RELOP(NonTerminal *parent) : NonTerminal("RELOP", parent) {}
+  Relop(NonTerminal *parent) : NonTerminal("RELOP", parent) {}
 };
 
-class EXPRESSION : NonTerminal {
+class Expression : public NonTerminal {
 public:
-  EXPRESSION(NonTerminal *parent) : NonTerminal("EXPRESSION", parent) {}
+  Expression(NonTerminal *parent) : NonTerminal("EXPRESSION", parent) {}
 };
 
-class EXPRESSIONA : NonTerminal {
+class Expressiona : public NonTerminal {
 public:
-  EXPRESSIONA(NonTerminal *parent) : NonTerminal("EXPRESSION'", parent) {}
+  Expressiona(NonTerminal *parent) : NonTerminal("EXPRESSION'", parent) {}
 };
 
-class SIGNAL : NonTerminal {
+class Signal : public NonTerminal {
 public:
-  SIGNAL(NonTerminal *parent) : NonTerminal("SIGNAL", parent) {}
+  Signal(NonTerminal *parent) : NonTerminal("SIGNAL", parent) {}
 };
 
-class NUMEXPRESSION : NonTerminal {
+class Numexpression : public NonTerminal {
 public:
-  NUMEXPRESSION(NonTerminal *parent) : NonTerminal("NUMEXPRESSION", parent) {}
+  Numexpression(NonTerminal *parent) : NonTerminal("NUMEXPRESSION", parent) {}
 };
 
-class NUMEXPRESSIONA : NonTerminal {
+class Numexpressiona : public NonTerminal {
 public:
-  NUMEXPRESSIONA(NonTerminal *parent) : NonTerminal("NUMEXPRESSION'", parent) {}
+  Numexpressiona(NonTerminal *parent) : NonTerminal("NUMEXPRESSION'", parent) {}
 };
 
-class TERMREC : NonTerminal {
+class Termrec : public NonTerminal {
 public:
-  TERMREC(NonTerminal *parent) : NonTerminal("TERM_REC", parent) {}
+  Termrec(NonTerminal *parent) : NonTerminal("TERM_REC", parent) {}
 };
 
-class TERMRECA : NonTerminal {
+class Termreca : public NonTerminal {
 public:
-  TERMRECA(NonTerminal *parent) : NonTerminal("TERM_REC'", parent) {}
+  Termreca(NonTerminal *parent) : NonTerminal("TERM_REC'", parent) {}
 };
 
-class OPERATOR : NonTerminal {
+class Operator : public NonTerminal {
 public:
-  OPERATOR(NonTerminal *parent) : NonTerminal("OPERATOR", parent) {}
+  Operator(NonTerminal *parent) : NonTerminal("OPERATOR", parent) {}
 };
 
-class TERM : NonTerminal {
+class Term : public NonTerminal {
 public:
-  TERM(NonTerminal *parent) : NonTerminal("TERM", parent) {}
+  Term(NonTerminal *parent) : NonTerminal("TERM", parent) {}
 };
 
-class UNARYEXPRREC : NonTerminal {
+class Terma : public NonTerminal {
 public:
-  UNARYEXPRREC(NonTerminal *parent) : NonTerminal("UNARYEXPR_REC", parent) {}
+  Terma(NonTerminal *parent) : NonTerminal("TERM'", parent) {}
 };
 
-class UNARYEXPRRECA : NonTerminal {
+
+class Unaryexprrec : public NonTerminal {
 public:
-  UNARYEXPRRECA(NonTerminal *parent) : NonTerminal("UNARYEXPR_REC'", parent) {}
+  Unaryexprrec(NonTerminal *parent) : NonTerminal("UNARYEXPR_REC", parent) {}
 };
 
-class UNARYEXPR : NonTerminal {
+class Unaryexprreca : public NonTerminal {
 public:
-  UNARYEXPR(NonTerminal *parent) : NonTerminal("UNARYEXPR", parent) {}
+  Unaryexprreca(NonTerminal *parent) : NonTerminal("UNARYEXPR_REC'", parent) {}
 };
 
-class FACTOR : NonTerminal {
+class Unaryexpr : public NonTerminal {
 public:
-  FACTOR(NonTerminal *parent) : NonTerminal("FACTOR", parent) {}
+  Unaryexpr(NonTerminal *parent) : NonTerminal("UNARYEXPR", parent) {}
 };
 
-class LVALUE : NonTerminal {
+class Factor : public NonTerminal {
 public:
-  LVALUE(NonTerminal *parent) : NonTerminal("LVALUE", parent) {}
+  Factor(NonTerminal *parent) : NonTerminal("FACTOR", parent) {}
 };
 
-class NUMEXPRESSIONREC : NonTerminal {
+class Lvalue : public NonTerminal {
 public:
-  NUMEXPRESSIONREC(NonTerminal *parent) : NonTerminal("NUMEXPRESSION_REC", parent) {}
+  Lvalue(NonTerminal *parent) : NonTerminal("LVALUE", parent) {}
 };
 
-class NUMEXPRESSIONRECA : NonTerminal {
+class Numexpressionrec : public NonTerminal {
 public:
-  NUMEXPRESSIONRECA(NonTerminal *parent) : NonTerminal("NUMEXPRESSION_REC'", parent) {}
+  Numexpressionrec(NonTerminal *parent) : NonTerminal("NUMEXPRESSION_REC", parent) {}
+};
+
+class Numexpressionreca : public NonTerminal {
+public:
+  Numexpressionreca(NonTerminal *parent) : NonTerminal("NUMEXPRESSION_REC'", parent) {}
+};
+
+class Production {
+public:
+  int id;
+  NonTerminal *head;
+  std::vector<Item> tail;
+
+  Production(int i, NonTerminal *h, std::vector<Item> t) {
+    head = h;
+    id = i;
+    tail = t;
+  }
 };
 
 class SyntaxAnalyzer
 {
 private:
-  std::vector<std::string> stack;
-  std::vector<Production> productions;
+  std::vector<Item> stack;
   std::unordered_map<std::string, std::unordered_map<std::string, int>> parseTable;
   LexicalAnalyzer *lexicalAnalyzer;
 
@@ -445,6 +488,8 @@ public:
   SyntaxAnalyzer(LexicalAnalyzer *la);
 
   void parse();
+
+  std::vector<Item> generateNewTokens(int production, NonTerminal *parent);
 };
 
 #endif
