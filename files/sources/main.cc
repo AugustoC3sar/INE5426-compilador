@@ -27,8 +27,10 @@ int main(int argc, char* argv[]) {
     std::string output_file;
 
     for (int i = 1; i < argc; i++){
+        std::string arg = argv[i];
+        
         // FILENAME
-        if (std::string(argv[i]) == "-f") {
+        if (arg == "-f") {
             if (i + 1 < argc) {
                 filename = argv[++i];
             } else {
@@ -38,7 +40,7 @@ int main(int argc, char* argv[]) {
                 return -1;
             }
         // OUTPUT FILENAME
-        } else if (std::string(argv[i]) == "-o") {
+        } else if (arg == "-o") {
             if (i + 1 < argc) {
                 output_file = argv[++i];
             } else {
