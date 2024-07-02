@@ -8,96 +8,6 @@ SyntaxAnalyzer::SyntaxAnalyzer(LexicalAnalyzer *la)
 
     stack = {"$", "PROGRAM"};
 
-    productions = {
-        {0, "PROGRAM", {"STATEMENT"}},
-        {1, "PROGRAM", {"FUNCLIST"}},
-        {2, "PROGRAM", {"&"}},
-        {3, "FUNCLIST", {"FUNCDEF", "FUNCLIST'"}},
-        {4, "FUNCLIST'", {"FUNCLIST"}},
-        {5, "FUNCLIST'", {"&"}},
-        {6, "FUNCDEF", {"def", "ident", "(", "PARAMLIST", ")", "{", "STATELIST", "}"}},
-        {7, "TYPE", {"int"}},
-        {8, "TYPE", {"float"}},
-        {9, "TYPE", {"string"}},
-        {10, "PARAMLIST", {"TYPE", "ident", "PARAMLIST'"}},
-        {11, "PARAMLIST", {"&"}},
-        {12, "PARAMLIST'", {",", "PARAMLIST"}},
-        {13, "PARAMLIST'", {"&"}},
-        {14, "STATEMENT", {"VARDECL", ";"}},
-        {15, "STATEMENT", {"ATRIBSTAT", ";"}},
-        {16, "STATEMENT", {"PRINTSTAT", ";"}},
-        {17, "STATEMENT", {"READSTAT", ";"}},
-        {18, "STATEMENT", {"RETURNSTAT", ";"}},
-        {19, "STATEMENT", {"IFSTAT"}},
-        {20, "STATEMENT", {"FORSTAT"}},
-        {21, "STATEMENT", {"{", "STATELIST", "}"}},
-        {22, "STATEMENT", {"break", ";"}},
-        {23, "STATEMENT", {";"}},
-        {24, "VARDECL", {"TYPE", "ident", "ARRAYVARDECL"}},
-        {25, "ARRAYVARDECL", {"[", "int_constant", "]", "ARRAYVARDECL"}},
-        {26, "ARRAYVARDECL", {"&"}},
-        {27, "ATRIBSTAT", {"LVALUE", "=", "ATRIBSTAT'"}},
-        {28, "ATRIBSTAT'", {"EXPRESSION"}},
-        {29, "ATRIBSTAT'", {"ALLOCEXPRESSION"}},
-        {30, "ATRIBSTAT'", {"FUNCCALL"}},
-        {31, "FUNCCALL", {"call", "ident", "(", "PARAMLISTCALL", ")"}},
-        {32, "PARAMLISTCALL", {"ident", "PARAMLISTCALL'"}},
-        {33, "PARAMLISTCALL", {"&"}},
-        {34, "PARAMLISTCALL'", {",", "PARAMLISTCALL"}},
-        {35, "PARAMLISTCALL'", {"&"}},
-        {36, "PRINTSTAT", {"print", "EXPRESSION"}},
-        {37, "READSTAT", {"read", "LVALUE"}},
-        {38, "RETURNSTAT", {"return", "ident"}},
-        {39, "IFSTAT", {"if", "(", "EXPRESSION", ")", "{", "STATEMENT", "}", "ELSESTAT"}},
-        {40, "ELSESTAT", {"else", "{", "STATEMENT", "}"}},
-        {41, "ELSESTAT", {"&"}},
-        {42, "FORSTAT", {"for", "(", "ATRIBSTAT", ";", "EXPRESSION", ";", "ATRIBSTAT", ")", "STATEMENT"}},
-        {43, "STATELIST", {"STATEMENT", "STATELIST'"}},
-        {44, "STATELIST'", {"STATELIST"}},
-        {45, "STATELIST'", {"&"}},
-        {46, "ALLOCEXPRESSION", {"new", "TYPE", "NUM_LIST"}},
-        {47, "NUM_LIST", {"[", "NUMEXPRESSION", "]", "NUM_LIST'"}},
-        {48, "NUM_LIST'", {"NUM_LIST"}},
-        {49, "NUM_LIST'", {"&"}},
-        {50, "RELOP", {"<"}},
-        {51, "RELOP", {">"}},
-        {52, "RELOP", {"<="}},
-        {53, "RELOP", {">="}},
-        {54, "RELOP", {"=="}},
-        {55, "RELOP", {"!="}},
-        {56, "EXPRESSION", {"NUMEXPRESSION", "EXPRESSION'"}},
-        {57, "EXPRESSION'", {"RELOP", "NUMEXPRESSION"}},
-        {58, "EXPRESSION'", {"&"}},
-        {59, "SIGNAL", {"+"}},
-        {60, "SIGNAL", {"-"}},
-        {61, "NUMEXPRESSION", {"TERM", "NUMEXPRESSION'"}},
-        {62, "NUMEXPRESSION'", {"TERM_REC"}},
-        {63, "TERM_REC", {"SIGNAL", "TERM", "TERM_REC'"}},
-        {64, "TERM_REC", {"&"}},
-        {65, "TERM_REC'", {"TERM_REC"}},
-        {66, "OPERATOR", {"*"}},
-        {67, "OPERATOR", {"/"}},
-        {68, "OPERATOR", {"%"}},
-        {69, "TERM", {"UNARYEXPR", "TERM'"}},
-        {70, "TERM'", {"UNARYEXPR_REC"}},
-        {71, "UNARYEXPR_REC", {"OPERATOR", "UNARYEXPR", "UNARYEXPR_REC'"}},
-        {72, "UNARYEXPR_REC", {"&"}},
-        {73, "UNARYEXPR_REC'", {"UNARYEXPR_REC"}},
-        {74, "UNARYEXPR", {"SIGNAL", "FACTOR"}},
-        {75, "UNARYEXPR", {"FACTOR"}},
-        {76, "FACTOR", {"int_constant"}},
-        {77, "FACTOR", {"float_constant"}},
-        {78, "FACTOR", {"string_constant"}},
-        {79, "FACTOR", {"null"}},
-        {80, "FACTOR", {"LVALUE"}},
-        {81, "FACTOR", {"(", "NUMEXPRESSION", ")"}},
-        {82, "LVALUE", {"ident", "LVALUE'"}},
-        {83, "LVALUE'", {"NUMEXPRESSION_REC"}},
-        {84, "NUMEXPRESSION_REC", {"[", "NUMEXPRESSION", "]", "NUMEXPRESSION_REC'"}},
-        {85, "NUMEXPRESSION_REC", {"&"}},
-        {86, "NUMEXPRESSION_REC'", {"NUMEXPRESSION_REC"}},
-    };
-
     parseTable = {
         {"PROGRAM", {
                         {"$", 2},
@@ -206,13 +116,195 @@ SyntaxAnalyzer::SyntaxAnalyzer(LexicalAnalyzer *la)
     };
 }
 
+std::vector<Item> SyntaxAnalyzer::generateNewTokens(int production, NonTerminal *parent) {
+    switch (production) {
+    case 0:
+        return {Statement(parent)};
+    case 1:
+        return {Funclist(parent)};
+    case 2:
+        return {Epsilon(parent)};
+    case 3:
+        return {Funcdef(parent), Funclist(parent)};
+    case 4:
+        return {Funclist(parent)};
+    case 5:
+        return {Epsilon(parent)};
+    case 6:
+        return {Def(parent), Ident("", parent), OpenParentheses(parent), Paramlist(parent), CloseParentheses(parent), OpenBrackets(parent), Statelist(parent), CloseBrackets(parent)};
+    case 7:
+        return {Int(parent)};
+    case 8:
+        return {Float(parent)};
+    case 9:
+        return {String(parent)};
+    case 10:
+        return {Type(parent), Ident("", parent), Paramlist(parent)};
+    case 11:
+        return {Epsilon(parent)};
+    case 12:
+        return {Comma(parent), Paramlist(parent)};
+    case 13:
+        return {Epsilon(parent)};
+    case 14:
+        return {Vardecl(parent), Semicolon(parent)};
+    case 15:
+        return {Atribstat(parent), Semicolon(parent)};
+    case 16:
+        return {Printstat(parent), Semicolon(parent)};
+    case 17:
+        return {ReadStat(parent), Semicolon(parent)};
+    case 18:
+        return {ReturnStat(parent), Semicolon(parent)};
+    case 19:
+        return {Ifstat(parent)};
+    case 20:
+        return {Forstat(parent)};
+    case 21:
+        return {OpenBrackets(parent), Statelist(parent), CloseBrackets(parent)};
+    case 22:
+        return {Break(parent), Semicolon(parent)};
+    case 23:
+        return {Semicolon(parent)};
+    case 24:
+        return {Type(parent), Ident("", parent), Arrayvardecl(parent)};
+    case 25:
+        return {OpenSquareBrackets(parent), IntConstant("", parent), CloseSquareBrackets(parent), Arrayvardecl(parent)};
+    case 26:
+        return {Epsilon(parent)};
+    case 27:
+        return {Lvalue(parent), Equal(parent), Atribstat(parent)};
+    case 28:
+        return {Expression(parent)};
+    case 29:
+        return {Allocexpression(parent)};
+    case 30:
+        return {Funccall(parent)};
+    case 31:
+        return {Call(parent), Ident("", parent), OpenParentheses(parent), Paramlistcall(parent), CloseBrackets(parent)};
+    case 32:
+        return {Ident("", parent), Paramlistcalla(parent)};
+    case 33:
+        return {Epsilon(parent)};
+    case 34:
+        return {Comma(parent), Paramlistcall(parent)};
+    case 35:
+        return {Epsilon(parent)};
+    case 36:
+        return {Print(parent), Expression(parent)};
+    case 37:
+        return {Read(parent), Lvalue(parent)};
+    case 38:
+        return {Return(parent), Ident("", parent)};
+    case 39:
+        return {If(parent), OpenParentheses(parent), Expression(parent), CloseParentheses(parent), OpenBrackets(parent), Statement(parent), CloseBrackets(parent), Elsestat(parent)};
+    case 40:
+        return {Else(parent), OpenBrackets(parent), Statement(parent), CloseBrackets(parent)};
+    case 41:
+        return {Epsilon(parent)};
+    case 42:
+        return {For(parent), OpenParentheses(parent), Atribstat(parent), Semicolon(parent), Expression(parent), Semicolon(parent), Atribstat(parent), CloseParentheses(parent), Statement(parent)};
+    case 43:
+        return {Statement(parent), Statelista(parent)};
+    case 44:
+        return {Statelist(parent)};
+    case 45:
+        return {Epsilon(parent)};
+    case 46:
+        return {New(parent), Type(parent), Numlist(parent)};
+    case 47:
+        return {OpenSquareBrackets(parent), Numexpression(parent), CloseSquareBrackets(parent), Numlista(parent)};
+    case 48:
+        return {Numlist(parent)};
+    case 49:
+        return {Epsilon(parent)};
+    case 50:
+        return {LessThan(parent)};
+    case 51:
+        return {GreaterThan(parent)};
+    case 52:
+        return {LessOrEquals(parent)};
+    case 53:
+        return {GreaterOrEquals(parent)};
+    case 54:
+        return {Equals(parent)};
+    case 55:
+        return {Different(parent)};
+    case 56:
+        return {Numexpression(parent), Expressiona(parent)};
+    case 57:
+        return {Relop(parent), Numexpression(parent)};
+    case 58:
+        return {Epsilon(parent)};
+    case 59:
+        return {Positive(parent)};
+    case 60:
+        return {Minus(parent)};
+    case 61:
+        return {Term(parent), Numexpressiona(parent)};
+    case 62:
+        return {Termrec(parent)};
+    case 63:
+        return {Signal(parent), Term(parent), Termreca(parent)};
+    case 64:
+        return {Epsilon(parent)};
+    case 65:
+        return {Termrec(parent)};
+    case 66:
+        return {Times(parent)};
+    case 67:
+        return {Divide(parent)};
+    case 68:
+        return {Remainder(parent)};
+    case 69:
+        return {Unaryexpr(parent), Terma(parent)};
+    case 70:
+        return {Unaryexprrec(parent)};
+    case 71:
+        return {Operator(parent), Unaryexpr(parent), Unaryexprreca(parent)};
+    case 72:
+        return {Epsilon(parent)};
+    case 73:
+        return {Unaryexprrec(parent)};
+    case 74:
+        return {Signal(parent), Factor(parent)};
+    case 75:
+        return {Factor(parent)};
+    case 76:
+        return {IntConstant("", parent)};
+    case 77:
+        return {FloatConstant("", parent)};
+    case 78:
+        return {StringConstant("", parent)};
+    case 79:
+        return {Null(parent)};
+    case 80:
+        return {Lvalue(parent)};
+    case 81:
+        return {OpenParentheses(parent), Numexpression(parent), CloseParentheses(parent)};
+    case 82:
+        return {Ident("", parent), Lvalue(parent)};
+    case 83:
+        return {Numexpressionrec(parent)};
+    case 84:
+        return {OpenSquareBrackets(parent), Numexpression(parent), CloseSquareBrackets(parent), Numexpressionreca(parent)};
+    case 85:
+        return {Epsilon(parent)};
+    case 86:
+        return {Numexpressionrec(parent)};
+    default:
+        std::cerr << "Produção não reconhecida" << std::endl;
+        return {};
+    }
+};
+
 void SyntaxAnalyzer::parse() {
     Token token = lexicalAnalyzer->getNextToken();
     while (token.type != END_OF_FILE)
     {
         if (token.type == WAITING) continue;
 
-        std::string A = stack.at(stack.size()-1);
+        auto A = stack.at(stack.size()-1);
         std::string tokenValue = token.value;
         if (token.type == INT_CONSTANT) {
             tokenValue = "int_constant";
@@ -223,29 +315,30 @@ void SyntaxAnalyzer::parse() {
         } else if (token.type == IDENT) {
             tokenValue = "ident";
         }
-
-        bool containsEntryInParseTable = !(parseTable.find(A) == parseTable.end());
-        if (tokenValue == A) {
+        
+        bool containsEntryInParseTable = !(parseTable.find(A.value()) == parseTable.end());
+        if (tokenValue == A.value()) {
             stack.pop_back();
             token = lexicalAnalyzer->getNextToken();
-        } else if (A == "&") {
+        } else if (A.value() == "&") {
             stack.pop_back();
         } else if (!containsEntryInParseTable) {
-            std::cerr << "Topo da pilha não pode ser encontrado na tabela de parse " << A << std::endl;
+            std::cerr << "Topo da pilha não pode ser encontrado na tabela de parse " << A.value() << std::endl;
             return;
         } else {
             stack.pop_back();
-            std::unordered_map<std::string, int> productionsParseRow = parseTable.at(A);
+            std::unordered_map<std::string, int> productionsParseRow = parseTable.at(A.value());
             bool containsProductionForToken = !(productionsParseRow.find(tokenValue) == productionsParseRow.end());
             if (!containsProductionForToken) {
-                std::cerr << "Token " << tokenValue <<  " não reconhecido para a produção " << A << std::endl;
+                std::cerr << "Token " << tokenValue <<  " não reconhecido para a produção " << A.value() << std::endl;
                 return;
             }
 
-            Production production = productions.at(productionsParseRow.at(tokenValue));
-            for (int i = production.tails.size() - 1; i >= 0; i--) {
-                std::string tokenToAdd = production.tails.at(i);
-                stack.push_back(tokenToAdd);
+            int production = productionsParseRow.at(tokenValue);
+            std::vector<Item> tail = generateNewTokens(production, (NonTerminal)A); // TODO: change this so we can use in the generation.
+            for (int i = tail.size() - 1; i >= 0; i--) {
+                Item item = tail.at(i);
+                stack.push_back(item);
             }
         }
     }
