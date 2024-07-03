@@ -14,7 +14,7 @@ INC_DIR = files/headers
 SRC = $(wildcard $(SRC_DIR)/*.cc)
 
 # Output executable
-TARGET = main
+TARGET = convcc
 
 # Build target
 all: $(TARGET)
