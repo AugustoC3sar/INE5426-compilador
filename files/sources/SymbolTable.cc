@@ -1,5 +1,7 @@
 #include "SymbolTable.h"
 
+#include <iostream>
+
 SymbolEntry::SymbolEntry(std::string tokenType)
     : token{tokenType}
 {
@@ -31,7 +33,7 @@ void SymbolTable::addTokenOccurence(std::string token, int column, int row)
 void SymbolTable::addTokenType(std::string token, std::string type)
 {
     if (entries.find(token) != entries.end())
-    {
+    {   
         entries[token].setType(type);
     }
 }

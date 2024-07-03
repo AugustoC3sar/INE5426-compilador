@@ -6,22 +6,23 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
-#include <cstdint>
-#include <variant>
 
-class SemanticAction  {
-public:
-  std::string name;
-
-  std::string value() {
-    return name;
-  };
+enum ItemType {
+  NON_TERMINAL,
+  TERMINAL,
+  SEMANTIC_ACTION,
 };
+
+class Item;
 
 class NonTerminal {
 public:
   std::string name;
   NonTerminal *parent;
+  std::vector<Item> children;
+
+  std::string type;
+  std::string inhType;
 
   NonTerminal(std::string n, NonTerminal *p) {
     name = n;
@@ -31,6 +32,12 @@ public:
   std::string value() {
     return name;
   };
+};
+
+class SemanticAction  {
+public:
+  virtual std::string value() = 0;
+  virtual void execute() = 0;
 };
 
 class Terminal {
@@ -55,12 +62,6 @@ public:
     }
     return lexicalValue;
   };
-};
-
-enum ItemType {
-  NON_TERMINAL,
-  TERMINAL,
-  SEMANTIC_ACTION,
 };
 
 class Item {
@@ -439,6 +440,14 @@ class Paramlist : public Item {
 public:
   Paramlist(NonTerminal *parent) {
     nonTerminal = new NonTerminal("PARAMLIST", parent);
+    type = NON_TERMINAL;
+  }
+};
+
+class Paramlista : public Item {
+public:
+  Paramlista(NonTerminal *parent) {
+    nonTerminal = new NonTerminal("PARAMLIST'", parent);
     type = NON_TERMINAL;
   }
 };

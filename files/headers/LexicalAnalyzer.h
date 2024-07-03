@@ -42,6 +42,7 @@ private:
     bool parsedAllFile = false;
     const int BUFFER_COUNT = 16;
     long unsigned int currentTokenIterator = 0;
+    SymbolTable *symbolTable =  new SymbolTable();
 
     bool isIdentifier(std::string token);
     bool isFloatConstant(std::string token);
@@ -55,10 +56,12 @@ private:
     bool shouldBreakToken(char character);
 
 public:
+
     LexicalAnalyzer() = default;
 
-    SymbolTable parse(std::string filename);
+    SymbolTable* parse(std::string filename);
     Token getNextToken();
+    SymbolTable* getSymbolTable();
 };
 
 #endif

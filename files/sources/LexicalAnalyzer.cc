@@ -102,10 +102,9 @@ bool LexicalAnalyzer::shouldBreakToken(char character)
            character == ']';
 }
 
-SymbolTable LexicalAnalyzer::parse(std::string filename)
+SymbolTable* LexicalAnalyzer::parse(std::string filename)
 {
     std::ifstream file(filename);
-    SymbolTable symbolTable;
 
     if (!file.is_open())
     {
@@ -169,7 +168,7 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
                     }
                     else if (isIdentifier(currentToken))
                     {
-                        symbolTable.addTokenOccurence(currentToken, column - currentToken.length(), row);
+                        symbolTable->addTokenOccurence(currentToken, column - currentToken.length(), row);
                         tokens.push_back({IDENT, currentToken});
                     }
                     else if (isPunctuation(currentToken))
@@ -218,7 +217,7 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
                     }
                     else if (isIdentifier(currentToken))
                     {
-                        symbolTable.addTokenOccurence(currentToken, column - currentToken.length(), row);
+                        symbolTable->addTokenOccurence(currentToken, column - currentToken.length(), row);
                         tokens.push_back({IDENT, currentToken});
                     }
                     else if (isPunctuation(currentToken))
@@ -279,7 +278,7 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
         }
         else if (isIdentifier(currentToken))
         {
-            symbolTable.addTokenOccurence(currentToken, column - currentToken.length(), row);
+            symbolTable->addTokenOccurence(currentToken, column - currentToken.length(), row);
             tokens.push_back({IDENT, currentToken});
         }
         else if (isPunctuation(currentToken))
@@ -296,6 +295,10 @@ SymbolTable LexicalAnalyzer::parse(std::string filename)
     parsedAllFile = true;
 
     file.close();
+    return symbolTable;
+}
+
+SymbolTable* LexicalAnalyzer::getSymbolTable() {
     return symbolTable;
 }
 

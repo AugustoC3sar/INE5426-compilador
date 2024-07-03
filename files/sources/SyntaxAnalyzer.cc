@@ -1,4 +1,5 @@
 #include "SyntaxAnalyzer.h"
+#include "Semantics.h"
 
 #include <iostream>
 
@@ -133,13 +134,13 @@ std::vector<Item> SyntaxAnalyzer::generateNewTokens(int production, NonTerminal 
     case 6:
         return {Def(parent), Ident("", parent), OpenParentheses(parent), Paramlist(parent), CloseParentheses(parent), OpenBrackets(parent), Statelist(parent), CloseBrackets(parent)};
     case 7:
-        return {Int(parent)};
+        return {Int(parent), SaveType("int", parent)};
     case 8:
-        return {Float(parent)};
+        return {Float(parent), SaveType("float", parent)};
     case 9:
-        return {String(parent)};
+        return {String(parent), SaveType("string", parent)};
     case 10:
-        return {Type(parent), Ident("", parent), Paramlist(parent)};
+        return {Type(parent), Ident("", parent), AddType(parent, lexicalAnalyzer->getSymbolTable()), Paramlista(parent)};
     case 11:
         return {Epsilon(parent)};
     case 12:
@@ -167,11 +168,11 @@ std::vector<Item> SyntaxAnalyzer::generateNewTokens(int production, NonTerminal 
     case 23:
         return {Semicolon(parent)};
     case 24:
-        return {Type(parent), Ident("", parent), Arrayvardecl(parent)};
+        return {Type(parent), Ident("", parent), InheritedType(parent), Arrayvardecl(parent),  SynthesizedType(parent), AddType(parent, lexicalAnalyzer->getSymbolTable())};
     case 25:
-        return {OpenSquareBrackets(parent), IntConstant("", parent), CloseSquareBrackets(parent), Arrayvardecl(parent)};
+        return {OpenSquareBrackets(parent), IntConstant("", parent), CloseSquareBrackets(parent), ArrayInheritedType(parent), Arrayvardecl(parent), ArraySynthesizedType(parent)};
     case 26:
-        return {Epsilon(parent)};
+        return {Epsilon(parent), ArraySynthesizeType(parent)};
     case 27:
         return {Lvalue(parent), Equal(parent), Atribstata(parent)};
     case 28:
@@ -317,7 +318,10 @@ void SyntaxAnalyzer::parse() {
         }
 
         bool containsEntryInParseTable = !(parseTable.find(A.value()) == parseTable.end());
-        if (tokenValue == A.value()) {
+        if (A.type == SEMANTIC_ACTION) {
+            A.semanticAction->execute();
+            stack.pop_back();
+        } else if (tokenValue == A.value()) {
             A.terminal->lexicalValue = token.value; 
             stack.pop_back();
             token = lexicalAnalyzer->getNextToken();
@@ -338,6 +342,7 @@ void SyntaxAnalyzer::parse() {
             int production = productionsParseRow.at(tokenValue);
             NonTerminal *head = A.nonTerminal;
             std::vector<Item> tail = generateNewTokens(production, head);
+            head->children = tail;
             for (int i = tail.size() - 1; i >= 0; i--) {
                 Item item = tail.at(i);
                 stack.push_back(item);
