@@ -1,7 +1,5 @@
 #include "SymbolTable.h"
 
-#include <iostream>
-
 SymbolEntry::SymbolEntry(std::string tokenType)
     : token{tokenType}
 {
