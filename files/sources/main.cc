@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include "compiler.h"
 
 bool hasConvccExtension(const std::string& filename) {
     const std::string extension = ".convcc";
@@ -28,7 +29,7 @@ int main(int argc, char* argv[]) {
 
     for (int i = 1; i < argc; i++){
         std::string arg = argv[i];
-        
+
         // FILENAME
         if (arg == "-f") {
             if (i + 1 < argc) {
@@ -85,10 +86,14 @@ int main(int argc, char* argv[]) {
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string input = buffer.str();
-    std::cout << input << std::endl;
     
     // Compiler will compile input
+    Compiler* compiler = new Compiler();
+    compiler->compile(input);
 
     // Close the file
     file.close();
+
+    // Clear memory
+    delete compiler;
 }
