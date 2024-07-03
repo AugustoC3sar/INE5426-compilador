@@ -298,7 +298,59 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
 };
 
 void Parser::parse(std::vector<Token*> tokens) {
-    for (auto token : tokens){
+    for (auto token : tokens) {
+        // Retrieve top of stack.
+        Item topOfStack = _stack.at(_stack.size()-1);
         
+        // Converts enums to a string value to be used in lexical values cases.
+        std::string tokenValue = token->value();
+        if (token->type() == INT_CONSTANT) {
+            tokenValue = "int_constant";
+        } else if (token->type() == FLOAT_CONSTANT) {
+            tokenValue = "float_constant";
+        } else if (token->type() == STRING_CONSTANT) {
+            tokenValue = "string_constant";
+        } else if (token->type() == IDENT) {
+            tokenValue = "ident";
+        }
+
+        // Verifies if there is an entry in parse table for the top of stack as the head of production.
+        bool containsEntryInParseTable = !(_parseTable.find(topOfStack.value()) == _parseTable.end());
+
+        if (tokenValue == topOfStack.value()) {
+            // If the value of the current token is equal to the value of the top of stack, we can remove the token from
+            // the stack and retrieve the next token in the sequence. The next token advances in the for loop.
+            topOfStack.terminal->lexicalValue = token->value(); 
+            _stack.pop_back();
+        } else if (topOfStack.value() == "&") {
+            // If the top of stack is epsilon we just pop the top and retrieve the next token.
+            _stack.pop_back();
+        } else if (!containsEntryInParseTable) {
+            std::cerr << "Topo da pilha não pode ser encontrado na tabela de parse " << A.value() << std::endl;
+            return;
+        } else {
+            // Removes the current non terminal from the top of the stack.
+            _stack.pop_back();
+
+            // Retrieves the production we must apply next based on the current token and the current non terminal at
+            // the top of the stack using the parse table.
+            std::unordered_map<std::string, int> productionsParseRow = _parseTable.at(topOfStack.value());
+            bool containsProductionForToken = !(productionsParseRow.find(tokenValue) == productionsParseRow.end());
+            if (!containsProductionForToken) {
+                std::cerr << "Token " << tokenValue <<  " não reconhecido para a produção " << topOfStack.value() << std::endl;
+                return;
+            }
+
+            // Generates the non terminals and terminals of the production to apply. We add to all terminals, non
+            // terminals and semantic actions the reference for the head of the production and its siblings.
+            int production = productionsParseRow.at(tokenValue);
+            NonTerminal *head = topOfStack.nonTerminal;
+            std::vector<Item> tail = generateNewTokens(production, head);
+            for (int i = tail.size() - 1; i >= 0; i--) {
+                // Add syntax items in reverse order into the stack
+                Item item = tail.at(i);
+                _stack.push_back(item);
+            }
+        }
     }
 }
