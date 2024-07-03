@@ -5,7 +5,7 @@
 Parser::Parser()
 {
 
-    _stack = {"$", "PROGRAM"};
+    _stack = {DollarSign(), Program(NULL)};
 
     _parseTable = {
         {"PROGRAM", {
@@ -172,7 +172,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
     case 26:
         return {Epsilon(parent)};
     case 27:
-        return {Lvalue(parent), Equal(parent), Atribstat(parent)};
+        return {Lvalue(parent), Equal(parent), Atribstata(parent)};
     case 28:
         return {Expression(parent)};
     case 29:
@@ -282,7 +282,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
     case 81:
         return {OpenParentheses(parent), Numexpression(parent), CloseParentheses(parent)};
     case 82:
-        return {Ident("", parent), Lvalue(parent)};
+        return {Ident("", parent), Lvaluea(parent)};
     case 83:
         return {Numexpressionrec(parent)};
     case 84:
@@ -326,7 +326,7 @@ void Parser::parse(std::vector<Token*> tokens) {
             // If the top of stack is epsilon we just pop the top and retrieve the next token.
             _stack.pop_back();
         } else if (!containsEntryInParseTable) {
-            std::cerr << "Topo da pilha não pode ser encontrado na tabela de parse " << A.value() << std::endl;
+            std::cerr << "Topo da pilha não pode ser encontrado na tabela de parse " << topOfStack.value() << std::endl;
             return;
         } else {
             // Removes the current non terminal from the top of the stack.

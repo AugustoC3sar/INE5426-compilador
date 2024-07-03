@@ -37,13 +37,15 @@ int Compiler::compile(std::string file)
     }
 
     // Parsing the file (tokens)
-    /* try
+    try
     {
         _parser->parse(tokens);
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-    } */
-    
+        return -1;
+    }
+
+    return 0;
 }

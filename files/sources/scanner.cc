@@ -220,9 +220,9 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
         }
 
         parsedAllFile = true;
-
-        return _tokens;
     }
+
+    return _tokens;
 }
 
 
