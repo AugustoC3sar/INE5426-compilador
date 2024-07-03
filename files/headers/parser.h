@@ -1,13 +1,11 @@
-#ifndef SYNTAX_ANALYZER_H
-#define SYNTAX_ANALYZER_H
+#ifndef PARSER_H
+#define PARSER_H
 
-#include "LexicalAnalyzer.h"
+#include "token.h"
 
 #include <unordered_map>
 #include <string>
 #include <vector>
-#include <cstdint>
-#include <variant>
 
 class SemanticAction  {
 public:
@@ -762,19 +760,21 @@ public:
   }
 };
 
-class SyntaxAnalyzer
+/**
+ * Definition of a lexical analyzer based on the Dragon Book's
+ */
+class Parser
 {
-private:
-  std::vector<Item> stack;
-  std::unordered_map<std::string, std::unordered_map<std::string, int>> parseTable;
-  LexicalAnalyzer *lexicalAnalyzer;
+    private:
+        std::vector<Item> _stack;
+        std::unordered_map<std::string, std::unordered_map<std::string, int>> _parseTable;
 
-public:
-  SyntaxAnalyzer(LexicalAnalyzer *la);
+    public:
+        Parser();
 
-  void parse();
+        void parse(std::vector<Token*> tokens);
 
-  std::vector<Item> generateNewTokens(int production, NonTerminal *parent);
+        std::vector<Item> generateNewTokens(int production, NonTerminal *parent);
 };
 
 #endif

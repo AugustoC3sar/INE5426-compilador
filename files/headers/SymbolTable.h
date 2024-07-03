@@ -1,40 +1,19 @@
 #ifndef SYMBOL_TABLE_H
 #define SYMBOL_TABLE_H
 
-#include <unordered_map>
 #include <string>
 #include <vector>
+#include "token.h"
 
-struct SymbolOccurrence
-{
-    int column, row;
-};
+class SymbolTable {
 
-class SymbolEntry
-{
-private:
-    std::string token;
-    std::vector<SymbolOccurrence> occurrences;
-    std::string type;
+    private:
+        std::vector<Token*> entries;
 
-public:
-    SymbolEntry() = default;
-    SymbolEntry(std::string token);
+    public:
+        SymbolTable() {};
 
-    void addOccurrence(int column, int row);
-    void setType(std::string tokenType);
-};
-
-class SymbolTable
-{
-private:
-    std::unordered_map<std::string, SymbolEntry> entries;
-
-public:
-    SymbolTable() = default;
-
-    void addTokenOccurence(std::string token, int column, int row);
-    void addTokenType(std::string token, std::string type);
+        void addToken(Token* token){ entries.push_back(token); };
 };
 
 #endif
