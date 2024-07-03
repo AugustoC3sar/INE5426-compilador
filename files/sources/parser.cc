@@ -1,14 +1,13 @@
-#include "SyntaxAnalyzer.h"
+#include "parser.h"
 
 #include <iostream>
 
-SyntaxAnalyzer::SyntaxAnalyzer(LexicalAnalyzer *la)
+Parser::Parser()
 {
-    lexicalAnalyzer = la;
 
-    stack = {"$", "PROGRAM"};
+    _stack = {"$", "PROGRAM"};
 
-    parseTable = {
+    _parseTable = {
         {"PROGRAM", {
                         {"$", 2},
                         {"def", 1},
@@ -116,7 +115,7 @@ SyntaxAnalyzer::SyntaxAnalyzer(LexicalAnalyzer *la)
     };
 }
 
-std::vector<Item> SyntaxAnalyzer::generateNewTokens(int production, NonTerminal *parent) {
+std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent) {
     switch (production) {
     case 0:
         return {Statement(parent)};
@@ -298,48 +297,8 @@ std::vector<Item> SyntaxAnalyzer::generateNewTokens(int production, NonTerminal 
     }
 };
 
-void SyntaxAnalyzer::parse() {
-    Token token = lexicalAnalyzer->getNextToken();
-    while (token.type != END_OF_FILE)
-    {
-        if (token.type == WAITING) continue;
-
-        auto A = stack.at(stack.size()-1);
-        std::string tokenValue = token.value;
-        if (token.type == INT_CONSTANT) {
-            tokenValue = "int_constant";
-        } else if (token.type == FLOAT_CONSTANT) {
-            tokenValue = "float_constant";
-        } else if (token.type == STRING_CONSTANT) {
-            tokenValue = "string_constant";
-        } else if (token.type == IDENT) {
-            tokenValue = "ident";
-        }
+void Parser::parse(std::vector<Token*> tokens) {
+    for (auto token : tokens){
         
-        bool containsEntryInParseTable = !(parseTable.find(A.value()) == parseTable.end());
-        if (tokenValue == A.value()) {
-            stack.pop_back();
-            token = lexicalAnalyzer->getNextToken();
-        } else if (A.value() == "&") {
-            stack.pop_back();
-        } else if (!containsEntryInParseTable) {
-            std::cerr << "Topo da pilha não pode ser encontrado na tabela de parse " << A.value() << std::endl;
-            return;
-        } else {
-            stack.pop_back();
-            std::unordered_map<std::string, int> productionsParseRow = parseTable.at(A.value());
-            bool containsProductionForToken = !(productionsParseRow.find(tokenValue) == productionsParseRow.end());
-            if (!containsProductionForToken) {
-                std::cerr << "Token " << tokenValue <<  " não reconhecido para a produção " << A.value() << std::endl;
-                return;
-            }
-
-            int production = productionsParseRow.at(tokenValue);
-            std::vector<Item> tail = generateNewTokens(production, (NonTerminal)A); // TODO: change this so we can use in the generation.
-            for (int i = tail.size() - 1; i >= 0; i--) {
-                Item item = tail.at(i);
-                stack.push_back(item);
-            }
-        }
     }
 }
