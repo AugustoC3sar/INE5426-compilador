@@ -1,0 +1,19 @@
+def fibonacci(int num){
+    if(num<0) return;
+    
+    int a;
+    a = 0;
+    int b;
+    b = 1;
+    int temp;
+
+    int i;    
+    for(i = 2; i<=num; i = i + 1){
+        temp = a + b;
+        a = b;
+       	b = temp;
+    }
+    
+    print b;
+    return;
+}
