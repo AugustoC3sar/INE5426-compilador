@@ -1,10 +1,13 @@
-#include "Semantics.h"
+#include "semantics.h"
+#include "terminals.h"
+#include "nonTerminals.h"
 #include "parser.h"
 
 #include <iostream>
 
-Parser::Parser()
+Parser::Parser(SymbolTable* table)
 {
+    _symbolTable = table;
 
     _stack = {DollarSign(), Program(NULL)};
 
@@ -139,7 +142,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
     case 9:
         return {String(parent), SaveType("string", parent)};
     case 10:
-        return {Type(parent), Ident("", parent), AddType(parent, lexicalAnalyzer->getSymbolTable()), Paramlista(parent)};
+        return {Type(parent), Ident("", parent), AddType(parent, _symbolTable), Paramlista(parent)};
     case 11:
         return {Epsilon(parent)};
     case 12:
@@ -167,7 +170,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
     case 23:
         return {Semicolon(parent)};
     case 24:
-        return {Type(parent), Ident("", parent), InheritedType(parent), Arrayvardecl(parent),  SynthesizedType(parent), AddType(parent, lexicalAnalyzer->getSymbolTable())};
+        return {Type(parent), Ident("", parent), InheritedType(parent), Arrayvardecl(parent),  SynthesizedType(parent), AddType(parent, _symbolTable)};
     case 25:
         return {OpenSquareBrackets(parent), IntConstant("", parent), CloseSquareBrackets(parent), ArrayInheritedType(parent), Arrayvardecl(parent), ArraySynthesizedType(parent)};
     case 26:
@@ -299,7 +302,10 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
 };
 
 void Parser::parse(std::vector<Token*> tokens) {
-    for (auto token : tokens) {
+    long unsigned int i = 0;
+    while (i < tokens.size()) {
+        Token* token = tokens.at(i); 
+
         // Retrieve top of stack.
         Item topOfStack = _stack.at(_stack.size()-1);
         
@@ -315,19 +321,23 @@ void Parser::parse(std::vector<Token*> tokens) {
             tokenValue = "ident";
         }
 
+        std::cout << "CURRENT TOKEN " << token->value() << std::endl;
+        std::cout << "TOP OF STACK " << topOfStack.value() << std::endl;
+
         // Verifies if there is an entry in parse table for the top of stack as the head of production.
         bool containsEntryInParseTable = !(_parseTable.find(topOfStack.value()) == _parseTable.end());
-        if (A.type == SEMANTIC_ACTION) {
+        if (topOfStack.type == SEMANTIC_ACTION) {
             // Checks if the syntax item is a semantic action before executing the algorithm.
-            A.semanticAction->execute();
-            stack.pop_back();
+            topOfStack.semanticAction->execute();
+            _stack.pop_back();
         } else if (tokenValue == topOfStack.value()) {
             // If the value of the current token is equal to the value of the top of stack, we can remove the token from
             // the stack and retrieve the next token in the sequence. The next token advances in the for loop.
             topOfStack.terminal->lexicalValue = token->value(); 
             _stack.pop_back();
+            i++;
         } else if (topOfStack.value() == "&") {
-            // If the top of stack is epsilon we just pop the top and retrieve the next token.
+            // If the top of stack is epsilon we just pop the top and use the same token.
             _stack.pop_back();
         } else if (!containsEntryInParseTable) {
             std::cerr << "Topo da pilha não pode ser encontrado na tabela de parse " << topOfStack.value() << std::endl;

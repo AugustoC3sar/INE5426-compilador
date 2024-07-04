@@ -1,10 +1,10 @@
-#include "../headers/compiler.h"
+#include "compiler.h"
 
 Compiler::Compiler()
 {
     _scanner = new Scanner();
-    _parser = new Parser();
     _table = new SymbolTable();
+    _parser = new Parser(_table);
 }
 
 Compiler::~Compiler()
@@ -27,13 +27,6 @@ int Compiler::compile(std::string file)
     {
         std::cerr << e.what() << '\n';
         return -1;
-    }
-
-    for (auto token : tokens){
-        std::cout << "Token " << token->value() << std::endl;
-        std::cout << "line = " << token->line() << std::endl;
-        std::cout << "column = " << token->line() << std::endl;
-        std::cout << "====================" << std::endl;
     }
 
     // Parsing the file (tokens)

@@ -3,7 +3,7 @@
 
 #include "scanner.h"
 #include "parser.h"
-#include "SymbolTable.h"
+#include "symbolTable.h"
 #include "token.h"
 
 // #include "codeGenerator.h"
