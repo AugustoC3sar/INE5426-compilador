@@ -1,7 +1,7 @@
 #ifndef SCANNER_H
 #define SCANNER_H
 
-#include "SymbolTable.h"
+#include "symbolTable.h"
 #include "token.h"
 
 #include <string>
@@ -32,7 +32,6 @@ class Scanner
 
         // Tokens array
         std::vector<Token*> _tokens;
-
 
         bool parsedAllFile = false;
         const int BUFFER_COUNT = 16;

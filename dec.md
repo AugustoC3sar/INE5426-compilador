@@ -12,7 +12,7 @@
 
 ## SDT
 
-PARAMLIST -> TYPE ident PARAMLIST' { addType(ident.entry, TYPE.type)  }
+PARAMLIST -> TYPE ident { addType(ident.entry, TYPE.type) } PARAMLIST'
 TYPE -> int { TYPE.type = int }
 TYPE -> float { TYPE.type = float }
 TYPE -> string { TYPE.type = string }
@@ -23,9 +23,9 @@ ARRAYVARDECL -> & { ARRAYVARDECL.type = ARRAYVARDECL.inh_type }
 Nós nomearemos as ações semânticas da seguinte maneira:
 
 SemanticActionAddType = { addType(ident.entry, TYPE.type) }
-SemanticActionAddTypeValue = { TYPE.type = int }
-SemanticActionAddTypeValue = { TYPE.type = float }
-SemanticActionAddTypeValue = { TYPE.type = string }
+SemanticActionSaveType = { TYPE.type = int }
+SemanticActionSaveType = { TYPE.type = float }
+SemanticActionSaveType = { TYPE.type = string }
 SemanticActionInheritdType = { ARRAYVARDECL.inh_type = TYPE.type }
 SemanticActionSynthesizedType = { VARDECL.type = ARRAYVARDECL.type }
 SemanticActionArrayInheritedType = { ARRAYVARDECL1.inh_type = array(ARRAYVARDECL.inh_type, int_constant.lexval) }
