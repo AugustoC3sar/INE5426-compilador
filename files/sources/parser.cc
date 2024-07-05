@@ -210,7 +210,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Lvalue(parent), Equal(parent), Atribstata(parent)};
     case 28:
         // ATRIBSTAT' -> EXPRESSION { ATRIBSTAT'.node = EXPRESSION.node }
-        return {Expression(parent), ReturnNode(parent)};
+        return {Expression(parent), AssignTree(parent)};
     case 29:
         // ATRIBSTAT' -> ALLOCEXPRESSION
         return {Allocexpression(parent)};
@@ -293,86 +293,86 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         // RELOP -> !=
         return {Different(parent)};
     case 56:
-        // EXPRESSION -> NUMEXPRESSION EXPRESSION'
-        return {Numexpression(parent), Expressiona(parent)};
+        // EXPRESSION -> NUMEXPRESSION { EXPRESSION.leftNode = NUMEXPRESSION.node } EXPRESSION' { EXPRESSION.node = EXPRESSION'.node }
+        return {Numexpression(parent), InheritNumexpressionNode(parent), Expressiona(parent), ReturnNode(parent)};
     case 57:
         // EXPRESSION' -> RELOP NUMEXPRESSION
         return {Relop(parent), Numexpression(parent)};
     case 58:
-        // EXPRESSION' -> &
-        return {Epsilon(parent)};
+        // EXPRESSION' -> & { EXPRESSION'.node = EXPRESSION'.leftNode}
+        return {Epsilon(parent), SyntehsizeNode(parent)};
     case 59:
-        // SIGNAL -> +
-        return {Positive(parent)};
+        // SIGNAL -> + { SIGNAL.value = + }
+        return {Positive(parent), ReturnOperationValue(parent)};
     case 60:
-        // SIGNAL -> -
-        return {Minus(parent)};
+        // SIGNAL -> - { SIGNAL.value = - }
+        return {Minus(parent), ReturnOperationValue(parent)};
     case 61:
-        // NUMEXPRESSION -> TERM NUMEXPRESSION'
-        return {Term(parent), Numexpressiona(parent)};
+        // NUMEXPRESSION -> TERM { NUMEXPRESSION'.leftNode = TERM.node } NUMEXPRESSION' { NUMEXPRESSION.node = NUMEXPRESSION'.node }
+        return {Term(parent), InheritTermNode(parent), Numexpressiona(parent), ReturnNode(parent)};
     case 62:
-        // NUMEXPRESSION' -> TERM_REC
-        return {Termrec(parent)};
+        // NUMEXPRESSION' -> TERM_REC { NUMEXPRESSION'.node = TERM_REC.node }
+        return {Termrec(parent), ReturnNode(parent)};
     case 63:
-        // TERM_REC -> SIGNAL TERM TERM_REC'
-        return {Signal(parent), Term(parent), Termreca(parent)};
+        // TERM_REC -> SIGNAL TERM { TERM_REC'.leftNode = new Node(SIGNAL.value, TERM_REC.leftNode, TERM.node) } TERM_REC' { TERM_REC.node = TERM_REC'.node }
+        return {Signal(parent), Term(parent), CreateInheritedSignalNode(parent), Termreca(parent), ReturnNode(parent)};
     case 64:
-        // TERM_REC -> &
-        return {Epsilon(parent)};
+        // TERM_REC -> & { TERM_REC.node = TERM_REC.leftNode }
+        return {Epsilon(parent), SyntehsizeNode(parent)};
     case 65:
-        // TERM_REC' -> TERM_REC
-        return {Termrec(parent)};
+        // TERM_REC' -> TERM_REC { TERM_REC'.node = TERM_REC.node }
+        return {Termrec(parent), ReturnNode(parent)};
     case 66:
-        // OPERATOR -> *
-        return {Times(parent)};
+        // OPERATOR -> * { OPERATOR.value = * }
+        return {Times(parent), ReturnOperationValue(parent)};
     case 67:
-        // OPERATOR -> /
-        return {Divide(parent)};
+        // OPERATOR -> / { OPERATOR.value = / }
+        return {Divide(parent), ReturnOperationValue(parent)};
     case 68:
-        // OPERATOR -> %
-        return {Remainder(parent)};
+        // OPERATOR -> % { OPERATOR.value = % }
+        return {Remainder(parent), ReturnOperationValue(parent)};
     case 69:
-        // TERM -> UNARYEXPR TERM'
-        return {Unaryexpr(parent), Terma(parent)};
+        // TERM -> UNARYEXPR { TERM'.leftNode = UNARYEXPR.node } TERM' { TERM.node = TERM'.node }
+        return {Unaryexpr(parent),  InheritUnaryexprNode(parent), Terma(parent), ReturnNode(parent)};
     case 70:
-        // TERM' -> UNARYEXPR_REC
-        return {Unaryexprrec(parent)};
+        // TERM' -> UNARYEXPR_REC { TERM'.node = UNARYEXPR_REC.node }
+        return {Unaryexprrec(parent), ReturnNode(parent)};
     case 71:
-        // UNARYEXPR_REC -> OPERATOR UNARYEXPR UNARYEXPR_REC'
-        return {Operator(parent), Unaryexpr(parent), Unaryexprreca(parent)};
+        // UNARYEXPR_REC -> OPERATOR UNARYEXPR { UNARYEXPR_REC'.leftNode = new Node(OPERATOR.value, UNARYEXPR_REC.leftNode, UNARYEXPR.node) } UNARYEXPR_REC' { UNARYEXPR_REC.node = UNARYEXPR_REC'.node }
+        return {Operator(parent),  Unaryexpr(parent), CreateUnaryexprRecInheritedNode(parent), Unaryexprreca(parent), ReturnNode(parent)};
     case 72:
-        // UNARYEXPR_REC -> &
-        return {Epsilon(parent)};
+        // UNARYEXPR_REC -> & { UNARYEXPR_REC.node = UNARYEXPR_REC.leftNode }
+        return {Epsilon(parent), SyntehsizeNode(parent)};
     case 73:
-        // UNARYEXPR_REC' -> UNARYEXPR_REC
-        return {Unaryexprrec(parent)};
+        // UNARYEXPR_REC' -> UNARYEXPR_REC { UNARYEXPR_REC'.node = UNARYEXPR_REC.node }
+        return {Unaryexprrec(parent), SyntehsizeNode(parent)};
     case 74:
-        // UNARYEXPR -> SIGNAL FACTOR
-        return {Signal(parent), Factor(parent)};
+        // UNARYEXPR -> SIGNAL FACTOR { UNARYEXPR.node = new Node(SIGNAL.operationValue, UNARYEXPR.leftNode, FACTOR.node) }
+        return {Signal(parent), Factor(parent), CreateOperatorNode(parent)};
     case 75:
-        // UNARYEXPR -> FACTOR
-        return {Factor(parent)};
+        // UNARYEXPR -> FACTOR { UNARYEXPR.node = FACTOR.node }
+        return {Factor(parent), ReturnNode(parent)};
     case 76:
-        // FACTOR -> int_constant
-        return {IntConstant("", parent)};
+        // FACTOR -> int_constant { FACTOR.node = new Node(int_constant, NULL, NULL) }
+        return {IntConstant("", parent), CreateLeafNode(parent)};
     case 77:
-        // FACTOR -> float_constant
-        return {FloatConstant("", parent)};
+        // FACTOR -> float_constant { FACTOR.node = new Node(float_constant, NULL, NULL) 
+        return {FloatConstant("", parent), CreateLeafNode(parent)};
     case 78:
-        // FACTOR -> string_constant
-        return {StringConstant("", parent)};
+        // FACTOR -> string_constant { FACTOR.node = new Node(string_constant, NULL, NULL) }
+        return {StringConstant("", parent), CreateLeafNode(parent)};
     case 79:
-        // FACTOR -> null
-        return {Null(parent)};
+        // FACTOR -> null { FACTOR.node = new Node(null, NULL, NULL) }
+        return {Null(parent), CreateLeafNode(parent)};
     case 80:
-        // FACTOR -> LVALUE
-        return {Lvalue(parent)};
+        // FACTOR -> LVALUE { FACTOR.node = LVALUE.node }
+        return {Lvalue(parent), ReturnNode(parent)};
     case 81:
-        // FACTOR -> (NUMEXPRESSION)
-        return {OpenParentheses(parent), Numexpression(parent), CloseParentheses(parent)};
+        // FACTOR -> (NUMEXPRESSION) { FACTOR.node = NUMEXPRESSION.node }
+        return {OpenParentheses(parent), Numexpression(parent), CloseParentheses(parent), SynthesizeNumexpressionNode(parent)};
     case 82:
-        // LVALUE -> ident LVALUE'
-        return {Ident("", parent), Lvaluea(parent)};
+        // LVALUE -> ident LVALUE' { FACTOR.node = new Node(ident, NULL, NULL) }
+        return {Ident("", parent), Lvaluea(parent), CreateLeafNode(parent)};
     case 83:
         // LVALUE' -> NUMEXPRESSION_REC
         return {Numexpressionrec(parent)};
@@ -419,9 +419,6 @@ void Parser::parse(std::vector<Token *> tokens)
         {
             tokenValue = "ident";
         }
-
-        std::cout << "CURRENT TOKEN " << token->value() << std::endl;
-        std::cout << "TOP OF STACK " << topOfStack.value() << std::endl;
 
         // Verifies if there is an entry in parse table for the top of stack as the head of production.
         bool containsEntryInParseTable = !(_parseTable.find(topOfStack.value()) == _parseTable.end());

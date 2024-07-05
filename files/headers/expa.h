@@ -90,7 +90,7 @@ public:
 
   void execute() override
   {
-    Item lastItem = parent->children.at(parent->children.size() - 1);
+    Item lastItem = parent->children.at(parent->children.size() - 2);
     parent->node = lastItem.nonTerminal->node;
   }
 };
@@ -124,7 +124,7 @@ public:
 
   void execute() override
   {
-    Item operation = parent->children.at(parent->children.size() - 1);
+    Item operation = parent->children.at(0);
     parent->operationValue = operation.terminal->lexicalValue;
   }
 };
@@ -215,7 +215,7 @@ public:
 
   CreateOperatorNodeSemanticAction(NonTerminal *p)
   {
-    name = "CREATE_SIGNAL_NODE";
+    name = "CREATE_OPERATOR_NODE";
     parent = p;
   }
 
@@ -227,8 +227,8 @@ public:
   void execute() override
   {
     Item op = parent->children.at(0);
-    Item unaryexpr = parent->children.at(1);
-    parent->node = new Node(op.nonTerminal->operationValue, parent->leftNode, unaryexpr.nonTerminal->node);
+    Item factor = parent->children.at(1);
+    parent->node = new Node(op.nonTerminal->operationValue, parent->leftNode, factor.nonTerminal->node);
   }
 };
 
@@ -262,7 +262,7 @@ public:
   void execute() override
   {
     Item unaryexpr = parent->children.at(0);
-    Item term = parent->children.at(1);
+    Item term = parent->children.at(2);
     term.nonTerminal->leftNode = unaryexpr.nonTerminal->node;
   }
 };
@@ -277,13 +277,13 @@ public:
   }
 };
 
-class CreateSignalNodeSemanticAction : public SemanticAction
+class CreateInheritedSignalNodeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
   NonTerminal *parent;
 
-  CreateSignalNodeSemanticAction(NonTerminal *p)
+  CreateInheritedSignalNodeSemanticAction(NonTerminal *p)
   {
     name = "CREATE_TERM_SIGNAL_NODE";
     parent = p;
@@ -303,12 +303,12 @@ public:
   }
 };
 
-class CreateSignalNode : public Item
+class CreateInheritedSignalNode : public Item
 {
 public:
-  CreateSignalNode(NonTerminal *p)
+  CreateInheritedSignalNode(NonTerminal *p)
   {
-    semanticAction = new CreateSignalNodeSemanticAction(p);
+    semanticAction = new CreateInheritedSignalNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -347,6 +347,43 @@ public:
     type = SEMANTIC_ACTION;
   }
 };
+
+class CreateUnaryexprRecInheritedNodeSemanticAction : public SemanticAction
+{
+public:
+  std::string name;
+  NonTerminal *parent;
+
+  CreateUnaryexprRecInheritedNodeSemanticAction(NonTerminal *p)
+  {
+    name = "CREATE_UNARYEXPR_REC_INHERITED_NODE";
+    parent = p;
+  }
+
+  std::string value() override
+  {
+    return name;
+  }
+
+  void execute() override
+  {
+    Item op = parent->children.at(0);
+    Item unaryexpr = parent->children.at(1);
+    Item unaryexprRec = parent->children.at(3);
+    unaryexprRec.nonTerminal->leftNode = new Node(op.nonTerminal->operationValue, parent->leftNode, unaryexpr.nonTerminal->node);
+  }
+};
+
+class CreateUnaryexprRecInheritedNode : public Item
+{
+public:
+  CreateUnaryexprRecInheritedNode(NonTerminal *p)
+  {
+    semanticAction = new CreateUnaryexprRecInheritedNodeSemanticAction(p);
+    type = SEMANTIC_ACTION;
+  }
+};
+
 class InheritNumexpressionNodeSemanticAction : public SemanticAction
 {
 public:
@@ -378,6 +415,40 @@ public:
   InheritNumexpressionNode(NonTerminal *p)
   {
     semanticAction = new InheritNumexpressionNodeSemanticAction(p);
+    type = SEMANTIC_ACTION;
+  }
+};
+
+class SynthesizeNumexpressionNodeSemanticAction : public SemanticAction
+{
+public:
+  std::string name;
+  NonTerminal *parent;
+
+  SynthesizeNumexpressionNodeSemanticAction(NonTerminal *p)
+  {
+    name = "SynthesizeNumexpressionNode";
+    parent = p;
+  }
+
+  std::string value() override
+  {
+    return name;
+  }
+
+  void execute() override
+  {
+    Item numexpression = parent->children.at(1);
+    parent->node = numexpression.nonTerminal->node;
+  }
+};
+
+class SynthesizeNumexpressionNode : public Item
+{
+public:
+  SynthesizeNumexpressionNode(NonTerminal *p)
+  {
+    semanticAction = new SynthesizeNumexpressionNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
