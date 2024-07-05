@@ -77,7 +77,7 @@ NUMEXPRESSION' -> TERM_REC { NUMEXPRESSION'.node = TERM_REC.node }
 TERM_REC -> SIGNAL TERM { TERM_REC'.leftNode = new Node(SIGNAL.value, TERM_REC.leftNode, TERM.node) } TERM_REC' { TERM_REC.node = TERM_REC'.node }
 TERM_REC -> & { TERM_REC.node = TERM_REC.leftNode }
 TERM_REC' -> TERM_REC { TERM_REC'.node = TERM_REC.node }
-TERM -> UNARYEXPR { TERM.leftNode = UNARYEXPR.node } TERM' { TERM.node = TERM'.node }
+TERM -> UNARYEXPR { TERM'.leftNode = UNARYEXPR.node } TERM' { TERM.node = TERM'.node }
 TERM' -> UNARYEXPR_REC { TERM'.node = UNARYEXPR_REC.node }
 UNARYEXPR_REC -> OPERATOR UNARYEXPR { UNARYEXPR_REC'.leftNode = new Node(OPERATOR.value, UNARYEXPR_REC.leftNode, UNARYEXPR.node) } UNARYEXPR_REC' { UNARYEXPR_REC.node = UNARYEXPR_REC'.node }                    
 UNARYEXPR_REC -> & { UNARYEXPR_REC.node = UNARYEXPR_REC.leftNode }
@@ -131,14 +131,6 @@ Vamos separar as ações semânticas em algumas que são comuns a todos. Primeir
 30 - { FACTOR.node = LVALUE.node }
 31 - { FACTOR.node = NUMEXPRESSION.node }
 32 - { FACTOR.node = new Node(ident, NULL, NULL) }
-
-                 
-21 - { UNARYEXPR.node = new Node(SIGNAL.value, UNARYEXPR.leftNode, FACTOR.node) }
-17 - { UNARYEXPR_REC'.leftNode = new Node(OPERATOR.value, UNARYEXPR_REC.leftNode, UNARYEXPR.node) }
-14 - { TERM.leftNode = UNARYEXPR.node }
-10 - { TERM_REC'.leftNode = new Node(SIGNAL.value, TERM_REC.leftNode, TERM.node) }
-7 - { NUMEXPRESSION'.leftNode = TERM.node }
-2 - { EXPRESSION.leftNode = NUMEXPRESSION.node }
 
 Primeiro trataremos de todas as ações semânticas que criam nós folhas em uma ação semântica "createLeafNode"
 
