@@ -32,7 +32,7 @@ LVALUE -> ident LVALUE'
 
 | Produção                                           | Definições                                                                                     |
 |----------------------------------------------------|------------------------------------------------------------------------------------------------|
-| ATRIBSTAT' -> EXPRESSION                           | ATRIBSTAT'.tree = EXPRESSION.node                                                              |
+| ATRIBSTAT' -> EXPRESSION                           | ATRIBSTAT'.node = EXPRESSION.node                                                              |
 | EXPRESSION -> NUMEXPRESSION  EXPRESSION'           | EXPRESSION'.leftNode = NUMEXPRESSION.node                                                      |
 |                                                    | EXPRESSION.node = EXPRESSION'.node                                                             |
 | EXPRESSION' -> &                                   | EXPRESSION'.node = EXPRESSION'.leftNode                                                        |
@@ -67,7 +67,7 @@ LVALUE -> ident LVALUE'
 
 ## SDT
 
-ATRIBSTAT' -> EXPRESSION { ATRIBSTAT'.tree = EXPRESSION.node }
+ATRIBSTAT' -> EXPRESSION { ATRIBSTAT'.node = EXPRESSION.node }
 EXPRESSION -> NUMEXPRESSION { EXPRESSION.leftNode = NUMEXPRESSION.node } EXPRESSION' { EXPRESSION.node = EXPRESSION'.node }
 EXPRESSION' -> & { EXPRESSION'.node = EXPRESSION'.leftNode}
 SIGNAL -> + { SIGNAL.value = + }
@@ -99,7 +99,7 @@ LVALUE -> ident LVALUE' { FACTOR.node = new Node(ident, NULL, NULL) }
 
 Vamos separar as ações semânticas em algumas que são comuns a todos. Primeiro iremos enumerá-las:
 
-1 - { ATRIBSTAT'.tree = EXPRESSION.node }
+1 - { ATRIBSTAT'.node = EXPRESSION.node }
 2 - { EXPRESSION.leftNode = NUMEXPRESSION.node }
 3 - { EXPRESSION.node = EXPRESSION'.node }
 4 - { EXPRESSION'.node = EXPRESSION'.leftNode}

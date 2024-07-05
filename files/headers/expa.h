@@ -7,14 +7,12 @@ class AssignTreeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  AssignTreeSemanticAction(std::string t, NonTerminal *p)
+  AssignTreeSemanticAction(NonTerminal *p)
   {
     name = "ASSIGN_TREE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -32,9 +30,9 @@ public:
 class AssignTree : public Item
 {
 public:
-  AssignTree(std::string t, NonTerminal *p)
+  AssignTree(NonTerminal *p)
   {
-    semanticAction = new AssignTreeSemanticAction(t, p);
+    semanticAction = new AssignTreeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -43,14 +41,12 @@ class CreateLeafNodeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  CreateLeafNodeSemanticAction(std::string t, NonTerminal *p)
+  CreateLeafNodeSemanticAction(NonTerminal *p)
   {
     name = "CREATE_LEAF_NODE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -68,9 +64,9 @@ public:
 class CreateLeafNode : public Item
 {
 public:
-  CreateLeafNode(std::string t, NonTerminal *p)
+  CreateLeafNode(NonTerminal *p)
   {
-    semanticAction = new CreateLeafNodeSemanticAction(t, p);
+    semanticAction = new CreateLeafNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -79,14 +75,12 @@ class ReturnNodeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  ReturnNodeSemanticAction(std::string t, NonTerminal *p)
+  ReturnNodeSemanticAction(NonTerminal *p)
   {
     name = "RETURN_NODE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -104,9 +98,9 @@ public:
 class ReturnNode : public Item
 {
 public:
-  ReturnNode(std::string t, NonTerminal *p)
+  ReturnNode(NonTerminal *p)
   {
-    semanticAction = new ReturnNodeSemanticAction(t, p);
+    semanticAction = new ReturnNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -115,14 +109,12 @@ class ReturnOperationValueSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  ReturnOperationValueSemanticAction(std::string t, NonTerminal *p)
+  ReturnOperationValueSemanticAction(NonTerminal *p)
   {
     name = "RETURN_OPERATION_VALUE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -140,9 +132,9 @@ public:
 class ReturnOperationValue : public Item
 {
 public:
-  ReturnOperationValue(std::string t, NonTerminal *p)
+  ReturnOperationValue(NonTerminal *p)
   {
-    semanticAction = new ReturnOperationValueSemanticAction(t, p);
+    semanticAction = new ReturnOperationValueSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -151,14 +143,12 @@ class SyntehsizeNodeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  SyntehsizeNodeSemanticAction(std::string t, NonTerminal *p)
+  SyntehsizeNodeSemanticAction(NonTerminal *p)
   {
     name = "SYNTHESIZE_NODE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -175,9 +165,9 @@ public:
 class SyntehsizeNode : public Item
 {
 public:
-  SyntehsizeNode(std::string t, NonTerminal *p)
+  SyntehsizeNode(NonTerminal *p)
   {
-    semanticAction = new SyntehsizeNodeSemanticAction(t, p);
+    semanticAction = new SyntehsizeNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -186,14 +176,12 @@ class CreateSignalNodeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  CreateSignalNodeSemanticAction(std::string t, NonTerminal *p)
+  CreateSignalNodeSemanticAction(NonTerminal *p)
   {
     name = "CREATE_SIGNAL_NODE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -212,9 +200,9 @@ public:
 class CreateSignalNode : public Item
 {
 public:
-  CreateSignalNode(std::string t, NonTerminal *p)
+  CreateSignalNode(NonTerminal *p)
   {
-    semanticAction = new CreateSignalNodeSemanticAction(t, p);
+    semanticAction = new CreateSignalNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -223,14 +211,12 @@ class CreateOperatorNodeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  CreateOperatorNodeSemanticAction(std::string t, NonTerminal *p)
+  CreateOperatorNodeSemanticAction(NonTerminal *p)
   {
     name = "CREATE_SIGNAL_NODE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -249,9 +235,9 @@ public:
 class CreateOperatorNode : public Item
 {
 public:
-  CreateOperatorNode(std::string t, NonTerminal *p)
+  CreateOperatorNode(NonTerminal *p)
   {
-    semanticAction = new CreateOperatorNodeSemanticAction(t, p);
+    semanticAction = new CreateOperatorNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -260,14 +246,12 @@ class InheritUnaryexprNodeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  InheritUnaryexprNodeSemanticAction(std::string t, NonTerminal *p)
+  InheritUnaryexprNodeSemanticAction(NonTerminal *p)
   {
     name = "INHERIT_UNARYEXPR_NODE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -286,9 +270,9 @@ public:
 class InheritUnaryexprNode : public Item
 {
 public:
-  InheritUnaryexprNode(std::string t, NonTerminal *p)
+  InheritUnaryexprNode(NonTerminal *p)
   {
-    semanticAction = new InheritUnaryexprNodeSemanticAction(t, p);
+    semanticAction = new InheritUnaryexprNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -297,14 +281,12 @@ class CreateSignalNodeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  CreateSignalNodeSemanticAction(std::string t, NonTerminal *p)
+  CreateSignalNodeSemanticAction(NonTerminal *p)
   {
     name = "CREATE_TERM_SIGNAL_NODE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -324,9 +306,9 @@ public:
 class CreateSignalNode : public Item
 {
 public:
-  CreateSignalNode(std::string t, NonTerminal *p)
+  CreateSignalNode(NonTerminal *p)
   {
-    semanticAction = new CreateSignalNodeSemanticAction(t, p);
+    semanticAction = new CreateSignalNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -335,14 +317,12 @@ class InheritTermNodeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  InheritTermNodeSemanticAction(std::string t, NonTerminal *p)
+  InheritTermNodeSemanticAction(NonTerminal *p)
   {
     name = "INHERIT_TERM_NODE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -361,9 +341,9 @@ public:
 class InheritTermNode : public Item
 {
 public:
-  InheritTermNode(std::string t, NonTerminal *p)
+  InheritTermNode(NonTerminal *p)
   {
-    semanticAction = new InheritTermNodeSemanticAction(t, p);
+    semanticAction = new InheritTermNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -371,14 +351,12 @@ class InheritNumexpressionNodeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
-  std::string type;
   NonTerminal *parent;
 
-  InheritNumexpressionNodeSemanticAction(std::string t, NonTerminal *p)
+  InheritNumexpressionNodeSemanticAction(NonTerminal *p)
   {
     name = "INHERIT_NUMEXPRESSION_NODE";
     parent = p;
-    type = t;
   }
 
   std::string value() override
@@ -397,9 +375,9 @@ public:
 class InheritNumexpressionNode : public Item
 {
 public:
-  InheritNumexpressionNode(std::string t, NonTerminal *p)
+  InheritNumexpressionNode(NonTerminal *p)
   {
-    semanticAction = new InheritNumexpressionNodeSemanticAction(t, p);
+    semanticAction = new InheritNumexpressionNodeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
