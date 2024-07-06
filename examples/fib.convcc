@@ -1,5 +1,5 @@
-def fibonacci(int num){
-    if(num<0) return;
+def fibonacci(int num) {
+    if(num < 0) { return; }
     
     int a;
     a = 0;
@@ -8,7 +8,7 @@ def fibonacci(int num){
     int temp;
 
     int i;    
-    for(i = 2; i<=num; i = i + 1){
+    for (i = 2; i <= num; i = i + 1) {
         temp = a + b;
         a = b;
        	b = temp;
