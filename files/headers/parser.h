@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <iostream>
 #include <vector>
 
 enum ItemType {
@@ -28,9 +29,20 @@ public:
   Node* leftNode;
   std::string operationValue;
 
+  SymbolTable *symbolTable = nullptr;
+
   NonTerminal(std::string n, NonTerminal *p) {
     name = n;
     parent = p;
+    if (symbolTable == nullptr && p->symbolTable != nullptr) {
+      symbolTable = p->symbolTable;
+    }
+  }
+
+  NonTerminal(std::string n, NonTerminal *p, SymbolTable *st) {
+    name = n;
+    parent = p;
+    symbolTable = st;
   }
 
   std::string value() {

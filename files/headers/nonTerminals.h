@@ -5,8 +5,8 @@
 
 class Program : public Item {
 public:
-  Program(NonTerminal *parent) {
-    nonTerminal = new NonTerminal("PROGRAM", parent);
+  Program(NonTerminal *parent, SymbolTable *st) {
+    nonTerminal = new NonTerminal("PROGRAM", parent, st);
     type = NON_TERMINAL;
   }
 };
@@ -353,14 +353,6 @@ class Numexpressionreca : public Item {
 public:
   Numexpressionreca(NonTerminal *parent) {
     nonTerminal = new NonTerminal("NUMEXPRESSION_REC'", parent);
-    type = NON_TERMINAL;
-  }
-};
-
-class DollarSign : public Item {
-public:
-  DollarSign() : Item() {
-    nonTerminal = new NonTerminal("$", NULL);
     type = NON_TERMINAL;
   }
 };
