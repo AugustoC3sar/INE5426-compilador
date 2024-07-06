@@ -101,6 +101,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "compilation finished with errors." << std::endl;
         return -1;
     } else {
+        std::cout << "compilation finished." << std::endl;
         return 0;
     }
 }
