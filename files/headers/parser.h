@@ -2,6 +2,7 @@
 #define PARSER_H
 
 #include "token.h"
+#include "node.h"
 
 #include <unordered_map>
 #include <string>
@@ -23,6 +24,9 @@ public:
 
   std::string type;
   std::string inhType;
+  Node* node;
+  Node* leftNode;
+  std::string operationValue;
 
   NonTerminal(std::string n, NonTerminal *p) {
     name = n;
