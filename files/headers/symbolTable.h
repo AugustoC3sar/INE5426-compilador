@@ -35,11 +35,19 @@ class SymbolEntry
         void addOccurrence(unsigned int row, unsigned int column);
 
         /**
+         * Getter
+         * 
+         * @return semantic type of the token
+         */
+        std::string getType();
+
+        /**
          * Sets the semantic type of the token
          * 
          * @param tokenType: semantic type of the token
          */
         void setType(std::string tokenType);
+
 };
 
 class SymbolTable
@@ -70,6 +78,13 @@ class SymbolTable
          */
         void addTokenType(std::string token, std::string type);
 
+
+        /**
+         * Getter
+         * 
+         * @return semantic type of a given lexical value
+         */
+        std::string getType(std::string lexicalValue);
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "symbolTable.h"
+#include <iostream>
 
 
 void SymbolEntry::addOccurrence(unsigned int row, unsigned int column)
@@ -42,5 +43,6 @@ std::string SymbolTable::getType(std::string lexicalValue) {
         return _entries[lexicalValue].getType();
     }
 
-    throw "reference to " + lexicalValue + " is undefined";
+    std::string error = "\033[31merror:\033[0m reference to " + lexicalValue + " is undefined";
+    throw std::logic_error(error);
 }
