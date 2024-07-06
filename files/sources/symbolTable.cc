@@ -1,6 +1,6 @@
 #include "symbolTable.h"
-#include <iostream>
 
+#include <iostream>
 
 void SymbolEntry::addOccurrence(unsigned int row, unsigned int column)
 {

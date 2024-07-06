@@ -1,7 +1,7 @@
 #ifndef TERMINALS_ANALYZER_H
 #define TERMINALS_ANALYZER_H
 
-#include <parser.h>
+#include "parser.h"
 
 class Epsilon : public Item {
 public:
@@ -322,6 +322,5 @@ public:
     type = TERMINAL;
   }
 };
-
 
 #endif

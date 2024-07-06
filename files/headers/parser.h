@@ -1,12 +1,12 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "temporaryVariable.h"
 #include "token.h"
 #include "node.h"
 
 #include <unordered_map>
 #include <string>
-#include <iostream>
 #include <vector>
 
 enum ItemType {
@@ -122,6 +122,7 @@ class Parser
         std::vector<Item> _stack;
         std::unordered_map<std::string, std::unordered_map<std::string, int>> _parseTable;
         SymbolTable* _symbolTable;
+        TemporaryVariable* t = new TemporaryVariable();
 
     public:
         Parser(SymbolTable* table);

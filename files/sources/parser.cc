@@ -211,7 +211,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Lvalue(parent), Equal(parent), Atribstata(parent)};
     case 28:
         // ATRIBSTAT' -> EXPRESSION { ATRIBSTAT'.node = EXPRESSION.node }
-        return {Expression(parent), AssignTree(parent)};
+        return {Expression(parent), AssignTree(parent, t)};
     case 29:
         // ATRIBSTAT' -> ALLOCEXPRESSION
         return {Allocexpression(parent)};
@@ -420,9 +420,6 @@ void Parser::parse(std::vector<Token *> tokens)
         {
             tokenValue = "ident";
         }
-
-        std::cout << "CURRENT TOKEN " << tokenValue << std::endl;
-        std::cout << "TOP OF STACK " << topOfStack.value() << std::endl;
 
         // Verifies if there is an entry in parse table for the top of stack as the head of production.
         bool containsEntryInParseTable = !(_parseTable.find(topOfStack.value()) == _parseTable.end());

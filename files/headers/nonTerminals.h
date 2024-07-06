@@ -1,7 +1,7 @@
 #ifndef NON_TERMINALS_ANALYZER_H
 #define NON_TERMINALS_ANALYZER_H
 
-#include <parser.h>
+#include "parser.h"
 
 class Program : public Item {
 public:

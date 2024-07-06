@@ -1,18 +1,24 @@
 #ifndef EXPA_H
 #define EXPA_H
 
-#include <parser.h>
+#include "parser.h"
+
+#include <iostream>
 
 class AssignTreeSemanticAction : public SemanticAction
 {
+private:
+  TemporaryVariable* _t;
+
 public:
   std::string name;
   NonTerminal *parent;
 
-  AssignTreeSemanticAction(NonTerminal *p)
+  AssignTreeSemanticAction(NonTerminal *p, TemporaryVariable *t)
   {
     name = "ASSIGN_TREE";
     parent = p;
+    _t = t;
   }
 
   std::string value() override
@@ -29,15 +35,17 @@ public:
     if (parent->node != nullptr) {
       parent->node->getExpressionType(parent->symbolTable);
     }
+
+    std::cout << parent->node->code(_t) << std::endl;
   }
 };
 
 class AssignTree : public Item
 {
 public:
-  AssignTree(NonTerminal *p)
+  AssignTree(NonTerminal *p, TemporaryVariable *t)
   {
-    semanticAction = new AssignTreeSemanticAction(p);
+    semanticAction = new AssignTreeSemanticAction(p, t);
     type = SEMANTIC_ACTION;
   }
 };

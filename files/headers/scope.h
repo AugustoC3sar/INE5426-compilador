@@ -1,8 +1,7 @@
 #ifndef SCOPE_H
 #define SCOPE_H
 
-#include <parser.h>
-
+#include "parser.h"
 
 class NewScopeSemanticAction : public SemanticAction
 {

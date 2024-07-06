@@ -1,8 +1,8 @@
 #ifndef SEMANTICS_ANALYZER_H
 #define SEMANTICS_ANALYZER_H
 
-#include <symbolTable.h>
-#include <parser.h>
+#include "symbolTable.h"
+#include "parser.h"
 
 #include <string>
 
