@@ -25,7 +25,7 @@ int Compiler::compile(std::string file)
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << "\033[1mconvcc: " << e.what() << '\n';
         return -1;
     }
 
@@ -36,7 +36,7 @@ int Compiler::compile(std::string file)
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << "\033[1mconvcc: " << e.what() << '\n';
         return -1;
     }
 

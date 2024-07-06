@@ -89,11 +89,19 @@ int main(int argc, char* argv[]) {
     
     // Compiler will compile input
     Compiler* compiler = new Compiler();
-    compiler->compile(input);
+    bool errors = compiler->compile(input);
 
     // Close the file
     file.close();
 
     // Clear memory
     delete compiler;
+
+    if (errors){
+        std::cerr << "compilation finished with errors." << std::endl;
+        return -1;
+    } else {
+        std::cout << "compilation finished." << std::endl;
+        return 0;
+    }
 }
