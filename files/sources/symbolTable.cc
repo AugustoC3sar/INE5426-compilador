@@ -15,7 +15,15 @@ void SymbolEntry::addOccurrence(int column, int row)
 
 void SymbolEntry::setType(std::string tokenType)
 {
-    _type = tokenType;
+    if (_type.empty()) {
+      _type = tokenType;
+    } else {
+      throw _token + " is already defined in this scope";
+    }
+}
+
+void SymbolEntry::removeType() {
+    _type = "";
 }
 
 std::string SymbolEntry::getType() {
@@ -44,11 +52,21 @@ std::string SymbolTable::getType(std::string lexicalValue) {
     if (_entries.find(lexicalValue) != _entries.end()) {
         return _entries[lexicalValue].getType();
     }
-
     throw "reference to " + lexicalValue + " is undefined";
 }
 
-SymbolTable SymbolTable::copy() {
-    SymbolTable symbolTableCopy = *this;
+// Generates a copy of a symbol table to use in another scope.
+SymbolTable* SymbolTable::copy() {
+    SymbolTable *symbolTableCopy = new SymbolTable();
+
+    for (const auto& pair : _entries) {
+        const std::string& token = pair.first;
+        const SymbolEntry& entry = pair.second;
+
+        SymbolEntry entryCopy(entry);
+        symbolTableCopy->_entries[token] = entryCopy;
+        symbolTableCopy->_entries[token].removeType();
+    }
+
     return symbolTableCopy;
 }

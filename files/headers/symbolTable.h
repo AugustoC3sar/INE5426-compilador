@@ -25,6 +25,7 @@ public:
 
     void addOccurrence(int column, int row);
     void setType(std::string tokenType);
+    void removeType(); // Used for cleanup routine in new scopes.
     std::string getType();
 };
 
@@ -39,7 +40,7 @@ public:
     void addToken(Token* token);
     void addTokenType(std::string token, std::string type);
     std::string getType(std::string lexicalValue);
-    SymbolTable copy();
+    SymbolTable* copy();
 };
 
 #endif

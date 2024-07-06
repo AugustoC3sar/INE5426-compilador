@@ -9,17 +9,17 @@ Para lidar com a declaração das variáveis a estratégia adotada seŕa:
 
 Desta forma, teremos a seguinte SDD com as seguintes produções:
 
-| Produção                          | Definições                        |
-|-----------------------------------|-----------------------------------|
-| FUNCLIST -> FUNCDEF FUNCLIST'      | { newScope }                      |
-| STATEMENT -> FORSTAT              | { newScope }                      |
+| Produção                                                                | Definições                        |
+|-------------------------------------------------------------------------|-----------------------------------|
+| FUNCLIST -> FUNCDEF FUNCLIST'                                           | { newScope }                      |
+| FORSTAT -> for(ATRIBSTAT; EXPRESSION; ATRIBSTAT) STATEMENT              | { newScope }                      |
 
 ## SDT
 
 Gerando a seguinte SDT:
 
 FUNCLIST -> { newScope } FUNCDEF FUNCLIST'
-STATEMENT -> { newScope } FORSTAT
+STATEMENT -> FORSTAT -> for(ATRIBSTAT; EXPRESSION; ATRIBSTAT) { newScope } STATEMENT 
 
 A função `newScope` irá copiar o conteúdo da tabela de símbolos em FUNCLIST e STATEMENT, para FUNCDEF e FORSTAT respectivamente.
 

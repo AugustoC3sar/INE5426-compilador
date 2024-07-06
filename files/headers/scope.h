@@ -25,12 +25,9 @@ public:
 
   void execute()
   {
-    Item firstChild = parent->children.at(1);
-    if (parent->symbolTable != nullptr) {
-        firstChild.nonTerminal->symbolTable = symbolTable;
-    } else {
-        firstChild.nonTerminal->symbolTable = parent->symbolTable;
-    }
+    Item firstChild = parent->children.at(parent->children.size()-1);
+    SymbolTable* symbolTableCopy = symbolTable->copy();
+    firstChild.nonTerminal->symbolTable = symbolTableCopy;
   }
 };
 
