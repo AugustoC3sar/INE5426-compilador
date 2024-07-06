@@ -72,10 +72,10 @@ bool Scanner::isType(std::string token)
 
 bool Scanner::isKeyword(std::string token)
 {
-    for (std::string reservedWord : _keywords)
+    for (std::string keyword : _keywords)
     {
-        bool tokenIsReservedWord = token.compare(reservedWord) == 0;
-        if (tokenIsReservedWord)
+        bool tokenIsKeyword = token.compare(keyword) == 0;
+        if (tokenIsKeyword)
         {
             return true;
         }
@@ -96,149 +96,183 @@ bool Scanner::isOperator(std::string token)
     return false;
 }
 
-bool Scanner::shouldBreakToken(char character)
+bool Scanner::isSignal(std::string token)
 {
-    return isspace(character) ||
-           character == '(' ||
-           character == ')' ||
-           character == '{' ||
-           character == '}' ||
-           character == ';' ||
-           character == ',' ||
-           character == '[' ||
-           character == ']';
+    return (token == "+" || token == "-");
+}
+
+bool Scanner::isAtribuition(std::string token)
+{
+    return (token == "=");
+}
+
+bool Scanner::shouldBreakToken(std::string token)
+{
+    return (isRelop(token) ||
+           isPunctuation(token) ||
+           isOperator(token) ||
+           isSignal(token) ||
+           isAtribuition(token));
+}
+
+Token* Scanner::_getToken(std::string token)
+{
+    if (isKeyword(token)) {
+        return new Token(KEYWORD, token);
+    } else if (isIntConstant(token)) {
+        return new Token(INT_CONSTANT, token);
+    } else if (isFloatConstant(token)) {
+        return new Token(FLOAT_CONSTANT, token);
+    } else if (isStringConstant(token)) {
+        return new Token(STRING_CONSTANT, token);
+    } else if (isType(token)) {
+        return new Token(TYPE, token);
+    } else if (isRelop(token)) {
+        return new Token(RELOP, token);
+    } else if (isOperator(token)) {
+        return new Token(OPERATION, token);
+    } else if (isIdentifier(token)) {
+        return new Token(IDENT, token);
+    } else if (isPunctuation(token)) {
+        return new Token(PUNCTUATION, token);
+    } else if (isSignal(token)) {
+        return new Token(SIGNAL, token);
+    } else if (isAtribuition(token)) {
+        return new Token(ATRIBUITION, token);
+    } else {
+        return nullptr;
+    }
 }
 
 std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
 {
-    std::string currentToken;
+    std::string currentToken = "";
     int column = 0;
     int line = 1;
 
-    for (size_t i = 0; i < file.size(); ++i) {
-        char c = file[i];
+    for (std::size_t i = 0; i < file.size(); ++i) {
+        // For each character in file
+        char ch = file[i];
         ++column;
-        if (shouldBreakToken(c)) {
-            if (isPunctuation(std::string(1, c))) {
-                if (currentToken.empty()) {
-                    currentToken += c;
-                } else {
-                    i--;
-                }
-            }
-
+        // Case char is new line character
+        if (ch == '\n') {
+            // If token is not empty
             if (!currentToken.empty()) {
-                if (isKeyword(currentToken)) {
-                    _tokens.push_back(new Token(KEYWORD, line, column-currentToken.length(), currentToken));
-                } else if (isIntConstant(currentToken)) {
-                    _tokens.push_back(new Token(INT_CONSTANT, line, column-currentToken.length(), currentToken));
-                } else if (isFloatConstant(currentToken)) {
-                    _tokens.push_back(new Token(FLOAT_CONSTANT, line, column-currentToken.length(), currentToken));
-                } else if (isStringConstant(currentToken)) {
-                    _tokens.push_back(new Token(STRING_CONSTANT, line, column-currentToken.length(), currentToken));
-                } else if (isType(currentToken)) {
-                    _tokens.push_back(new Token(TYPE, line, column-currentToken.length(), currentToken));
-                } else if (isRelop(currentToken)) {
-                    _tokens.push_back(new Token(RELOP, line, column-currentToken.length(), currentToken));
-                } else if (isOperator(currentToken)) {
-                    _tokens.push_back(new Token(OPERATION, line, column-currentToken.length(), currentToken));
-                } else if (isIdentifier(currentToken)) {
-                    Token* token = new Token(IDENT, line, column-currentToken.length(), currentToken);
-                    _tokens.push_back(token);
-                    table->addToken(token);
-                } else if (isPunctuation(currentToken)) {
-                    _tokens.push_back(new Token(PUNCTUATION, line, column-currentToken.length(), currentToken));
-                } else {
-                    std::string error = "\033[31mUnmatched token:\033[0m " + currentToken;
+                // Gets token
+                Token* token = _getToken(currentToken);
+                // If no token returned, throw error
+                if (token == nullptr){
+                    std::string error = "\033[31mUnmatched token:\033[0m '" + currentToken + "' at line " + std::to_string(line) + " column " + std::to_string(column-currentToken.length());
                     throw std::logic_error(error);
                 }
-                currentToken.clear();
-            }
-        } else if (isOperator(std::string(1, c)) || isRelop(std::string(1, c))) {
-            if (!currentToken.empty()) {
-                if (isKeyword(currentToken)) {
-                    _tokens.push_back(new Token(KEYWORD, line, column-currentToken.length(), currentToken));
-                } else if (isIntConstant(currentToken)) {
-                    _tokens.push_back(new Token(INT_CONSTANT, line, column-currentToken.length(), currentToken));
-                } else if (isFloatConstant(currentToken)) {
-                    _tokens.push_back(new Token(FLOAT_CONSTANT, line, column-currentToken.length(), currentToken));
-                } else if (isStringConstant(currentToken)) {
-                    _tokens.push_back(new Token(STRING_CONSTANT, line, column-currentToken.length(), currentToken));
-                } else if (isType(currentToken)) {
-                    _tokens.push_back(new Token(TYPE, line, column-currentToken.length(), currentToken));
-                } else if (isRelop(currentToken)) {
-                    _tokens.push_back(new Token(RELOP, line, column-currentToken.length(), currentToken));
-                } else if (isOperator(currentToken)) {
-                    _tokens.push_back(new Token(OPERATION, line, column-currentToken.length(), currentToken));
-                } else if (isIdentifier(currentToken)) {
-                    Token* token = new Token(IDENT, line, column-currentToken.length(), currentToken);
-                    table->addToken(token);
-                    _tokens.push_back(new Token(IDENT, line, column-currentToken.length(), currentToken));
-                } else if (isPunctuation(currentToken)) {
-                    _tokens.push_back(new Token(PUNCTUATION, line, column-currentToken.length(), currentToken));
-                } else {
-                    std::string error = "\033[31mUnmatched token:\033[0m " + currentToken;
-                    throw std::logic_error(error);
-                }
-                currentToken.clear();
-            }
-            currentToken += c;
-        } else {
-            currentToken += c;
-        }
 
-        if (c == '\n') {
+                // Push to token list
+                _tokens.push_back(token);
+
+                // If token is identifier
+                if (isIdentifier(currentToken)){
+                    // Adds to symble table
+                    table->addToken(currentToken, line, column-currentToken.length());
+                }
+
+                // Clear current token
+                currentToken = "";
+            }
+
             ++line;
             column = 0;
-        }
-    }
+        // Case char is white space
+        } else if (ch == ' ' || ch == '\t') {
+            // If token is not empty
+            if (!currentToken.empty()) {
+                // Gets token
+                Token* token = _getToken(currentToken);
+                // If no token returned, throw error
+                if (token == nullptr){
+                    std::string error = "\033[31mUnmatched token:\033[0m '" + currentToken + "' at line " + std::to_string(line) + " column " + std::to_string(column-currentToken.length());
+                    throw std::logic_error(error);
+                }
 
-    if (!currentToken.empty()) {
-        if (isKeyword(currentToken)) {
-            _tokens.push_back(new Token(KEYWORD, line, column-currentToken.length(), currentToken));
-        } else if (isIntConstant(currentToken)) {
-            _tokens.push_back(new Token(INT_CONSTANT, line, column-currentToken.length(), currentToken));
-        } else if (isFloatConstant(currentToken)) {
-            _tokens.push_back(new Token(FLOAT_CONSTANT, line, column-currentToken.length(), currentToken));
-        } else if (isStringConstant(currentToken)) {
-            _tokens.push_back(new Token(STRING_CONSTANT, line, column-currentToken.length(), currentToken));
-        } else if (isType(currentToken)) {
-            _tokens.push_back(new Token(TYPE, line, column-currentToken.length(), currentToken));
-        } else if (isRelop(currentToken)) {
-            _tokens.push_back(new Token(RELOP, line, column-currentToken.length(), currentToken));
-        } else if (isOperator(currentToken)) {
-            _tokens.push_back(new Token(OPERATION, line, column-currentToken.length(), currentToken));
-        } else if (isIdentifier(currentToken)) {
-            Token* token = new Token(IDENT, line, column-currentToken.length(), currentToken);
-            table->addToken(token);
-            _tokens.push_back(new Token(IDENT, line, column-currentToken.length(), currentToken));
-        } else if (isPunctuation(currentToken)) {
-            _tokens.push_back(new Token(PUNCTUATION, line, column-currentToken.length(), currentToken));
+                // Push to token list
+                _tokens.push_back(token);
+
+                // If token is identifier
+                if (isIdentifier(currentToken)){
+                    // Adds to symble table
+                    table->addToken(currentToken, line, column-currentToken.length());
+                }
+
+                // Clear current token
+                currentToken = "";
+            }
+        // Case should break token
+        } else if (shouldBreakToken(std::string("")+ch)) {
+            // If token is not empty
+            if (!currentToken.empty()) {
+                // Gets token
+                Token* token = _getToken(currentToken);
+                // If no token returned, throw error
+                if (token == nullptr){
+                    std::string error = "\033[31mUnmatched token:\033[0m '" + currentToken + "' at line " + std::to_string(line) + " column " + std::to_string(column-currentToken.length());
+                    throw std::logic_error(error);
+                }
+
+                // Push to token list
+                _tokens.push_back(token);
+
+                // If token is identifier
+                if (isIdentifier(currentToken)){
+                    // Adds to symble table
+                    table->addToken(currentToken, line, column-currentToken.length());
+                }
+
+                // Clear current token
+                currentToken = "";
+            }
+
+            currentToken += ch;
+
+            // Case char is relop
+            if (isRelop(currentToken)){
+                // Look Ahead
+                char look_ahead = file[i+1];
+                // If next char is '='
+                if (look_ahead == '=') {
+                    // Add to token
+                    currentToken += look_ahead;
+                    // Create token
+                    Token* token = new Token(RELOP, currentToken);
+                    _tokens.push_back(token);
+                    // Adjusting file read position
+                    i+=2;
+                    column+=2;
+                    // Clear current token
+                    currentToken = "";
+                }
+            }
+        // Case char is alfanum
         } else {
-            std::string error = "\033[31mUnmatched token:\033[0m " + currentToken;
-            throw std::logic_error(error);
+            // Case current token is not alfanum
+            if (shouldBreakToken(currentToken)) {
+                // Gets token
+                Token* token = _getToken(currentToken);
+                // If no token returned, throw error
+                if (token == nullptr){
+                    std::string error = "\033[31mUnmatched token:\033[0m '" + currentToken + "' at line " + std::to_string(line) + " column " + std::to_string(column-currentToken.length());
+                    throw std::logic_error(error);
+                }
+
+                // Push to token list
+                _tokens.push_back(token);
+
+                // Clear current token
+                currentToken = "";
+            }
+
+            currentToken += ch;
         }
 
-        parsedAllFile = true;
     }
 
     return _tokens;
-}
-
-
-Token* Scanner::getNextToken()
-{
-    if (currentTokenIterator < _tokens.size())
-    {
-        Token* token = _tokens.at(currentTokenIterator);
-        currentTokenIterator++;
-        return token;
-    }
-
-    if (!parsedAllFile)
-    {
-        return new Token(WAITING, 0, 0, "WAITING");
-    }
-
-    return new Token(END_OF_FILE, 0, 0, "EOF");
 }

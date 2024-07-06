@@ -1,11 +1,8 @@
 #include "symbolTable.h"
+#include <iostream>
 
-SymbolEntry::SymbolEntry(std::string tokenType)
-    : _token{tokenType}
-{
-}
 
-void SymbolEntry::addOccurrence(int column, int row)
+void SymbolEntry::addOccurrence(unsigned int row, unsigned int column)
 {
     struct SymbolOccurrence occurrence;
     occurrence.column = column;
@@ -30,14 +27,15 @@ std::string SymbolEntry::getType() {
     return _type;
 }
 
-void SymbolTable::addToken(Token* token)
+
+void SymbolTable::addToken(std::string token, unsigned int row, unsigned int column)
 {
-    bool containsEntry = !(_entries.find(token->value()) == _entries.end());
+    bool containsEntry = !(_entries.find(token) == _entries.end());
     if (!containsEntry)
     {
-        _entries[token->value()] = SymbolEntry(token->value());
+        _entries[token] = SymbolEntry(token);
     }
-    _entries[token->value()].addOccurrence(token->column(), token->line());
+    _entries[token].addOccurrence(row, column);
 }
 
 void SymbolTable::addTokenType(std::string token, std::string type)
@@ -52,7 +50,9 @@ std::string SymbolTable::getType(std::string lexicalValue) {
     if (_entries.find(lexicalValue) != _entries.end()) {
         return _entries[lexicalValue].getType();
     }
-    throw "reference to " + lexicalValue + " is undefined";
+
+    std::string error = "\033[31merror:\033[0m reference to " + lexicalValue + " is undefined";
+    throw std::logic_error(error);
 }
 
 // Generates a copy of a symbol table to use in another scope.

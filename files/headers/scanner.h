@@ -25,17 +25,13 @@ class Scanner
         std::vector<std::string> _relops = {"<", ">", "<=", ">=", "==", "!="};
 
         // Array with language operators
-        std::vector<std::string> _operators = {"+", "-", "%", "="};
+        std::vector<std::string> _operators = {"/", "%", "*"};
 
         // Array with ...
         std::vector<std::string> _punctuations = {",", ";", "(", ")", "[", "]", "{", "}"};
 
         // Tokens array
         std::vector<Token*> _tokens;
-
-        bool parsedAllFile = false;
-        const int BUFFER_COUNT = 16;
-        long unsigned int currentTokenIterator = 0;
 
         bool isIdentifier(std::string token);
         bool isFloatConstant(std::string token);
@@ -46,14 +42,16 @@ class Scanner
         bool isType(std::string token);
         bool isKeyword(std::string token);
         bool isOperator(std::string token);
-        bool shouldBreakToken(char character);
+        bool isSignal(std::string token);
+        bool isAtribuition(std::string token);
+        bool shouldBreakToken(std::string token);
+        Token* _getToken(std::string token);
 
     public:
         Scanner() = default;
         ~Scanner();
 
         std::vector<Token*> scan(std::string file, SymbolTable* table);
-        Token* getNextToken();
     };
 
 #endif
