@@ -181,10 +181,8 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
 
             ++line;
             column = 0;
-        }
-
         // Case char is white space
-        if (ch == ' ') {
+        } else if (ch == ' ' || ch == '\t') {
             // If token is not empty
             if (!currentToken.empty()) {
                 // Gets token
@@ -207,10 +205,8 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
                 // Clear current token
                 currentToken = "";
             }
-        }
-
         // Case should break token
-        if (shouldBreakToken(std::string("")+ch)){
+        } else if (shouldBreakToken(std::string("")+ch)) {
             // If token is not empty
             if (!currentToken.empty()) {
                 // Gets token
@@ -254,10 +250,8 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
                     currentToken = "";
                 }
             }
-        }
-
         // Case char is alfanum
-        if (std::isalnum(ch)) {
+        } else {
             // Case current token is not alfanum
             if (shouldBreakToken(currentToken)) {
                 // Gets token
