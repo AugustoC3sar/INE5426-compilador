@@ -296,8 +296,8 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
     case 86:
         return {Numexpressionrec(parent)};
     default:
-        std::cerr << "Produção não reconhecida" << std::endl;
-        return {};
+        std::string error = "\033[31merror:\033[0m unrecognized production";
+        throw std::logic_error(error);
     }
 };
 
@@ -340,8 +340,8 @@ void Parser::parse(std::vector<Token*> tokens) {
             // If the top of stack is epsilon we just pop the top and use the same token.
             _stack.pop_back();
         } else if (!containsEntryInParseTable) {
-            std::cerr << "Topo da pilha não pode ser encontrado na tabela de parse " << topOfStack.value() << std::endl;
-            return;
+            std::string error = "\033[31merror:\033[0m stack top '" + topOfStack.value() + "' could not be found in parsing table";
+            throw std::logic_error(error);
         } else {
             // Removes the current non terminal from the top of the stack.
             _stack.pop_back();
@@ -351,8 +351,8 @@ void Parser::parse(std::vector<Token*> tokens) {
             std::unordered_map<std::string, int> productionsParseRow = _parseTable.at(topOfStack.value());
             bool containsProductionForToken = !(productionsParseRow.find(tokenValue) == productionsParseRow.end());
             if (!containsProductionForToken) {
-                std::cerr << "Token " << tokenValue <<  " não reconhecido para a produção " << topOfStack.value() << std::endl;
-                return;
+                std::string error = "Token '" + tokenValue +  "' have no production for stack top '" + topOfStack.value() +"'";
+                throw std::logic_error(error);
             }
 
             // Generates the non terminals and terminals of the production to apply. We add to all terminals, non
