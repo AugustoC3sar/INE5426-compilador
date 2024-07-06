@@ -315,4 +315,13 @@ public:
   }
 };
 
+class DollarSign : public Item {
+public:
+  DollarSign() : Item() {
+    terminal = new Terminal("$", "$", NULL);
+    type = TERMINAL;
+  }
+};
+
+
 #endif

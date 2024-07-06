@@ -48,6 +48,10 @@ class SymbolEntry
          */
         void setType(std::string tokenType);
 
+        /**
+         * Removes the current type attributed to a token.
+        */
+        void removeType();
 };
 
 class SymbolTable
@@ -85,6 +89,11 @@ class SymbolTable
          * @return semantic type of a given lexical value
          */
         std::string getType(std::string lexicalValue);
+
+        /**
+         * Creates an empty copy of the symbol table.
+        */
+       SymbolTable* copy();
 };
 
 #endif

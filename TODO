@@ -1,2 +1,0 @@
-- [ ] Current implementation of parser cannot differentiate composed relops (<=, ==, >=, !=)
-- [ ] Current grammar expects to return an ident. We could just either remove this ident from there returning nothing and expecting the return value to be given as a parameter.

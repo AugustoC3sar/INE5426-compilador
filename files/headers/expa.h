@@ -8,13 +8,11 @@ class AssignTreeSemanticAction : public SemanticAction
 public:
   std::string name;
   NonTerminal *parent;
-  SymbolTable* symbolTable;
 
-  AssignTreeSemanticAction(NonTerminal *p, SymbolTable *st)
+  AssignTreeSemanticAction(NonTerminal *p)
   {
     name = "ASSIGN_TREE";
     parent = p;
-    symbolTable = st;
   }
 
   std::string value() override
@@ -29,7 +27,7 @@ public:
 
     // Validates that all expressions arguments have the same type returning the expression type.
     if (parent->node != nullptr) {
-      parent->node->getExpressionType(symbolTable);
+      parent->node->getExpressionType(parent->symbolTable);
     }
   }
 };
@@ -37,9 +35,9 @@ public:
 class AssignTree : public Item
 {
 public:
-  AssignTree(NonTerminal *p, SymbolTable *st)
+  AssignTree(NonTerminal *p)
   {
-    semanticAction = new AssignTreeSemanticAction(p, st);
+    semanticAction = new AssignTreeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
