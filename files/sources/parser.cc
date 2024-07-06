@@ -192,8 +192,8 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         // STATEMENT -> {STATELIST}
         return {OpenBrackets(parent), Statelist(parent), CloseBrackets(parent)};
     case 22:
-        // STATEMENT -> break;
-        return {Break(parent), Semicolon(parent)};
+        // STATEMENT -> { checkBreakInScope } break;
+        return {CheckBreakInScope(parent), Break(parent), Semicolon(parent)};
     case 23:
         // STATEMENT -> ;
         return {Semicolon(parent)};
@@ -420,9 +420,6 @@ void Parser::parse(std::vector<Token *> tokens)
         {
             tokenValue = "ident";
         }
-
-        std::cout << "CURRENT TOKEN " << tokenValue << std::endl;
-        std::cout << "TOP OF STACK " << topOfStack.value() << std::endl;
 
         // Verifies if there is an entry in parse table for the top of stack as the head of production.
         bool containsEntryInParseTable = !(_parseTable.find(topOfStack.value()) == _parseTable.end());

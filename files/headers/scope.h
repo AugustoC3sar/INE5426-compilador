@@ -3,7 +3,6 @@
 
 #include <parser.h>
 
-
 class NewScopeSemanticAction : public SemanticAction
 {
 public:
@@ -16,6 +15,12 @@ public:
     name = "NEW_SCOPE";
     parent = p;
     symbolTable = st;
+    parent->scope = p->value();
+    for (auto child : parent->children) {
+      if (child.nonTerminal != nullptr) {
+        child.nonTerminal->scope = parent->scope;
+      }
+    }
   }
 
   std::string value() override
@@ -40,5 +45,41 @@ public:
     type = SEMANTIC_ACTION;
   }
 };
+
+class CheckBreakInScopeSemanticAction : public SemanticAction
+{
+public:
+  std::string name;
+  NonTerminal *parent;
+
+  CheckBreakInScopeSemanticAction(NonTerminal *p)
+  {
+    name = "CHECK_BREAK_IN_SCOPE";
+    parent = p;
+  }
+
+  std::string value() override
+  {
+    return name;
+  }
+
+  void execute()
+  {
+    if (parent->scope != "FORSTAT") {
+      throw "break outside for loop";
+    }
+  }
+};
+
+class CheckBreakInScope : public Item
+{
+public:
+  CheckBreakInScope(NonTerminal *p)
+  {
+    semanticAction = new CheckBreakInScopeSemanticAction(p);
+    type = SEMANTIC_ACTION;
+  }
+};
+
 
 #endif

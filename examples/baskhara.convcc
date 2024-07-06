@@ -25,7 +25,7 @@ def calculate_delta(float a, float b, float c) {
     if (delta == 0) {
         print "There is exactly one real root!";
     }
-    
+
     if (delta > 0) {
         print "There are two distinct roots!";
     }
