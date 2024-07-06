@@ -28,15 +28,19 @@ public:
   Node* node;
   Node* leftNode;
   std::string operationValue;
+  std::string scope;
 
   SymbolTable *symbolTable = nullptr;
 
   NonTerminal(std::string n, NonTerminal *p) {
     name = n;
     parent = p;
+
     if (symbolTable == nullptr && p->symbolTable != nullptr) {
       symbolTable = p->symbolTable;
     }
+
+    scope = p->scope;
   }
 
   NonTerminal(std::string n, NonTerminal *p, SymbolTable *st) {
