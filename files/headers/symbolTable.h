@@ -25,6 +25,7 @@ public:
 
     void addOccurrence(int column, int row);
     void setType(std::string tokenType);
+    std::string getType();
 };
 
 class SymbolTable
@@ -37,6 +38,7 @@ public:
 
     void addToken(Token* token);
     void addTokenType(std::string token, std::string type);
+    std::string getType(std::string lexicalValue);
 };
 
 #endif

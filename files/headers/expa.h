@@ -3,16 +3,20 @@
 
 #include <parser.h>
 
+#include <iostream>
+
 class AssignTreeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
   NonTerminal *parent;
+  SymbolTable* symbolTable;
 
-  AssignTreeSemanticAction(NonTerminal *p)
+  AssignTreeSemanticAction(NonTerminal *p, SymbolTable *st)
   {
     name = "ASSIGN_TREE";
     parent = p;
+    symbolTable = st;
   }
 
   std::string value() override
@@ -20,19 +24,24 @@ public:
     return name;
   }
 
-  void execute() override
+  void execute()
   {
     Item expression = parent->children.at(0);
     parent->node = expression.nonTerminal->node;
+
+    // Validates that all expressions arguments have the same type returning the expression type.
+    if (parent->node != nullptr) {
+      parent->node->getExpressionType(symbolTable);
+    }
   }
 };
 
 class AssignTree : public Item
 {
 public:
-  AssignTree(NonTerminal *p)
+  AssignTree(NonTerminal *p, SymbolTable *st)
   {
-    semanticAction = new AssignTreeSemanticAction(p);
+    semanticAction = new AssignTreeSemanticAction(p, st);
     type = SEMANTIC_ACTION;
   }
 };
@@ -57,7 +66,8 @@ public:
   void execute() override
   {
     Item item = parent->children.at(0);
-    parent->node = new Node(item.terminal->lexicalValue, NULL, NULL);
+    Node *node = new Node(item.terminal->lexicalValue);
+    parent->node = node;
   }
 };
 
@@ -449,6 +459,40 @@ public:
   SynthesizeNumexpressionNode(NonTerminal *p)
   {
     semanticAction = new SynthesizeNumexpressionNodeSemanticAction(p);
+    type = SEMANTIC_ACTION;
+  }
+};
+
+class InheritLeftNodeToFirstChildSemanticAction : public SemanticAction
+{
+public:
+  std::string name;
+  NonTerminal *parent;
+
+  InheritLeftNodeToFirstChildSemanticAction(NonTerminal *p)
+  {
+    name = "InheritLeftNodeToFirstChild";
+    parent = p;
+  }
+
+  std::string value() override
+  {
+    return name;
+  }
+
+  void execute() override
+  {
+    Item firstChild = parent->children.at(1);
+    firstChild.nonTerminal->leftNode = parent->leftNode;
+  }
+};
+
+class InheritLeftNodeToFirstChild : public Item
+{
+public:
+  InheritLeftNodeToFirstChild(NonTerminal *p)
+  {
+    semanticAction = new InheritLeftNodeToFirstChildSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };

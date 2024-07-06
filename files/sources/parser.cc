@@ -210,7 +210,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Lvalue(parent), Equal(parent), Atribstata(parent)};
     case 28:
         // ATRIBSTAT' -> EXPRESSION { ATRIBSTAT'.node = EXPRESSION.node }
-        return {Expression(parent), AssignTree(parent)};
+        return {Expression(parent), AssignTree(parent, _symbolTable)};
     case 29:
         // ATRIBSTAT' -> ALLOCEXPRESSION
         return {Allocexpression(parent)};
@@ -311,8 +311,8 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         // NUMEXPRESSION -> TERM { NUMEXPRESSION'.leftNode = TERM.node } NUMEXPRESSION' { NUMEXPRESSION.node = NUMEXPRESSION'.node }
         return {Term(parent), InheritTermNode(parent), Numexpressiona(parent), ReturnNode(parent)};
     case 62:
-        // NUMEXPRESSION' -> TERM_REC { NUMEXPRESSION'.node = TERM_REC.node }
-        return {Termrec(parent), ReturnNode(parent)};
+        // NUMEXPRESSION' -> { TERM_REC.leftNode = NUMEXPRESSION'.leftNode } TERM_REC { NUMEXPRESSION'.node = TERM_REC.node }
+        return {InheritLeftNodeToFirstChild(parent), Termrec(parent), ReturnNode(parent)};
     case 63:
         // TERM_REC -> SIGNAL TERM { TERM_REC'.leftNode = new Node(SIGNAL.value, TERM_REC.leftNode, TERM.node) } TERM_REC' { TERM_REC.node = TERM_REC'.node }
         return {Signal(parent), Term(parent), CreateInheritedSignalNode(parent), Termreca(parent), ReturnNode(parent)};
@@ -320,8 +320,8 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         // TERM_REC -> & { TERM_REC.node = TERM_REC.leftNode }
         return {Epsilon(parent), SyntehsizeNode(parent)};
     case 65:
-        // TERM_REC' -> TERM_REC { TERM_REC'.node = TERM_REC.node }
-        return {Termrec(parent), ReturnNode(parent)};
+        // TERM_REC' -> { TERM_REC.leftNode = TERM_REC'.leftNode } TERM_REC { TERM_REC'.node = TERM_REC.node }
+        return { InheritLeftNodeToFirstChild(parent), Termrec(parent), ReturnNode(parent)};
     case 66:
         // OPERATOR -> * { OPERATOR.value = * }
         return {Times(parent), ReturnOperationValue(parent)};
@@ -335,8 +335,8 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         // TERM -> UNARYEXPR { TERM'.leftNode = UNARYEXPR.node } TERM' { TERM.node = TERM'.node }
         return {Unaryexpr(parent),  InheritUnaryexprNode(parent), Terma(parent), ReturnNode(parent)};
     case 70:
-        // TERM' -> UNARYEXPR_REC { TERM'.node = UNARYEXPR_REC.node }
-        return {Unaryexprrec(parent), ReturnNode(parent)};
+        // TERM' -> { UNARYEXPR_REC.leftNode = TERM'.leftNode } UNARYEXPR_REC { TERM'.node = UNARYEXPR_REC.node }
+        return {InheritLeftNodeToFirstChild(parent), Unaryexprrec(parent), ReturnNode(parent)};
     case 71:
         // UNARYEXPR_REC -> OPERATOR UNARYEXPR { UNARYEXPR_REC'.leftNode = new Node(OPERATOR.value, UNARYEXPR_REC.leftNode, UNARYEXPR.node) } UNARYEXPR_REC' { UNARYEXPR_REC.node = UNARYEXPR_REC'.node }
         return {Operator(parent),  Unaryexpr(parent), CreateUnaryexprRecInheritedNode(parent), Unaryexprreca(parent), ReturnNode(parent)};
@@ -344,14 +344,14 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         // UNARYEXPR_REC -> & { UNARYEXPR_REC.node = UNARYEXPR_REC.leftNode }
         return {Epsilon(parent), SyntehsizeNode(parent)};
     case 73:
-        // UNARYEXPR_REC' -> UNARYEXPR_REC { UNARYEXPR_REC'.node = UNARYEXPR_REC.node }
-        return {Unaryexprrec(parent), SyntehsizeNode(parent)};
+        // UNARYEXPR_REC' -> { UNARYEXPR_REC.leftNode = UNARYEXPR_REC'.leftNode } UNARYEXPR_REC { UNARYEXPR_REC'.node = UNARYEXPR_REC.node }
+        return {InheritLeftNodeToFirstChild(parent), Unaryexprrec(parent), ReturnNode(parent)};
     case 74:
         // UNARYEXPR -> SIGNAL FACTOR { UNARYEXPR.node = new Node(SIGNAL.operationValue, UNARYEXPR.leftNode, FACTOR.node) }
         return {Signal(parent), Factor(parent), CreateOperatorNode(parent)};
     case 75:
-        // UNARYEXPR -> FACTOR { UNARYEXPR.node = FACTOR.node }
-        return {Factor(parent), ReturnNode(parent)};
+        // UNARYEXPR -> { FACTOR.leftNode = UNARYEXPR.leftNode } FACTOR { UNARYEXPR.node = FACTOR.node }
+        return {InheritLeftNodeToFirstChild(parent), Factor(parent), ReturnNode(parent)};
     case 76:
         // FACTOR -> int_constant { FACTOR.node = new Node(int_constant, NULL, NULL) }
         return {IntConstant("", parent), CreateLeafNode(parent)};
@@ -365,8 +365,8 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         // FACTOR -> null { FACTOR.node = new Node(null, NULL, NULL) }
         return {Null(parent), CreateLeafNode(parent)};
     case 80:
-        // FACTOR -> LVALUE { FACTOR.node = LVALUE.node }
-        return {Lvalue(parent), ReturnNode(parent)};
+        // FACTOR -> { LVALUE.leftNode = FACTOR.leftNode } LVALUE { FACTOR.node = LVALUE.node }
+        return {InheritLeftNodeToFirstChild(parent), Lvalue(parent), ReturnNode(parent)};
     case 81:
         // FACTOR -> (NUMEXPRESSION) { FACTOR.node = NUMEXPRESSION.node }
         return {OpenParentheses(parent), Numexpression(parent), CloseParentheses(parent), SynthesizeNumexpressionNode(parent)};

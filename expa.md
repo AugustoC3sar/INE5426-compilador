@@ -41,19 +41,24 @@ LVALUE -> ident LVALUE'
 | NUMEXPRESSION -> TERM NUMEXPRESSION'               | NUMEXPRESSION'.leftNode = TERM.node                                                            |
 |                                                    | NUMEXPRESSION.node = NUMEXPRESSION'.node                                                       |
 | NUMEXPRESSION' -> TERM_REC                         | NUMEXPRESSION'.node = TERM_REC.node                                                            |
+|                                                    | TERM_REC.leftNode = NUMEXPRESSION'.leftNode                                                    |
 | TERM_REC -> SIGNAL TERM TERM_REC'                  | TERM_REC.node = TERM_REC'.node                                                                 |
 |                                                    | TERM_REC'.leftNode = new Node(SIGNAL.value, TERM_REC.leftNode, TERM.node)                      |
 | TERM_REC -> &                                      | TERM_REC.node = TERM_REC.leftNode                                                              |
 | TERM_REC' -> TERM_REC                              | TERM_REC'.node = TERM_REC.node                                                                 |
+|                                                    | TERM_REC.leftNode = TERM_REC'.leftNode                                                         |
 | TERM -> UNARYEXPR TERM'                            | TERM'.leftNode = UNARYEXPR.node                                                                |
 |                                                    | TERM.node = TERM'.node                                                                         |
 | TERM' -> UNARYEXPR_REC                             | TERM'.node = UNARYEXPR_REC.node                                                                |
+|                                                    | UNARYEXPR_REC.leftNode = TERM'.leftNode                                                        |
 | UNARYEXPR_REC -> OPERATOR UNARYEXPR UNARYEXPR_REC' | UNARYEXPR_REC.node = UNARYEXPR_REC'.node                                                       |
 |                                                    | UNARYEXPR_REC'.leftNode = new Node(OPERATOR.value, UNARYEXPR.leftNode, UNARYEXPR_REC.leftNode) |
 | UNARYEXPR_REC -> &                                 | UNARYEXPR_REC.node = UNARYEXPR_REC.leftNode                                                    |
 | UNARYEXPR_REC' -> UNARYEXPR_REC                    | UNARYEXPR_REC'.node = UNARYEXPR_REC.node                                                       |
+|                                                    | UNARYEXPR_REC.leftNode = UNARYEXPR_REC'.leftNode                                               |
 | UNARYEXPR -> SIGNAL FACTOR                         | UNARYEXPR.node = new Node(SIGNAL.value, UNARYEXPR.leftNode, FACTOR.node)                       |
 | UNARYEXPR -> FACTOR                                | UNARYEXPR.node = FACTOR.node                                                                   |
+|                                                    | FACTOR.leftNode = UNARYEXPR.leftNode                                                           |
 | FACTOR -> int_constant                             | FACTOR.node = new Node(int_constant.lexValue, NULL, NULL)                                      |
 | FACTOR -> float_constant                           | FACTOR.node = new Node(float_constant.lexValue, NULL, NULL)                                    |
 | OPERATOR -> *                                      | OPERATOR.value = *                                                                             |
@@ -62,6 +67,7 @@ LVALUE -> ident LVALUE'
 | FACTOR -> string_constant                          | FACTOR.node = new Node(string_constant.lexValue, NULL, NULL)                                   |
 | FACTOR -> null                                     | FACTOR.node = new Node(null, NULL, NULL)                                                       |
 | FACTOR -> LVALUE                                   | FACTOR.node = LVALUE.node                                                                      |
+|                                                    | LVALUE.leftNode = FACTOR.leftNode                                                              |
 | FACTOR -> (NUMEXPRESSION)                          | FACTOR.node = NUMEXPRESSION.node                                                               |
 | LVALUE -> ident LVALUE'                            | FACTOR.node = new Node(ident, NULL, NULL)                                                      |
 
@@ -73,17 +79,17 @@ EXPRESSION' -> & { EXPRESSION'.node = EXPRESSION'.leftNode}
 SIGNAL -> + { SIGNAL.value = + }
 SIGNAL -> - { SIGNAL.value = - }
 NUMEXPRESSION -> TERM { NUMEXPRESSION'.leftNode = TERM.node } NUMEXPRESSION' { NUMEXPRESSION.node = NUMEXPRESSION'.node }
-NUMEXPRESSION' -> TERM_REC { NUMEXPRESSION'.node = TERM_REC.node }
+NUMEXPRESSION' -> { TERM_REC.leftNode = NUMEXPRESSION'.leftNode } TERM_REC { NUMEXPRESSION'.node = TERM_REC.node }
 TERM_REC -> SIGNAL TERM { TERM_REC'.leftNode = new Node(SIGNAL.value, TERM_REC.leftNode, TERM.node) } TERM_REC' { TERM_REC.node = TERM_REC'.node }
 TERM_REC -> & { TERM_REC.node = TERM_REC.leftNode }
-TERM_REC' -> TERM_REC { TERM_REC'.node = TERM_REC.node }
+TERM_REC' -> { TERM_REC.leftNode = TERM_REC'.leftNode } TERM_REC { TERM_REC'.node = TERM_REC.node }
 TERM -> UNARYEXPR { TERM'.leftNode = UNARYEXPR.node } TERM' { TERM.node = TERM'.node }
-TERM' -> UNARYEXPR_REC { TERM'.node = UNARYEXPR_REC.node }
+TERM' -> { UNRAYEXPR_REC.leftNode = TERM'.leftNode } UNARYEXPR_REC { TERM'.node = UNARYEXPR_REC.node }
 UNARYEXPR_REC -> OPERATOR UNARYEXPR { UNARYEXPR_REC'.leftNode = new Node(OPERATOR.value, UNARYEXPR_REC.leftNode, UNARYEXPR.node) } UNARYEXPR_REC' { UNARYEXPR_REC.node = UNARYEXPR_REC'.node }                    
 UNARYEXPR_REC -> & { UNARYEXPR_REC.node = UNARYEXPR_REC.leftNode }
-UNARYEXPR_REC' -> UNARYEXPR_REC { UNARYEXPR_REC'.node = UNARYEXPR_REC.node }
+UNARYEXPR_REC' -> { UNARYEXPR_REC.leftNode = UNARYEXPR_REC'.leftNode } UNARYEXPR_REC { UNARYEXPR_REC'.node = UNARYEXPR_REC.node }
 UNARYEXPR -> SIGNAL FACTOR { UNARYEXPR.node = new Node(SIGNAL.value, UNARYEXPR.leftNode, FACTOR.node) }
-UNARYEXPR -> FACTOR { UNARYEXPR.node = FACTOR.node }
+UNARYEXPR -> { FACTOR.leftNode = UNARYEXPR.leftNode } FACTOR { UNARYEXPR.node = FACTOR.node }
 FACTOR -> int_constant { FACTOR.node = new Node(int_constant, NULL, NULL) }
 FACTOR -> float_constant { FACTOR.node = new Node(float_constant, NULL, NULL) }
 OPERATOR -> * { OPERATOR.value = * }
@@ -91,7 +97,7 @@ OPERATOR -> / { OPERATOR.value = / }
 OPERATOR -> % { OPERATOR.value = % }
 FACTOR -> string_constant { FACTOR.node = new Node(string_constant, NULL, NULL) }
 FACTOR -> null { FACTOR.node = new Node(null, NULL, NULL) }
-FACTOR -> LVALUE { FACTOR.node = LVALUE.node }
+FACTOR -> { LVALUE.leftNode = FACTOR.leftNode } LVALUE { FACTOR.node = LVALUE.node }
 FACTOR -> (NUMEXPRESSION) { FACTOR.node = NUMEXPRESSION.node }
 LVALUE -> ident LVALUE' { FACTOR.node = new Node(ident, NULL, NULL) }
 

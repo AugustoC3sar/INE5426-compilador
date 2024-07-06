@@ -18,6 +18,10 @@ void SymbolEntry::setType(std::string tokenType)
     _type = tokenType;
 }
 
+std::string SymbolEntry::getType() {
+    return _type;
+}
+
 void SymbolTable::addToken(Token* token)
 {
     bool containsEntry = !(_entries.find(token->value()) == _entries.end());
@@ -34,4 +38,12 @@ void SymbolTable::addTokenType(std::string token, std::string type)
     {
         _entries[token].setType(type);
     }
+}
+
+std::string SymbolTable::getType(std::string lexicalValue) {
+    if (_entries.find(lexicalValue) != _entries.end()) {
+        return _entries[lexicalValue].getType();
+    }
+
+    throw "reference to " + lexicalValue + " is undefined";
 }
