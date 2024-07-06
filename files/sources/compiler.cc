@@ -29,12 +29,7 @@ int Compiler::compile(std::string file)
         return -1;
     }
 
-    // Printing tokens
-    for (auto token : tokens){
-        std::cout << token->value() << std::endl;
-    }
-
-    /* // Parsing the file (tokens)
+    // Parsing the file (tokens)
     try
     {
         _parser->parse(tokens);
@@ -43,7 +38,7 @@ int Compiler::compile(std::string file)
     {
         std::cerr << "\033[1mconvcc: " << e.what() << '\n';
         return -1;
-    } */
+    }
 
     return 0;
 }
