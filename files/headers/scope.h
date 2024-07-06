@@ -26,7 +26,7 @@ public:
   void execute()
   {
     Item firstChild = parent->children.at(parent->children.size()-1);
-    SymbolTable* symbolTableCopy = symbolTable->copy();
+    SymbolTable* symbolTableCopy = symbolTable->newChildSymbolTable();
     firstChild.nonTerminal->symbolTable = symbolTableCopy;
   }
 };
