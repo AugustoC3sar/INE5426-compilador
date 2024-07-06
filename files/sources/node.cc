@@ -24,15 +24,19 @@ bool isFloat(std::string str) {
 
 std::string Node::getExpressionType(SymbolTable *symbolTable) {
     if (_left == nullptr && _right == nullptr) {
-        if (isInteger(_lexicalValue)) {
-            return "int";
+        std::string type;
+        try {
+            type = symbolTable->getType(_lexicalValue);
+        } catch (...) {
+            if (isInteger(_lexicalValue)) {
+                type = "int";
+            }
+
+            if (isFloat(_lexicalValue)) {
+                type = "float";
+            }   
         }
 
-        if (isFloat(_lexicalValue)) {
-            return "float";
-        }
-
-        std::string type = symbolTable->getType(_lexicalValue);
         return type;
     }
     

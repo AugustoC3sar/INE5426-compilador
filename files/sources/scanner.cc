@@ -106,8 +106,15 @@ bool Scanner::isAtribuition(std::string token)
     return (token == "=");
 }
 
-bool Scanner::shouldBreakToken(std::string token)
+bool Scanner::shouldBreakToken(std::string token, std::string currentToken)
 {
+    if (currentToken.size() > 0) {
+        bool currentTokenDefinesAString = currentToken.at(0) == '"';
+        if (currentTokenDefinesAString) {
+            return currentToken.size() > 1 && currentToken.at(currentToken.size() - 1) == '"';
+        }
+    }
+
     return (isRelop(token) ||
            isPunctuation(token) ||
            isOperator(token) ||
@@ -154,6 +161,12 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
         // For each character in file
         char ch = file[i];
         ++column;
+
+        bool currentTokenDefinesAString = false;
+        if (currentToken.size() > 0) {
+            currentTokenDefinesAString = currentToken.at(0) == '"';
+        }
+
         // Case char is new line character
         if (ch == '\n') {
             // If token is not empty
@@ -184,9 +197,10 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
         // Case char is white space
         } else if (ch == ' ' || ch == '\t') {
             // If token is not empty
-            if (!currentToken.empty()) {
+            if (!currentToken.empty() && !currentTokenDefinesAString) {
                 // Gets token
                 Token* token = _getToken(currentToken);
+
                 // If no token returned, throw error
                 if (token == nullptr){
                     std::string error = "\033[31mUnmatched token:\033[0m '" + currentToken + "' at line " + std::to_string(line) + " column " + std::to_string(column-currentToken.length());
@@ -205,8 +219,12 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
                 // Clear current token
                 currentToken = "";
             }
+
+            if (currentTokenDefinesAString) {
+                currentToken += ch;
+            }
         // Case should break token
-        } else if (shouldBreakToken(std::string("")+ch)) {
+        } else if (shouldBreakToken(std::string("")+ch, currentToken)) {
             // If token is not empty
             if (!currentToken.empty()) {
                 // Gets token
@@ -233,7 +251,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
             currentToken += ch;
 
             // Case char is relop
-            if (isRelop(currentToken)){
+            if (isRelop(currentToken) || currentToken == "="){
                 // Look Ahead
                 char look_ahead = file[i+1];
                 // If next char is '='
@@ -253,7 +271,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
         // Case char is alfanum
         } else {
             // Case current token is not alfanum
-            if (shouldBreakToken(currentToken)) {
+            if (shouldBreakToken(currentToken, currentToken)) {
                 // Gets token
                 Token* token = _getToken(currentToken);
                 // If no token returned, throw error

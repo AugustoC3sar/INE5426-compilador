@@ -44,7 +44,7 @@ class Scanner
         bool isOperator(std::string token);
         bool isSignal(std::string token);
         bool isAtribuition(std::string token);
-        bool shouldBreakToken(std::string token);
+        bool shouldBreakToken(std::string token, std::string currentToken);
         Token* _getToken(std::string token);
 
     public:

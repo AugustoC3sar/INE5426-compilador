@@ -45,7 +45,7 @@ Parser::Parser(SymbolTable *table)
                      {"float", 8},
                      {"string", 9},
                  }},
-        {"PARAMLIST", {{")", 11}, {"int", 10}, {"int", 10}, {"string", 10}}},
+        {"PARAMLIST", {{")", 11}, {"int", 10}, {"float", 10}, {"string", 10}}},
         {"PARAMLIST'", {
                            {")", 13},
                            {",", 12},
@@ -83,7 +83,7 @@ Parser::Parser(SymbolTable *table)
                               {"(", 33},
                           }},
         {"PARAMLISTCALL'", {
-                               {"(", 35},
+                               {")", 35},
                                {",", 34},
                            }},
         {"PRINTSTAT", {{"print", 36}}},
@@ -108,7 +108,7 @@ Parser::Parser(SymbolTable *table)
         {"TERM_REC", {{")", 64}, {"]", 64}, {";", 64}, {"<", 64}, {">", 64}, {"<=", 64}, {">=", 64}, {"==", 64}, {"!=", 64}, {"+", 63}, {"-", 63}}},
         {"TERM_REC'", {{")", 65}, {"]", 65}, {";", 65}, {"<", 65}, {">", 65}, {"<=", 65}, {">=", 65}, {"==", 65}, {"!=", 65}, {"+", 65}, {"-", 65}}},
         {"OPERATOR", {{"*", 66}, {"/", 67}, {"%", 68}}},
-        {"TERM", {{"ident", 69}, {"{", 69}, {"int_constant", 69}, {"+", 69}, {"-", 69}, {"float_constant", 69}, {"string_constant", 69}, {"null", 69}}},
+        {"TERM", {{"(", 69}, {"ident", 69}, {"{", 69}, {"int_constant", 69}, {"+", 69}, {"-", 69}, {"float_constant", 69}, {"string_constant", 69}, {"null", 69}}},
         {"TERM'", {{")", 70}, {";", 70}, {"]", 70}, {"<", 70}, {">", 70}, {"<=", 70}, {">=", 70}, {"==", 70}, {"!=", 70}, {"+", 70}, {"-", 70}, {"*", 70}, {"/", 70}, {"%", 70}}},
         {"UNARYEXPR_REC", {{")", 72}, {";", 72}, {"]", 72}, {"<", 72}, {">", 72}, {"<=", 72}, {">=", 72}, {"==", 72}, {"!=", 72}, {"+", 72}, {"-", 72}, {"*", 71}, {"/", 71}, {"%", 71}}},
         {"UNARYEXPR_REC'", {{")", 73}, {";", 73}, {"]", 73}, {"<", 73}, {">", 73}, {"<=", 73}, {">=", 73}, {"==", 73}, {"!=", 73}, {"+", 73}, {"-", 73}, {"*", 73}, {"/", 73}, {"%", 73}}},
@@ -220,7 +220,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Funccall(parent)};
     case 31:
         // FUNCCALL -> call ident(PARAMLISTCALL)
-        return {Call(parent), Ident("", parent), OpenParentheses(parent), Paramlistcall(parent), CloseBrackets(parent)};
+        return {Call(parent), Ident("", parent), OpenParentheses(parent), Paramlistcall(parent), CloseParentheses(parent)};
     case 32:
         // PARAMLISTCALL -> ident PARAMLISTCALL'
         return {Ident("", parent), Paramlistcalla(parent)};
@@ -240,11 +240,11 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         // READSTAT -> read LVALUE
         return {Read(parent), Lvalue(parent)};
     case 38:
-        // RETURNSTAT -> return ident
-        return {Return(parent), Ident("", parent)};
+        // RETURNSTAT -> return
+        return {Return(parent)};
     case 39:
         // IFSTAT -> if (EXPRESSION) { STATEMENT } ELSESTAT
-        return {If(parent), OpenParentheses(parent), Expression(parent), CloseParentheses(parent), OpenBrackets(parent), Statement(parent), CloseBrackets(parent), Elsestat(parent)};
+        return {If(parent), OpenParentheses(parent), Expression(parent), CloseParentheses(parent), OpenBrackets(parent), Statelist(parent), CloseBrackets(parent), Elsestat(parent)};
     case 40:
         // ELSESTAT -> else { STATEMENT }
         return {Else(parent), OpenBrackets(parent), Statement(parent), CloseBrackets(parent)};
