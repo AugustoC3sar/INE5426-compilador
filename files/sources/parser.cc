@@ -3,6 +3,7 @@
 #include "nonTerminals.h"
 #include "parser.h"
 #include "expa.h"
+#include "scope.h"
 
 #include <iostream>
 
@@ -135,7 +136,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Epsilon(parent)};
     case 3:
         // FUNCLIST -> FUNCDEF FUNCLIST'
-        return {Funcdef(parent), Funclist(parent)};
+        return {NewScope(parent, _symbolTable), Funcdef(parent), Funclist(parent)};
     case 4:
         // FUNCLIST' -> FUNCLIST
         return {Funclist(parent)};
@@ -186,7 +187,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Ifstat(parent)};
     case 20:
         // STATEMENT -> FORSTAT
-        return {Forstat(parent)};
+        return {NewScope(parent, _symbolTable), Forstat(parent)};
     case 21:
         // STATEMENT -> {STATELIST}
         return {OpenBrackets(parent), Statelist(parent), CloseBrackets(parent)};
@@ -419,6 +420,9 @@ void Parser::parse(std::vector<Token *> tokens)
         {
             tokenValue = "ident";
         }
+
+        std::cout << "CURRENT TOKEN " << tokenValue << std::endl;
+        std::cout << "TOP OF STACK " << topOfStack.value() << std::endl;
 
         // Verifies if there is an entry in parse table for the top of stack as the head of production.
         bool containsEntryInParseTable = !(_parseTable.find(topOfStack.value()) == _parseTable.end());

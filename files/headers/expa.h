@@ -3,8 +3,6 @@
 
 #include <parser.h>
 
-#include <iostream>
-
 class AssignTreeSemanticAction : public SemanticAction
 {
 public:
@@ -295,7 +293,7 @@ public:
 
   CreateInheritedSignalNodeSemanticAction(NonTerminal *p)
   {
-    name = "CREATE_TERM_SIGNAL_NODE";
+    name = "CREATE_INHERITED_SIGNAL_NODE";
     parent = p;
   }
 
@@ -309,7 +307,7 @@ public:
     Item signal = parent->children.at(0);
     Item term = parent->children.at(1);
     Item termrec = parent->children.at(3);
-    termrec.nonTerminal->leftNode = new Node(signal.terminal->lexicalValue, parent->leftNode, term.nonTerminal->node);
+    termrec.nonTerminal->leftNode = new Node(signal.nonTerminal->operationValue, parent->leftNode, term.nonTerminal->node);
   }
 };
 

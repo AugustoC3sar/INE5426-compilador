@@ -47,3 +47,8 @@ std::string SymbolTable::getType(std::string lexicalValue) {
 
     throw "reference to " + lexicalValue + " is undefined";
 }
+
+SymbolTable SymbolTable::copy() {
+    SymbolTable symbolTableCopy = *this;
+    return symbolTableCopy;
+}

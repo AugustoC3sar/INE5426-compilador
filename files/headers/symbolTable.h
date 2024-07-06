@@ -39,6 +39,7 @@ public:
     void addToken(Token* token);
     void addTokenType(std::string token, std::string type);
     std::string getType(std::string lexicalValue);
+    SymbolTable copy();
 };
 
 #endif

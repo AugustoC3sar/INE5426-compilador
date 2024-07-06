@@ -28,6 +28,8 @@ public:
   Node* leftNode;
   std::string operationValue;
 
+  SymbolTable *symbolTable = nullptr;
+
   NonTerminal(std::string n, NonTerminal *p) {
     name = n;
     parent = p;
