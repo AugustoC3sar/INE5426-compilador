@@ -69,6 +69,7 @@ class SymbolTable
          * @param type: semantic type of the token
          */
         void addTokenType(std::string token, std::string type);
+
 };
 
 #endif

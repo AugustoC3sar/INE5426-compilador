@@ -2,10 +2,11 @@
 #include "terminals.h"
 #include "nonTerminals.h"
 #include "parser.h"
+#include "expa.h"
 
 #include <iostream>
 
-Parser::Parser(SymbolTable* table)
+Parser::Parser(SymbolTable *table)
 {
     _symbolTable = table;
 
@@ -119,181 +120,270 @@ Parser::Parser(SymbolTable* table)
     };
 }
 
-std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent) {
-    switch (production) {
+std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
+{
+    switch (production)
+    {
     case 0:
+        // PROGRAM -> STATEMENT
         return {Statement(parent)};
     case 1:
+        // PROGRAM -> FUNCLIST
         return {Funclist(parent)};
     case 2:
+        // PROGRAM -> &
         return {Epsilon(parent)};
     case 3:
+        // FUNCLIST -> FUNCDEF FUNCLIST'
         return {Funcdef(parent), Funclist(parent)};
     case 4:
+        // FUNCLIST' -> FUNCLIST
         return {Funclist(parent)};
     case 5:
+        // FUNCLIST' -> &
         return {Epsilon(parent)};
     case 6:
+        // FUNCDEF -> def ident(PARAMLIST) {STATELIST}
         return {Def(parent), Ident("", parent), OpenParentheses(parent), Paramlist(parent), CloseParentheses(parent), OpenBrackets(parent), Statelist(parent), CloseBrackets(parent)};
     case 7:
+        // TYPE -> int { TYPE.type = int }
         return {Int(parent), SaveType("int", parent)};
     case 8:
+        // TYPE -> float { TYPE.float = float }
         return {Float(parent), SaveType("float", parent)};
     case 9:
+        // TYPE -> string { TYPE.string = string }
         return {String(parent), SaveType("string", parent)};
     case 10:
+        // PARAMLIST -> TYPE ident { symbolTable->addType(ident.lexicalValue, TYPE.type) } PARAMLIST'
         return {Type(parent), Ident("", parent), AddType(parent, _symbolTable), Paramlista(parent)};
     case 11:
+        // PARAMLIST -> &
         return {Epsilon(parent)};
     case 12:
+        // PARAMLIST' -> , PARAMLIST
         return {Comma(parent), Paramlist(parent)};
     case 13:
+        // PARAMLIST' -> &
         return {Epsilon(parent)};
     case 14:
+        // STATEMENT -> VARDECL;
         return {Vardecl(parent), Semicolon(parent)};
     case 15:
+        // STATEMENT -> ATRIBSTAT;
         return {Atribstat(parent), Semicolon(parent)};
     case 16:
+        // STATEMENT -> PRINTSTAT;
         return {Printstat(parent), Semicolon(parent)};
     case 17:
+        // STATEMENT -> READSTAT;
         return {ReadStat(parent), Semicolon(parent)};
     case 18:
+        // STATEMENT -> RETURNSTAT;
         return {ReturnStat(parent), Semicolon(parent)};
     case 19:
+        // STATEMENT -> IFSTAT
         return {Ifstat(parent)};
     case 20:
+        // STATEMENT -> FORSTAT
         return {Forstat(parent)};
     case 21:
+        // STATEMENT -> {STATELIST}
         return {OpenBrackets(parent), Statelist(parent), CloseBrackets(parent)};
     case 22:
+        // STATEMENT -> break;
         return {Break(parent), Semicolon(parent)};
     case 23:
+        // STATEMENT -> ;
         return {Semicolon(parent)};
     case 24:
-        return {Type(parent), Ident("", parent), InheritedType(parent), Arrayvardecl(parent),  SynthesizedType(parent), AddType(parent, _symbolTable)};
+        // VARDECL -> TYPE ident { ARRAYVARDECL.inhType = TYPE.type } ARRAYVARDECL { VARDECL.type = ARRAYVARDECL.type } { symbolTable->addType(ident.lexicalValue, VARDECL.type) }
+        return {Type(parent), Ident("", parent), InheritedType(parent), Arrayvardecl(parent), SynthesizedType(parent), AddType(parent, _symbolTable)};
     case 25:
+        // ARRAYVARDECL ->[int_constant] ARRAYVARDECL
         return {OpenSquareBrackets(parent), IntConstant("", parent), CloseSquareBrackets(parent), ArrayInheritedType(parent), Arrayvardecl(parent), ArraySynthesizedType(parent)};
     case 26:
+        // ARRAYVARDECL -> & { ARRAYVARDECL.type = ARRAYVARDECL.inhType }
         return {Epsilon(parent), ArraySynthesizeType(parent)};
     case 27:
+        // ATRIBSTAT -> LVALUE = ATRIBSTAT'
         return {Lvalue(parent), Equal(parent), Atribstata(parent)};
     case 28:
-        return {Expression(parent)};
+        // ATRIBSTAT' -> EXPRESSION { ATRIBSTAT'.node = EXPRESSION.node }
+        return {Expression(parent), AssignTree(parent, _symbolTable)};
     case 29:
+        // ATRIBSTAT' -> ALLOCEXPRESSION
         return {Allocexpression(parent)};
     case 30:
+        // ATRIBSTAT' -> FUNCCALL
         return {Funccall(parent)};
     case 31:
+        // FUNCCALL -> call ident(PARAMLISTCALL)
         return {Call(parent), Ident("", parent), OpenParentheses(parent), Paramlistcall(parent), CloseBrackets(parent)};
     case 32:
+        // PARAMLISTCALL -> ident PARAMLISTCALL'
         return {Ident("", parent), Paramlistcalla(parent)};
     case 33:
+        // PARAMLISTCALL -> &
         return {Epsilon(parent)};
     case 34:
+        // PARAMLISTCALL' -> , PARAMLISTCALL
         return {Comma(parent), Paramlistcall(parent)};
     case 35:
+        // PARAMLISTCALL' -> &
         return {Epsilon(parent)};
     case 36:
+        // PRINTSTAT -> print EXPRESSION
         return {Print(parent), Expression(parent)};
     case 37:
+        // READSTAT -> read LVALUE
         return {Read(parent), Lvalue(parent)};
     case 38:
+        // RETURNSTAT -> return ident
         return {Return(parent), Ident("", parent)};
     case 39:
+        // IFSTAT -> if (EXPRESSION) { STATEMENT } ELSESTAT
         return {If(parent), OpenParentheses(parent), Expression(parent), CloseParentheses(parent), OpenBrackets(parent), Statement(parent), CloseBrackets(parent), Elsestat(parent)};
     case 40:
+        // ELSESTAT -> else { STATEMENT }
         return {Else(parent), OpenBrackets(parent), Statement(parent), CloseBrackets(parent)};
     case 41:
+        // ELSESTAT -> &
         return {Epsilon(parent)};
     case 42:
+        // FORSTAT -> for(ATRIBSTAT; EXPRESSION; ATRIBSTAT) STATEMENT
         return {For(parent), OpenParentheses(parent), Atribstat(parent), Semicolon(parent), Expression(parent), Semicolon(parent), Atribstat(parent), CloseParentheses(parent), Statement(parent)};
     case 43:
+        // STATELIST -> STATEMENT STATELIST'
         return {Statement(parent), Statelista(parent)};
     case 44:
+        // STATELIST' -> STATELIST
         return {Statelist(parent)};
     case 45:
+        // STATELIST' -> &
         return {Epsilon(parent)};
     case 46:
+        // ALLOCEXPRESSION -> new TYPE NUM_LIST
         return {New(parent), Type(parent), Numlist(parent)};
     case 47:
+        // NUM_LIST -> [NUMEXPRESSION] NUM_LIST'
         return {OpenSquareBrackets(parent), Numexpression(parent), CloseSquareBrackets(parent), Numlista(parent)};
     case 48:
+        // NUM_LIST' -> NUM_LIST
         return {Numlist(parent)};
     case 49:
+        // NUM_LIST' -> &
         return {Epsilon(parent)};
     case 50:
+        // RELOP -> <
         return {LessThan(parent)};
     case 51:
+        // RELOP -> >
         return {GreaterThan(parent)};
     case 52:
+        // RELOP -> <=
         return {LessOrEquals(parent)};
     case 53:
+        // RELOP -> >=
         return {GreaterOrEquals(parent)};
     case 54:
+        // RELOP -> ==
         return {Equals(parent)};
     case 55:
+        // RELOP -> !=
         return {Different(parent)};
     case 56:
-        return {Numexpression(parent), Expressiona(parent)};
+        // EXPRESSION -> NUMEXPRESSION { EXPRESSION.leftNode = NUMEXPRESSION.node } EXPRESSION' { EXPRESSION.node = EXPRESSION'.node }
+        return {Numexpression(parent), InheritNumexpressionNode(parent), Expressiona(parent), ReturnNode(parent)};
     case 57:
+        // EXPRESSION' -> RELOP NUMEXPRESSION
         return {Relop(parent), Numexpression(parent)};
     case 58:
-        return {Epsilon(parent)};
+        // EXPRESSION' -> & { EXPRESSION'.node = EXPRESSION'.leftNode}
+        return {Epsilon(parent), SyntehsizeNode(parent)};
     case 59:
-        return {Positive(parent)};
+        // SIGNAL -> + { SIGNAL.value = + }
+        return {Positive(parent), ReturnOperationValue(parent)};
     case 60:
-        return {Minus(parent)};
+        // SIGNAL -> - { SIGNAL.value = - }
+        return {Minus(parent), ReturnOperationValue(parent)};
     case 61:
-        return {Term(parent), Numexpressiona(parent)};
+        // NUMEXPRESSION -> TERM { NUMEXPRESSION'.leftNode = TERM.node } NUMEXPRESSION' { NUMEXPRESSION.node = NUMEXPRESSION'.node }
+        return {Term(parent), InheritTermNode(parent), Numexpressiona(parent), ReturnNode(parent)};
     case 62:
-        return {Termrec(parent)};
+        // NUMEXPRESSION' -> { TERM_REC.leftNode = NUMEXPRESSION'.leftNode } TERM_REC { NUMEXPRESSION'.node = TERM_REC.node }
+        return {InheritLeftNodeToFirstChild(parent), Termrec(parent), ReturnNode(parent)};
     case 63:
-        return {Signal(parent), Term(parent), Termreca(parent)};
+        // TERM_REC -> SIGNAL TERM { TERM_REC'.leftNode = new Node(SIGNAL.value, TERM_REC.leftNode, TERM.node) } TERM_REC' { TERM_REC.node = TERM_REC'.node }
+        return {Signal(parent), Term(parent), CreateInheritedSignalNode(parent), Termreca(parent), ReturnNode(parent)};
     case 64:
-        return {Epsilon(parent)};
+        // TERM_REC -> & { TERM_REC.node = TERM_REC.leftNode }
+        return {Epsilon(parent), SyntehsizeNode(parent)};
     case 65:
-        return {Termrec(parent)};
+        // TERM_REC' -> { TERM_REC.leftNode = TERM_REC'.leftNode } TERM_REC { TERM_REC'.node = TERM_REC.node }
+        return { InheritLeftNodeToFirstChild(parent), Termrec(parent), ReturnNode(parent)};
     case 66:
-        return {Times(parent)};
+        // OPERATOR -> * { OPERATOR.value = * }
+        return {Times(parent), ReturnOperationValue(parent)};
     case 67:
-        return {Divide(parent)};
+        // OPERATOR -> / { OPERATOR.value = / }
+        return {Divide(parent), ReturnOperationValue(parent)};
     case 68:
-        return {Remainder(parent)};
+        // OPERATOR -> % { OPERATOR.value = % }
+        return {Remainder(parent), ReturnOperationValue(parent)};
     case 69:
-        return {Unaryexpr(parent), Terma(parent)};
+        // TERM -> UNARYEXPR { TERM'.leftNode = UNARYEXPR.node } TERM' { TERM.node = TERM'.node }
+        return {Unaryexpr(parent),  InheritUnaryexprNode(parent), Terma(parent), ReturnNode(parent)};
     case 70:
-        return {Unaryexprrec(parent)};
+        // TERM' -> { UNARYEXPR_REC.leftNode = TERM'.leftNode } UNARYEXPR_REC { TERM'.node = UNARYEXPR_REC.node }
+        return {InheritLeftNodeToFirstChild(parent), Unaryexprrec(parent), ReturnNode(parent)};
     case 71:
-        return {Operator(parent), Unaryexpr(parent), Unaryexprreca(parent)};
+        // UNARYEXPR_REC -> OPERATOR UNARYEXPR { UNARYEXPR_REC'.leftNode = new Node(OPERATOR.value, UNARYEXPR_REC.leftNode, UNARYEXPR.node) } UNARYEXPR_REC' { UNARYEXPR_REC.node = UNARYEXPR_REC'.node }
+        return {Operator(parent),  Unaryexpr(parent), CreateUnaryexprRecInheritedNode(parent), Unaryexprreca(parent), ReturnNode(parent)};
     case 72:
-        return {Epsilon(parent)};
+        // UNARYEXPR_REC -> & { UNARYEXPR_REC.node = UNARYEXPR_REC.leftNode }
+        return {Epsilon(parent), SyntehsizeNode(parent)};
     case 73:
-        return {Unaryexprrec(parent)};
+        // UNARYEXPR_REC' -> { UNARYEXPR_REC.leftNode = UNARYEXPR_REC'.leftNode } UNARYEXPR_REC { UNARYEXPR_REC'.node = UNARYEXPR_REC.node }
+        return {InheritLeftNodeToFirstChild(parent), Unaryexprrec(parent), ReturnNode(parent)};
     case 74:
-        return {Signal(parent), Factor(parent)};
+        // UNARYEXPR -> SIGNAL FACTOR { UNARYEXPR.node = new Node(SIGNAL.operationValue, UNARYEXPR.leftNode, FACTOR.node) }
+        return {Signal(parent), Factor(parent), CreateOperatorNode(parent)};
     case 75:
-        return {Factor(parent)};
+        // UNARYEXPR -> { FACTOR.leftNode = UNARYEXPR.leftNode } FACTOR { UNARYEXPR.node = FACTOR.node }
+        return {InheritLeftNodeToFirstChild(parent), Factor(parent), ReturnNode(parent)};
     case 76:
-        return {IntConstant("", parent)};
+        // FACTOR -> int_constant { FACTOR.node = new Node(int_constant, NULL, NULL) }
+        return {IntConstant("", parent), CreateLeafNode(parent)};
     case 77:
-        return {FloatConstant("", parent)};
+        // FACTOR -> float_constant { FACTOR.node = new Node(float_constant, NULL, NULL) 
+        return {FloatConstant("", parent), CreateLeafNode(parent)};
     case 78:
-        return {StringConstant("", parent)};
+        // FACTOR -> string_constant { FACTOR.node = new Node(string_constant, NULL, NULL) }
+        return {StringConstant("", parent), CreateLeafNode(parent)};
     case 79:
-        return {Null(parent)};
+        // FACTOR -> null { FACTOR.node = new Node(null, NULL, NULL) }
+        return {Null(parent), CreateLeafNode(parent)};
     case 80:
-        return {Lvalue(parent)};
+        // FACTOR -> { LVALUE.leftNode = FACTOR.leftNode } LVALUE { FACTOR.node = LVALUE.node }
+        return {InheritLeftNodeToFirstChild(parent), Lvalue(parent), ReturnNode(parent)};
     case 81:
-        return {OpenParentheses(parent), Numexpression(parent), CloseParentheses(parent)};
+        // FACTOR -> (NUMEXPRESSION) { FACTOR.node = NUMEXPRESSION.node }
+        return {OpenParentheses(parent), Numexpression(parent), CloseParentheses(parent), SynthesizeNumexpressionNode(parent)};
     case 82:
-        return {Ident("", parent), Lvaluea(parent)};
+        // LVALUE -> ident LVALUE' { FACTOR.node = new Node(ident, NULL, NULL) }
+        return {Ident("", parent), Lvaluea(parent), CreateLeafNode(parent)};
     case 83:
+        // LVALUE' -> NUMEXPRESSION_REC
         return {Numexpressionrec(parent)};
     case 84:
+        // NUMEXPRESSION_REC -> [NUMEXPRESSION] NUMEXPRESSION_REC'
         return {OpenSquareBrackets(parent), Numexpression(parent), CloseSquareBrackets(parent), Numexpressionreca(parent)};
     case 85:
+        // NUMEXPRESSION_REC -> &
         return {Epsilon(parent)};
     case 86:
+        // NUMEXPRESSION_REC' -> NUMEXPRESSION_REC
         return {Numexpressionrec(parent)};
     default:
         std::string error = "\033[31merror:\033[0m unrecognized production";
@@ -301,44 +391,56 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
     }
 };
 
-void Parser::parse(std::vector<Token*> tokens) {
+void Parser::parse(std::vector<Token *> tokens)
+{
     long unsigned int i = 0;
-    while (i < tokens.size()) {
-        Token* token = tokens.at(i); 
+    while (i < tokens.size())
+    {
+        Token *token = tokens.at(i);
 
         // Retrieve top of stack.
-        Item topOfStack = _stack.at(_stack.size()-1);
-        
+        Item topOfStack = _stack.at(_stack.size() - 1);
+
         // Converts enums to a string value to be used in lexical values cases.
         std::string tokenValue = token->value();
-        if (token->type() == INT_CONSTANT) {
+        if (token->type() == INT_CONSTANT)
+        {
             tokenValue = "int_constant";
-        } else if (token->type() == FLOAT_CONSTANT) {
+        }
+        else if (token->type() == FLOAT_CONSTANT)
+        {
             tokenValue = "float_constant";
-        } else if (token->type() == STRING_CONSTANT) {
+        }
+        else if (token->type() == STRING_CONSTANT)
+        {
             tokenValue = "string_constant";
-        } else if (token->type() == IDENT) {
+        }
+        else if (token->type() == IDENT)
+        {
             tokenValue = "ident";
         }
 
-        std::cout << "CURRENT TOKEN " << token->value() << std::endl;
-        std::cout << "TOP OF STACK " << topOfStack.value() << std::endl;
-
         // Verifies if there is an entry in parse table for the top of stack as the head of production.
         bool containsEntryInParseTable = !(_parseTable.find(topOfStack.value()) == _parseTable.end());
-        if (topOfStack.type == SEMANTIC_ACTION) {
+        if (topOfStack.type == SEMANTIC_ACTION)
+        {
             // Checks if the syntax item is a semantic action before executing the algorithm.
             topOfStack.semanticAction->execute();
             _stack.pop_back();
-        } else if (tokenValue == topOfStack.value()) {
+        }
+        else if (tokenValue == topOfStack.value())
+        {
             // If the value of the current token is equal to the value of the top of stack, we can remove the token from
             // the stack and retrieve the next token in the sequence. The next token advances in the for loop.
-            topOfStack.terminal->lexicalValue = token->value(); 
+            topOfStack.terminal->lexicalValue = token->value();
             _stack.pop_back();
             i++;
-        } else if (topOfStack.value() == "&") {
+        }
+        else if (topOfStack.value() == "&")
+        {
             // If the top of stack is epsilon we just pop the top and use the same token.
             _stack.pop_back();
+
         } else if (!containsEntryInParseTable) {
             std::string error = "\033[31merror:\033[0m stack top '" + topOfStack.value() + "' could not be found in parsing table";
             throw std::logic_error(error);
@@ -350,6 +452,7 @@ void Parser::parse(std::vector<Token*> tokens) {
             // the top of the stack using the parse table.
             std::unordered_map<std::string, int> productionsParseRow = _parseTable.at(topOfStack.value());
             bool containsProductionForToken = !(productionsParseRow.find(tokenValue) == productionsParseRow.end());
+
             if (!containsProductionForToken) {
                 std::string error = "Token '" + tokenValue +  "' have no production for stack top '" + topOfStack.value() +"'";
                 throw std::logic_error(error);
@@ -361,7 +464,8 @@ void Parser::parse(std::vector<Token*> tokens) {
             NonTerminal *head = topOfStack.nonTerminal;
             std::vector<Item> tail = generateNewTokens(production, head);
             head->children = tail;
-            for (int i = tail.size() - 1; i >= 0; i--) {
+            for (int i = tail.size() - 1; i >= 0; i--)
+            {
                 // Add syntax items in reverse order into the stack
                 Item item = tail.at(i);
                 _stack.push_back(item);
