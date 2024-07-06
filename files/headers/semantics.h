@@ -10,12 +10,10 @@ class AddTypeSemanticAction : public SemanticAction {
 public:
   std::string name;
   NonTerminal *parent;
-  SymbolTable *symbolTable;
-  
-  AddTypeSemanticAction(NonTerminal *p, SymbolTable *st) {
+
+  AddTypeSemanticAction(NonTerminal *p) {
     name = "ADD_TYPE";
     parent = p;
-    symbolTable = st;
   }
 
   std::string value() override {
@@ -25,7 +23,7 @@ public:
   void execute() override {
     Item type = parent->children.at(0);
     Item ident = parent->children.at(1);
-    symbolTable->addTokenType(ident.terminal->lexicalValue, type.nonTerminal->type);
+    parent->symbolTable->addTokenType(ident.terminal->lexicalValue, type.nonTerminal->type);
   }
 };
 
@@ -205,8 +203,8 @@ public:
 
 class AddType : public Item {
 public:
-  AddType(NonTerminal *p, SymbolTable *st) {
-    semanticAction = new AddTypeSemanticAction(p, st);
+  AddType(NonTerminal *p) {
+    semanticAction = new AddTypeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };

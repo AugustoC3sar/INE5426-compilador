@@ -3,6 +3,7 @@
 #include "nonTerminals.h"
 #include "parser.h"
 #include "expa.h"
+#include "scope.h"
 
 #include <iostream>
 
@@ -10,7 +11,7 @@ Parser::Parser(SymbolTable *table)
 {
     _symbolTable = table;
 
-    _stack = {DollarSign(), Program(NULL)};
+    _stack = {DollarSign(), Program(NULL, table)};
 
     _parseTable = {
         {"PROGRAM", {
@@ -107,7 +108,7 @@ Parser::Parser(SymbolTable *table)
         {"TERM_REC", {{")", 64}, {"]", 64}, {";", 64}, {"<", 64}, {">", 64}, {"<=", 64}, {">=", 64}, {"==", 64}, {"!=", 64}, {"+", 63}, {"-", 63}}},
         {"TERM_REC'", {{")", 65}, {"]", 65}, {";", 65}, {"<", 65}, {">", 65}, {"<=", 65}, {">=", 65}, {"==", 65}, {"!=", 65}, {"+", 65}, {"-", 65}}},
         {"OPERATOR", {{"*", 66}, {"/", 67}, {"%", 68}}},
-        {"TERM", {{"ident", 69}, {"{", 69}, {"int_constant", 69}, {"+", 69}, {"-", 69}, {"int_constant", 69}, {"string_constant", 69}, {"null", 69}}},
+        {"TERM", {{"ident", 69}, {"{", 69}, {"int_constant", 69}, {"+", 69}, {"-", 69}, {"float_constant", 69}, {"string_constant", 69}, {"null", 69}}},
         {"TERM'", {{")", 70}, {";", 70}, {"]", 70}, {"<", 70}, {">", 70}, {"<=", 70}, {">=", 70}, {"==", 70}, {"!=", 70}, {"+", 70}, {"-", 70}, {"*", 70}, {"/", 70}, {"%", 70}}},
         {"UNARYEXPR_REC", {{")", 72}, {";", 72}, {"]", 72}, {"<", 72}, {">", 72}, {"<=", 72}, {">=", 72}, {"==", 72}, {"!=", 72}, {"+", 72}, {"-", 72}, {"*", 71}, {"/", 71}, {"%", 71}}},
         {"UNARYEXPR_REC'", {{")", 73}, {";", 73}, {"]", 73}, {"<", 73}, {">", 73}, {"<=", 73}, {">=", 73}, {"==", 73}, {"!=", 73}, {"+", 73}, {"-", 73}, {"*", 73}, {"/", 73}, {"%", 73}}},
@@ -135,7 +136,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Epsilon(parent)};
     case 3:
         // FUNCLIST -> FUNCDEF FUNCLIST'
-        return {Funcdef(parent), Funclist(parent)};
+        return {NewScope(parent, _symbolTable), Funcdef(parent), Funclist(parent)};
     case 4:
         // FUNCLIST' -> FUNCLIST
         return {Funclist(parent)};
@@ -156,7 +157,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {String(parent), SaveType("string", parent)};
     case 10:
         // PARAMLIST -> TYPE ident { symbolTable->addType(ident.lexicalValue, TYPE.type) } PARAMLIST'
-        return {Type(parent), Ident("", parent), AddType(parent, _symbolTable), Paramlista(parent)};
+        return {Type(parent), Ident("", parent), AddType(parent), Paramlista(parent)};
     case 11:
         // PARAMLIST -> &
         return {Epsilon(parent)};
@@ -198,7 +199,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Semicolon(parent)};
     case 24:
         // VARDECL -> TYPE ident { ARRAYVARDECL.inhType = TYPE.type } ARRAYVARDECL { VARDECL.type = ARRAYVARDECL.type } { symbolTable->addType(ident.lexicalValue, VARDECL.type) }
-        return {Type(parent), Ident("", parent), InheritedType(parent), Arrayvardecl(parent), SynthesizedType(parent), AddType(parent, _symbolTable)};
+        return {Type(parent), Ident("", parent), InheritedType(parent), Arrayvardecl(parent), SynthesizedType(parent), AddType(parent)};
     case 25:
         // ARRAYVARDECL ->[int_constant] ARRAYVARDECL
         return {OpenSquareBrackets(parent), IntConstant("", parent), CloseSquareBrackets(parent), ArrayInheritedType(parent), Arrayvardecl(parent), ArraySynthesizedType(parent)};
@@ -210,7 +211,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Lvalue(parent), Equal(parent), Atribstata(parent)};
     case 28:
         // ATRIBSTAT' -> EXPRESSION { ATRIBSTAT'.node = EXPRESSION.node }
-        return {Expression(parent), AssignTree(parent, _symbolTable)};
+        return {Expression(parent), AssignTree(parent)};
     case 29:
         // ATRIBSTAT' -> ALLOCEXPRESSION
         return {Allocexpression(parent)};
@@ -252,7 +253,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Epsilon(parent)};
     case 42:
         // FORSTAT -> for(ATRIBSTAT; EXPRESSION; ATRIBSTAT) STATEMENT
-        return {For(parent), OpenParentheses(parent), Atribstat(parent), Semicolon(parent), Expression(parent), Semicolon(parent), Atribstat(parent), CloseParentheses(parent), Statement(parent)};
+        return {For(parent), OpenParentheses(parent), Atribstat(parent), Semicolon(parent), Expression(parent), Semicolon(parent), Atribstat(parent), CloseParentheses(parent), NewScope(parent, _symbolTable), Statement(parent)};
     case 43:
         // STATELIST -> STATEMENT STATELIST'
         return {Statement(parent), Statelista(parent)};
