@@ -25,20 +25,25 @@ int Compiler::compile(std::string file)
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << "\033[1mconvcc: " << e.what() << '\n';
         return -1;
     }
 
-    // Parsing the file (tokens)
+    // Printing tokens
+    for (auto token : tokens){
+        std::cout << token->value() << std::endl;
+    }
+
+    /* // Parsing the file (tokens)
     try
     {
         _parser->parse(tokens);
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << "\033[1mconvcc: " << e.what() << '\n';
         return -1;
-    }
+    } */
 
     return 0;
 }

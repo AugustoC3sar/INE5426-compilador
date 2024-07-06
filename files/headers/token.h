@@ -14,8 +14,8 @@ enum TokenType
     KEYWORD,
     RELOP,
     OPERATION,
-    END_OF_FILE,
-    WAITING,
+    SIGNAL,
+    ATRIBUITION
 };
 
 
@@ -26,11 +26,9 @@ class Token
          * Constructor;
          * 
          * @param type: type of the token
-         * @param line: file line of the token
-         * @param column: file column of the token
          * @param value: string value of the token
          */
-        Token(TokenType type, unsigned int line, unsigned int column, std::string value) : _type(type), _line(line), _column(column), _value(value) {};
+        Token(TokenType type, std::string value) : _type(type), _value(value) {};
 
         /**
          * Getter
@@ -42,28 +40,12 @@ class Token
         /**
          * Getter
          * 
-         * @return file line of the token
-         */
-        const unsigned int& line() { return _line; };
-
-        /**
-         * Getter
-         * 
-         * @return file column of the token
-         */
-        const unsigned int& column() { return _column; };
-
-        /**
-         * Getter
-         * 
          * @return string value of the token
          */
         const std::string& value() { return _value; };
     
     private:
         TokenType _type;
-        unsigned int _line;
-        unsigned int _column;
         std::string _value;
 };
 

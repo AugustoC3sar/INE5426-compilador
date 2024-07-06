@@ -6,8 +6,8 @@
 ## Tabela de símbolos
 
 - [X] Uma entrada por token Identificador
-- [ ] Manter uma lista de ocorrências do identificador
-- [ ] Tabela preparada para novas inserções de propriedades de Identificadores
+- [X] Manter uma lista de ocorrências do identificador
+- [X] Tabela preparada para novas inserções de propriedades de Identificadores
 
 ## Analisador Sintático
 
