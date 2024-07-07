@@ -1,0 +1,109 @@
+def sqrt(float number, float tolerance, float ret)
+{
+    if (number < 0.0)
+    {
+        print "Cannot compute the square root of a negative number.\n";
+        ret = -1.0;
+        return;
+    }
+
+    float guess;
+    guess = number / 2.0;
+    float difference;
+
+    for (difference = 1.0; difference > tolerance; difference = difference)
+    {
+        float newGuess;
+        newGuess = 0.5 * (guess + number / guess);
+        
+        if (newGuess > guess)
+        {
+            difference = newGuess - guess;
+        }
+        else
+        {
+            difference = guess - newGuess;
+        }
+        guess = newGuess;
+    }
+
+    ret = guess;
+    return;
+}
+
+def findQuadraticRoots(float a, float b, float c, float root1, float root2, int rootCount)
+{
+    float discriminant;
+    discriminant = b * b - 4.0 * a * c;
+
+    if (discriminant > 0.0)
+    {
+        float sqrtDiscriminant;
+        float tolerance;
+        tolerance = 0.00001;
+        sqrtDiscriminant = call sqrt(discriminant, tolerance, sqrtDiscriminant);
+ 
+        root1 = (-b + sqrtDiscriminant) / (2.0 * a);
+        root2 = (-b - sqrtDiscriminant) / (2.0 * a);
+        rootCount = 2;
+    }
+    
+    if (discriminant == 0.0)
+    {
+        root2 = -b / (2.0 * a);
+        root1 = root2;
+        rootCount = 1;
+    }
+    else
+    {
+        rootCount = 0;
+    }
+
+    return;
+}
+
+def main()
+{
+    float a;
+    float b;
+    float c;
+    float root1;
+    float root2;
+    int rootCount;
+
+    a = 2.0;
+    b = -30.0;
+    c = 0.0;
+
+    if (a == 0)
+    {
+        print "Coefficient 'a' cannot be zero in a quadratic equation.\n";
+        return;
+    }
+
+    rootCount = call findQuadraticRoots(a, b, c, root1, root2, rootCount);
+
+    if (rootCount == 2)
+    {
+        print "The roots are: ";
+        print root1;
+        print root2;
+        print "\n";
+        return;
+    }
+    else
+    {
+        if (rootCount == 1)
+        {
+            print "The root is: ";
+            print root1;
+            print "\n";
+        }
+        else
+        {
+            print "There are no real roots\n";
+        }
+    }
+
+    return;
+}

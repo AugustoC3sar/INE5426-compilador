@@ -10,7 +10,7 @@ A partir deste comando aplicamos a análise léxica, a análise sintática e as 
 
 Disponibilizamos quatro exemplos de códigos na linguagem para testes:
 
-* `examples/baskhara.convcc`: Cálculo de baskhara com alguns testes.
+* `examples/quadraticRoots.convcc`: Cálculo de raízes quadradas de equações de segundo grau.
 * `examples/fib.convcc`: Cálculo de sequência de fibonnaci.
 * `examples/geometry.convcc`: Alguns exemplos de cálculos de geometria com cosseno e seno.
 * `examples/sqrt.convcc`: Implementação do cálculo da raiz quadrada usando o método de Newton.
@@ -18,7 +18,7 @@ Disponibilizamos quatro exemplos de códigos na linguagem para testes:
 Para rodar cada um, respectivamente, execute os comandos:
 
 ```
-./convcc -f examples/baskhara.convcc
+./convcc -f examples/quadraticRoots.convcc
 ```
 
 ```
