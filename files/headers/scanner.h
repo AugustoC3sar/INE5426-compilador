@@ -33,6 +33,7 @@ class Scanner
         // Tokens array
         std::vector<Token*> _tokens;
 
+        // Definitions of methods to recognize token's type
         bool isIdentifier(std::string token);
         bool isFloatConstant(std::string token);
         bool isIntConstant(std::string token);
@@ -45,12 +46,35 @@ class Scanner
         bool isSignal(std::string token);
         bool isAtribuition(std::string token);
         bool shouldBreakToken(std::string token, std::string currentToken);
-        Token* _getToken(std::string token, int line, int column);
+
+        /**
+         * Abstraction of the process of token's type identification and creation of token object
+         * 
+         * @param token: token's lexical value
+         * @param line: line of token's occurrence
+         * @param column: column of token's occurrence
+         * @return token object created
+         */
+        Token* _getToken(std::string token, unsigned int line, unsigned int column);
 
     public:
-        Scanner() = default;
+        /**
+         * Constructor
+         */
+        Scanner() {};
+
+        /**
+         * Destructor
+         */
         ~Scanner();
 
+        /**
+         * Scanner main method. Iterate over file reading each character and identifying tokens.
+         * 
+         * @param file: the whole file converted to a string
+         * @param table: Symbol table from the compiler
+         * @return list of identified tokens
+         */
         std::vector<Token*> scan(std::string file, SymbolTable* table);
     };
 

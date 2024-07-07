@@ -134,8 +134,16 @@ class Parser
         std::vector<Node*> expressionTrees;
 
     public:
+        /**
+         * Constructor
+         */
         Parser(SymbolTable* table);
 
+        /**
+         * LL(1) analysis based on tokens list from scanner
+         * 
+         * @param tokens: tokens identified by scanner
+         */
         void parse(std::vector<Token*> tokens);
 
         std::vector<Item> generateNewTokens(int production, NonTerminal *parent);
