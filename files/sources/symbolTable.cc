@@ -56,7 +56,6 @@ std::string SymbolTable::getType(std::string lexicalValue) {
 
 SymbolTable* SymbolTable::newChildSymbolTable() {
     SymbolTable *symbolTable = new SymbolTable();
-    std::cout << symbolTable << std::endl;
     _children.push_back(symbolTable);
     symbolTable->_parent = this;
     return symbolTable;

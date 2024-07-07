@@ -3,6 +3,7 @@
 
 #include "token.h"
 #include "node.h"
+#include "temporaryVariable.h"
 
 #include <unordered_map>
 #include <string>
@@ -126,6 +127,7 @@ class Parser
         std::vector<Item> _stack;
         std::unordered_map<std::string, std::unordered_map<std::string, int>> _parseTable;
         SymbolTable* _symbolTable;
+        TemporaryVariable* t = new TemporaryVariable();
 
     public:
         Parser(SymbolTable* table);

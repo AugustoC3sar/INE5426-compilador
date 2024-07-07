@@ -211,7 +211,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Lvalue(parent), Equal(parent), Atribstata(parent)};
     case 28:
         // ATRIBSTAT' -> EXPRESSION { ATRIBSTAT'.node = EXPRESSION.node }
-        return {Expression(parent), AssignTree(parent)};
+        return {Expression(parent), AssignTree(parent, t)};
     case 29:
         // ATRIBSTAT' -> ALLOCEXPRESSION
         return {Allocexpression(parent)};
