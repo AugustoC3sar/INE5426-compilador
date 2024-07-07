@@ -46,12 +46,18 @@ void SymbolTable::addTokenType(std::string token, std::string type)
 }
 
 std::string SymbolTable::getType(std::string lexicalValue) {
+
     if (_entries.find(lexicalValue) != _entries.end()) {
-        return _entries[lexicalValue].getType();
+        SymbolEntry entry = _entries[lexicalValue];
+        return entry.getType();
+    }
+    
+    if (_parent == nullptr) {
+        std::string error = "\033[31merror:\033[0m reference to " + lexicalValue + " is undefined";
+        throw std::logic_error(error);
     }
 
-    std::string error = "\033[31merror:\033[0m reference to " + lexicalValue + " is undefined";
-    throw std::logic_error(error);
+    return _parent->getType(lexicalValue);
 }
 
 SymbolTable* SymbolTable::newChildSymbolTable() {

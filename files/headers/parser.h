@@ -31,6 +31,9 @@ public:
   std::string operationValue;
   std::string scope;
 
+  std::string code;
+  std::string returnT;
+
   SymbolTable *symbolTable = nullptr;
 
   NonTerminal(std::string n, NonTerminal *p) {

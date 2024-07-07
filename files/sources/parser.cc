@@ -4,6 +4,7 @@
 #include "parser.h"
 #include "expa.h"
 #include "scope.h"
+#include "codeGen.h"
 
 #include <iostream>
 
@@ -208,7 +209,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Epsilon(parent), ArraySynthesizeType(parent)};
     case 27:
         // ATRIBSTAT -> LVALUE = ATRIBSTAT'
-        return {Lvalue(parent), Equal(parent), Atribstata(parent)};
+        return {Lvalue(parent), Equal(parent), Atribstata(parent), GenerateAtribstatCode(parent)};
     case 28:
         // ATRIBSTAT' -> EXPRESSION { ATRIBSTAT'.node = EXPRESSION.node }
         return {Expression(parent), AssignTree(parent, t)};
@@ -373,16 +374,16 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {OpenParentheses(parent), Numexpression(parent), CloseParentheses(parent), SynthesizeNumexpressionNode(parent)};
     case 82:
         // LVALUE -> ident LVALUE' { FACTOR.node = new Node(ident, NULL, NULL) }
-        return {Ident("", parent), Lvaluea(parent), CreateLeafNode(parent)};
+        return {Ident("", parent),  InheritLvalueType(parent), Lvaluea(parent), CreateLeafNode(parent), SynthesizeLvalueType(parent), GenerateLvalueCode(parent, t)};
     case 83:
         // LVALUE' -> NUMEXPRESSION_REC
-        return {Numexpressionrec(parent)};
+        return {InheritLvalueLinhaType(parent), Numexpressionrec(parent), SynthesizeLvalueLinhaType(parent)};
     case 84:
         // NUMEXPRESSION_REC -> [NUMEXPRESSION] NUMEXPRESSION_REC'
         return {OpenSquareBrackets(parent), Numexpression(parent), CloseSquareBrackets(parent), Numexpressionreca(parent)};
     case 85:
         // NUMEXPRESSION_REC -> &
-        return {Epsilon(parent)};
+        return {Epsilon(parent), SynthesizeNumexpressionRecType(parent)};
     case 86:
         // NUMEXPRESSION_REC' -> NUMEXPRESSION_REC
         return {Numexpressionrec(parent)};

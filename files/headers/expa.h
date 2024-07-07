@@ -32,6 +32,9 @@ public:
     // Validates that all expressions arguments have the same type returning the expression type.
     if (parent->node != nullptr) {
       parent->node->getExpressionType(parent->symbolTable);
+
+      parent->code = parent->node->code(_t);
+      parent->returnT = _t->currentT();
     }
   }
 };
