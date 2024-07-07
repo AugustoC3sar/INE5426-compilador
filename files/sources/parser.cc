@@ -248,14 +248,14 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         // IFSTAT -> if (EXPRESSION) { STATELIST } ELSESTAT
         return {If(parent), OpenParentheses(parent), Expression(parent), CloseParentheses(parent), OpenBrackets(parent), Statelist(parent), CloseBrackets(parent), Elsestat(parent)};
     case 40:
-        // ELSESTAT -> else { STATEMENT }
-        return {Else(parent), OpenBrackets(parent), Statement(parent), CloseBrackets(parent)};
+        // ELSESTAT -> else { STATELIST }
+        return {Else(parent), OpenBrackets(parent), Statelist(parent), CloseBrackets(parent)};
     case 41:
         // ELSESTAT -> &
         return {Epsilon(parent)};
     case 42:
-        // FORSTAT -> for(ATRIBSTAT; EXPRESSION; ATRIBSTAT) STATEMENT
-        return {For(parent), OpenParentheses(parent), Atribstat(parent), Semicolon(parent), Expression(parent), Semicolon(parent), Atribstat(parent), CloseParentheses(parent), Statement(parent)};
+        // FORSTAT -> for(ATRIBSTAT; EXPRESSION; ATRIBSTAT) { STATELIST }
+        return {For(parent), OpenParentheses(parent), Atribstat(parent), Semicolon(parent), Expression(parent), Semicolon(parent), Atribstat(parent), CloseParentheses(parent), OpenBrackets(parent), Statelist(parent), CloseBrackets(parent)};
     case 43:
         // STATELIST -> STATEMENT STATELIST'
         return {Statement(parent), Statelista(parent)};
@@ -422,6 +422,9 @@ void Parser::parse(std::vector<Token *> tokens)
         {
             tokenValue = "ident";
         }
+
+        // std::cout << "CURRENT TOKEN " << tokenValue << std::endl;
+        // std::cout << "TOP OF STACK " << topOfStack.value() << std::endl;
 
         try {
             // Verifies if there is an entry in parse table for the top of stack as the head of production.
