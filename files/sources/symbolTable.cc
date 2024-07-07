@@ -20,6 +20,10 @@ void SymbolEntry::setType(std::string tokenType)
     }
 }
 
+std::string SymbolEntry::token() {
+    return _token;
+}
+
 std::string SymbolEntry::getType() {
     return _type;
 }
@@ -72,4 +76,21 @@ SymbolTable* SymbolTable::newChildSymbolTable() {
     _children.push_back(symbolTable);
     symbolTable->_parent = this;
     return symbolTable;
+}
+
+void SymbolTable::print() {
+    std::cout << "Printing symbol table located at " << this << std::endl;
+    for (auto it : _entries) {
+        auto entry = it.second;
+        std::cout << entry.token() << ": " << entry.getType() << std::endl; 
+    }
+    std::cout << std::endl;
+
+    if (_children.size() == 0) {
+        return;
+    }
+
+    for (auto child : _children) {
+        child->print();
+    }
 }

@@ -493,4 +493,7 @@ void Parser::parse(std::vector<Token *> tokens)
         std::cout << std::endl << std::endl;
         i++;
     }
+
+    // Print all symbol tables.
+    _symbolTable->print();
 }

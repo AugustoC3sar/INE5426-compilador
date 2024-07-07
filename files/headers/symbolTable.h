@@ -42,6 +42,13 @@ class SymbolEntry
         std::string getType();
 
         /**
+         * Getter
+         * 
+         * @return the token in this entry.
+        */
+       std::string token();
+
+        /**
          * Sets the semantic type of the token
          * 
          * @param tokenType: semantic type of the token
@@ -92,6 +99,11 @@ public:
      * @return SymbolTable: a new children SymbolTable.
     */
     SymbolTable* newChildSymbolTable();
+
+    /**
+     * Print all symbol tables.
+    */
+   void print();
 };
 
 #endif

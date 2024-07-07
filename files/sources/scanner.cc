@@ -187,7 +187,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
                 _tokens.push_back(token);
 
                 // If token is identifier
-                if (isIdentifier(currentToken)){
+                if (token->type() == IDENT){
                     // Adds to symble table
                     table->addToken(currentToken, line, column-currentToken.length());
                 }
@@ -215,7 +215,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
                 _tokens.push_back(token);
 
                 // If token is identifier
-                if (isIdentifier(currentToken)){
+                if (token->type() == IDENT){
                     // Adds to symble table
                     table->addToken(currentToken, line, column-currentToken.length());
                 }
@@ -243,7 +243,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
                 _tokens.push_back(token);
 
                 // If token is identifier
-                if (isIdentifier(currentToken)){
+                if (token->type() == IDENT){
                     // Adds to symble table
                     table->addToken(currentToken, line, column-currentToken.length());
                 }
