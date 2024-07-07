@@ -37,18 +37,26 @@ void SymbolTable::addToken(std::string token, unsigned int row, unsigned int col
 void SymbolTable::addTokenType(std::string token, std::string type)
 {
     if (_entries.find(token) != _entries.end()) {
-        _entries[token].setType(type);
-    } else if (_parent->_entries.find(token) != _parent->_entries.end()) {
-        SymbolEntry entry = SymbolEntry(token);
-        _entries[token] = entry;
-        _entries[token].setType(type);
+        return;
+    } else {
+        SymbolTable *parent = _parent;
+        while (parent != nullptr) {
+            if (parent->_entries.find(token) != parent->_entries.end()) {
+                SymbolEntry entry = SymbolEntry(token);
+                _entries[token] = entry;
+                _entries[token].setType(type);
+                return;
+            }
+            parent = parent->_parent;
+        }
     }
 }
 
 std::string SymbolTable::getType(std::string lexicalValue) {
     if (_entries.find(lexicalValue) != _entries.end()) {
         SymbolEntry entry = _entries[lexicalValue];
-        return entry.getType();
+        std::string type = entry.getType();
+        return type;
     }
     
     if (_parent == nullptr) {
