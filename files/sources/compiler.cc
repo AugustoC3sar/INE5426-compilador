@@ -28,6 +28,7 @@ int Compiler::compile(std::string file)
         std::cerr << "\033[1mconvcc: " << e.what() << '\n';
         return -1;
     }
+    std::cout << "lexical analysis finished." << std::endl;
 
     // Parsing the file (tokens)
     try
@@ -39,6 +40,10 @@ int Compiler::compile(std::string file)
         std::cerr << "\033[1mconvcc: " << e.what() << '\n';
         return -1;
     }
+    std::cout << "syntax analysis finished." << std::endl;
+
+    // Generate intermediate code
+    // TODO
 
     return 0;
 }

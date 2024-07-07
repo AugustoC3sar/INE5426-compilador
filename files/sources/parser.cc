@@ -478,10 +478,9 @@ void Parser::parse(std::vector<Token *> tokens)
                     _stack.push_back(item);
                 }
             }
-        } catch (const std::exception& error) {
-            std::cout << "At line " << token->line() << " and column " << token->column() << std::endl;
-            std::cout << error.what() << std::endl;
-            throw error;
+        } catch (const std::exception& e) {
+            std::string error = "\033[31merror:\033[0m at line " + std::to_string(token->line()) + " column " + std::to_string(token->column());
+            throw std::logic_error(error);
         }
     }
 

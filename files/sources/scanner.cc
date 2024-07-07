@@ -126,7 +126,7 @@ bool Scanner::shouldBreakToken(std::string token, std::string currentToken)
            isAtribuition(token));
 }
 
-Token* Scanner::_getToken(std::string token, int line, int column)
+Token* Scanner::_getToken(std::string token, unsigned int line, unsigned int column)
 {
     if (isKeyword(token)) {
         return new Token(KEYWORD, token, line, column);
@@ -158,8 +158,8 @@ Token* Scanner::_getToken(std::string token, int line, int column)
 std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
 {
     std::string currentToken = "";
-    int column = 0;
-    int line = 1;
+    unsigned int column = 0;
+    unsigned int line = 1;
 
     for (std::size_t i = 0; i < file.size(); ++i) {
         // For each character in file

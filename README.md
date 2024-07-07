@@ -1,4 +1,8 @@
-# INE5426-compilador
+# Compilador CONVCC
+
+Alunos:
+- César Augusto Pereira de Souza
+- Gian Ortiz
 
 Para compilar o compilador, basta executar `make`, isto irá gerar um binário que pode ser executado da seguinte maneira:
 

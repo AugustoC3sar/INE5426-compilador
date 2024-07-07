@@ -21,13 +21,13 @@
     - [X] Efetivada através de uma SDD L-atribuída
         - [X] separe as produções da gramática que derivam expressões aritméticas (EXPA)
         - [X] construa uma SDD L-atribuída para EXPA
-        - [ ] mostre que a SDD é realmente L-atribuída
+        - [X] mostre que a SDD é realmente L-atribuída
         - [X]  construa uma SDT para SDD de EXPA
         - [X] construa uma árvore de expressão T para expressões derivadas de EXPA
 - [X] Inserção do tipo de variáveis na tabela de símbolos
     - [X] separe as produções da gramática que derivam em declarações de variáveis (DEC)
     - [X] construa uma SDD L-atribuida para DEC
-    - [ ] mostre que a SDD é realmente L-atribuída
+    - [X] mostre que a SDD é realmente L-atribuída
     - [X] construa uma SDT para SDD de DEC
 - [X] Verificação de tipos em expressões aritméticas
     - [X] definir se é possível realizar as operações da expressão considerando os tipos de cada operando
@@ -52,6 +52,6 @@
     - [ ] mensagem de sucesso dizendo que as declarações das variáveis por escopo são válidas
     - [ ] mensagem de sucesso dizendo que todo break está num escopo de um for
     - [ ] código intermediário para a entrada
-- [ ] Saída em caso de insucesso da compilação
-    - [ ] mensagem de insucesso, esclarecendo ao usuário o que ocorreu de errado, indicando linha e coluna no arquivo de entrada onde ocorreu o erro;
-        - [ ] parar no primeiro erro encontrado
+- [X] Saída em caso de insucesso da compilação
+    - [X] mensagem de insucesso, esclarecendo ao usuário o que ocorreu de errado, indicando linha e coluna no arquivo de entrada onde ocorreu o erro;
+        - [X] parar no primeiro erro encontrado
