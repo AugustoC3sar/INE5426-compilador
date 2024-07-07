@@ -115,6 +115,10 @@ bool Scanner::shouldBreakToken(std::string token, std::string currentToken)
         }
     }
 
+    if (currentToken == "!" && token == "=") {
+        return false;
+    }
+
     return (isRelop(token) ||
            isPunctuation(token) ||
            isOperator(token) ||
@@ -251,7 +255,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
             currentToken += ch;
 
             // Case char is relop
-            if (isRelop(currentToken) || currentToken == "="){
+            if (isRelop(currentToken) || currentToken == "=" || currentToken == "!"){
                 // Look Ahead
                 char look_ahead = file[i+1];
                 // If next char is '='
