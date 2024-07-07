@@ -122,30 +122,30 @@ bool Scanner::shouldBreakToken(std::string token, std::string currentToken)
            isAtribuition(token));
 }
 
-Token* Scanner::_getToken(std::string token)
+Token* Scanner::_getToken(std::string token, int line, int column)
 {
     if (isKeyword(token)) {
-        return new Token(KEYWORD, token);
+        return new Token(KEYWORD, token, line, column);
     } else if (isIntConstant(token)) {
-        return new Token(INT_CONSTANT, token);
+        return new Token(INT_CONSTANT, token, line, column);
     } else if (isFloatConstant(token)) {
-        return new Token(FLOAT_CONSTANT, token);
+        return new Token(FLOAT_CONSTANT, token, line, column);
     } else if (isStringConstant(token)) {
-        return new Token(STRING_CONSTANT, token);
+        return new Token(STRING_CONSTANT, token, line, column);
     } else if (isType(token)) {
-        return new Token(TYPE, token);
+        return new Token(TYPE, token, line, column);
     } else if (isRelop(token)) {
-        return new Token(RELOP, token);
+        return new Token(RELOP, token, line, column);
     } else if (isOperator(token)) {
-        return new Token(OPERATION, token);
+        return new Token(OPERATION, token, line, column);
     } else if (isIdentifier(token)) {
-        return new Token(IDENT, token);
+        return new Token(IDENT, token, line, column);
     } else if (isPunctuation(token)) {
-        return new Token(PUNCTUATION, token);
+        return new Token(PUNCTUATION, token, line, column);
     } else if (isSignal(token)) {
-        return new Token(SIGNAL, token);
+        return new Token(SIGNAL, token, line, column);
     } else if (isAtribuition(token)) {
-        return new Token(ATRIBUITION, token);
+        return new Token(ATRIBUITION, token, line, column);
     } else {
         return nullptr;
     }
@@ -172,7 +172,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
             // If token is not empty
             if (!currentToken.empty()) {
                 // Gets token
-                Token* token = _getToken(currentToken);
+                Token* token = _getToken(currentToken, line, column);
                 // If no token returned, throw error
                 if (token == nullptr){
                     std::string error = "\033[31mUnmatched token:\033[0m '" + currentToken + "' at line " + std::to_string(line) + " column " + std::to_string(column-currentToken.length());
@@ -199,7 +199,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
             // If token is not empty
             if (!currentToken.empty() && !currentTokenDefinesAString) {
                 // Gets token
-                Token* token = _getToken(currentToken);
+                Token* token = _getToken(currentToken, line, column);
 
                 // If no token returned, throw error
                 if (token == nullptr){
@@ -228,7 +228,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
             // If token is not empty
             if (!currentToken.empty()) {
                 // Gets token
-                Token* token = _getToken(currentToken);
+                Token* token = _getToken(currentToken, line, column);
                 // If no token returned, throw error
                 if (token == nullptr){
                     std::string error = "\033[31mUnmatched token:\033[0m '" + currentToken + "' at line " + std::to_string(line) + " column " + std::to_string(column-currentToken.length());
@@ -259,7 +259,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
                     // Add to token
                     currentToken += look_ahead;
                     // Create token
-                    Token* token = new Token(RELOP, currentToken);
+                    Token* token = new Token(RELOP, currentToken, line, column);
                     _tokens.push_back(token);
                     // Adjusting file read position
                     i+=2;
@@ -273,7 +273,7 @@ std::vector<Token*> Scanner::scan(std::string file, SymbolTable* table)
             // Case current token is not alfanum
             if (shouldBreakToken(currentToken, currentToken)) {
                 // Gets token
-                Token* token = _getToken(currentToken);
+                Token* token = _getToken(currentToken, line, column);
                 // If no token returned, throw error
                 if (token == nullptr){
                     std::string error = "\033[31mUnmatched token:\033[0m '" + currentToken + "' at line " + std::to_string(line) + " column " + std::to_string(column-currentToken.length());

@@ -28,7 +28,7 @@ class Token
          * @param type: type of the token
          * @param value: string value of the token
          */
-        Token(TokenType type, std::string value) : _type(type), _value(value) {};
+        Token(TokenType type, std::string value, int line, int column) : _type(type), _value(value), _line(line), _column(column) {};
 
         /**
          * Getter
@@ -44,9 +44,25 @@ class Token
          */
         const std::string& value() { return _value; };
     
+        /**
+         * Getter
+         * 
+         * @return the line of occurence of token
+        */
+       int line() { return _line; };
+
+        /**
+         * Getter
+         * 
+         * @return the column of occurence of token
+        */
+       int column() { return _column; };
+
     private:
         TokenType _type;
         std::string _value;
+        int _line;
+        int _column;
 };
 
 #endif

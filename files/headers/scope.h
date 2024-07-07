@@ -66,7 +66,8 @@ public:
   void execute()
   {
     if (parent->scope != "FORSTAT") {
-      throw "break outside for loop";
+      std::string error = "break outside for loop";
+      throw std::logic_error(error);
     }
   }
 };

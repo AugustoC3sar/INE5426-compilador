@@ -1,6 +1,7 @@
 #include <node.h>
 
 #include <regex>
+#include <iostream>
 
 Node::Node(std::string lexVal, Node* l, Node* r) {
     _lexicalValue = lexVal;
@@ -82,5 +83,6 @@ std::string Node::getExpressionType(SymbolTable *symbolTable) {
         return rightExpressionType;
     }
 
-    throw "expression types do not match";
+    std::string error = "expression types do not match";
+    throw std::logic_error(error);
 };
