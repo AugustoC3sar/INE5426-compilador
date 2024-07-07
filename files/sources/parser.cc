@@ -138,7 +138,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Epsilon(parent)};
     case 3:
         // FUNCLIST -> FUNCDEF FUNCLIST'
-        return {NewScope(parent, _symbolTable), Funcdef(parent), Funclist(parent)};
+        return {NewScope(parent), Funcdef(parent), Funclist(parent)};
     case 4:
         // FUNCLIST' -> FUNCLIST
         return {Funclist(parent)};
@@ -189,7 +189,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Ifstat(parent)};
     case 20:
         // STATEMENT -> FORSTAT
-        return {Forstat(parent)};
+        return {NewScope(parent), Forstat(parent)};
     case 21:
         // STATEMENT -> {STATELIST}
         return {OpenBrackets(parent), Statelist(parent), CloseBrackets(parent)};
@@ -255,7 +255,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Epsilon(parent)};
     case 42:
         // FORSTAT -> for(ATRIBSTAT; EXPRESSION; ATRIBSTAT) STATEMENT
-        return {For(parent), OpenParentheses(parent), Atribstat(parent), Semicolon(parent), Expression(parent), Semicolon(parent), Atribstat(parent), CloseParentheses(parent), NewScope(parent, _symbolTable), Statement(parent)};
+        return {For(parent), OpenParentheses(parent), Atribstat(parent), Semicolon(parent), Expression(parent), Semicolon(parent), Atribstat(parent), CloseParentheses(parent), Statement(parent)};
     case 43:
         // STATELIST -> STATEMENT STATELIST'
         return {Statement(parent), Statelista(parent)};

@@ -6,7 +6,7 @@ Para compilar o compilador, basta executar `make`, isto irá gerar um binário q
 ./convcc -f filename.convcc
 ```
 
-A partir deste comando aplicamos a análise léxica, a análise sintática e as funções semânticas da Tarefa ASem. A parte de geração de código intermediário não foi realizada.
+A partir deste comando aplicamos a análise léxica, a análise sintática e as funções semânticas da Tarefa ASem.
 
 Disponibilizamos quatro exemplos de códigos na linguagem para testes:
 
@@ -32,3 +32,5 @@ Para rodar cada um, respectivamente, execute os comandos:
 ```
 ./convcc -f examples/operations.convcc
 ```
+
+A parte de geração de código foi inicializada, porém não foi finalizada.

@@ -46,7 +46,6 @@ void SymbolTable::addTokenType(std::string token, std::string type)
 }
 
 std::string SymbolTable::getType(std::string lexicalValue) {
-
     if (_entries.find(lexicalValue) != _entries.end()) {
         SymbolEntry entry = _entries[lexicalValue];
         return entry.getType();
