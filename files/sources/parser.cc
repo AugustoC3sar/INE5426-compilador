@@ -496,4 +496,13 @@ void Parser::parse(std::vector<Token *> tokens)
 
     // Print all symbol tables.
     _symbolTable->print();
+
+    // Mensagem sobre validação dos tipos.
+    std::cout << "As verificações de tipos foram feitas na computação das árvores mostradas e todas estão corretas" << std::endl;
+
+    // Mensagem sobre verificação do break;
+    std::cout << "As verificações de breaks em escopo foram feitas durante ação semântica e todas estão corretas" << std::endl;
+
+    // Mensagem sobre definições em escopos.
+    std::cout << "As verificações sobre declarações em escopo foram feitas assim como mostrado nas tabelas de símbolos e estão corretas" << std::endl;
 }
