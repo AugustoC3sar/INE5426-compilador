@@ -13,7 +13,7 @@ Disponibilizamos quatro exemplos de códigos na linguagem para testes:
 * `examples/baskhara.convcc`: Cálculo de baskhara com alguns testes.
 * `examples/fib.convcc`: Cálculo de sequência de fibonnaci.
 * `examples/geometry.convcc`: Alguns exemplos de cálculos de geometria.
-* `examples/operations.convcc`: Alguns exemplos de operações matemáticas na linguagem.
+* `examples/sqrt.convcc`: Implementação do cálculo da raiz quadrada usando o método de Newton.
 
 Para rodar cada um, respectivamente, execute os comandos:
 
@@ -30,7 +30,7 @@ Para rodar cada um, respectivamente, execute os comandos:
 ```
 
 ```
-./convcc -f examples/operations.convcc
+./convcc -f examples/sqrt.convcc
 ```
 
 A parte de geração de código foi inicializada, porém não foi finalizada.

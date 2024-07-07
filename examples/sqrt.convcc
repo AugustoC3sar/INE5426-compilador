@@ -1,0 +1,107 @@
+def newtonSqrtIterative (float number, float tolerance, float ret)
+{
+    if (number < 0.0)
+    {
+        print "Cannot compute the square root of a negative number.\n";
+        ret = -1.0;
+        return;
+    }
+
+    float guess;
+    guess = number / 2.0;
+    float difference;
+
+    for (difference = 1.0; difference > tolerance; difference = difference)
+    {
+        float newGuess;
+        newGuess = 0.5 * (guess + number / guess);
+        
+        if (newGuess > guess)
+        {
+            difference = newGuess - guess;
+        }
+        else
+        {
+            difference = guess - newGuess;
+        }
+        guess = newGuess;
+    }
+
+    ret = guess;
+    return;
+}
+
+def newtonSqrtRecursiveHelper(float number, float guess, float tolerance, float ret)
+{
+    float newGuess;
+    newGuess = 0.5 * (guess + number / guess);
+    float difference;
+
+    if (newGuess > guess)
+    {
+        difference = newGuess - guess;
+    }
+    else
+    {
+        difference = guess - newGuess;
+    }
+
+    if (difference <= tolerance)
+    {
+        ret = newGuess;
+        return;
+    }
+
+    ret = call newtonSqrtRecursiveHelper(number, newGuess, tolerance, ret);
+    return;
+}
+
+def newtonSqrtRecursive(float number, float tolerance, float ret)
+{
+    if (number < 0)
+    {
+        print "Cannot compute the square root of a negative number.\n";
+        ret = -1.0;
+        return;
+    }
+
+    float initialGuess;
+    initialGuess = number / 2.0;
+    ret = call newtonSqrtRecursiveHelper(number, initialGuess, tolerance, ret);
+    return;
+}
+
+def main()
+{
+    float number;
+    float tolerance;
+
+    number = 4.0;
+    tolerance = 0.0001;
+
+    float resultIterative;
+    float resultRecursive;
+
+    resultIterative = call newtonSqrtIterative(number, tolerance, resultIterative);
+    resultRecursive = call newtonSqrtRecursive(number, tolerance, resultRecursive);
+
+    if (resultIterative != -1.0)
+    {
+        print "Iterative method: The square root of ";
+        print number;
+        print " is approximately ";
+        print resultIterative;
+        print "\n";
+    }
+
+    if (resultRecursive != -1.0)
+    {
+        print "Recursive method: The square root of ";
+        print number;
+        print " is approximately ";
+        print resultRecursive;
+        print "\n";
+    }
+
+    return;
+}
