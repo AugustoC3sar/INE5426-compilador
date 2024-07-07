@@ -213,7 +213,7 @@ std::vector<Item> Parser::generateNewTokens(int production, NonTerminal *parent)
         return {Lvalue(parent), Equal(parent), Atribstata(parent), GenerateAtribstatCode(parent)};
     case 28:
         // ATRIBSTAT' -> EXPRESSION { ATRIBSTAT'.node = EXPRESSION.node }
-        return {Expression(parent), AssignTree(parent, t)};
+        return {Expression(parent), AssignTree(parent, t, &expressionTrees)};
     case 29:
         // ATRIBSTAT' -> ALLOCEXPRESSION
         return {Allocexpression(parent)};
@@ -483,5 +483,14 @@ void Parser::parse(std::vector<Token *> tokens)
             std::cout << error.what() << std::endl;
             throw error;
         }
+    }
+
+    // Print all executed expression trees.
+    i = 0;
+    for (auto node : expressionTrees) {
+        std::cout << "Computed expression tree " << i << std::endl;
+        node->printLeftFromRight();
+        std::cout << std::endl << std::endl;
+        i++;
     }
 }

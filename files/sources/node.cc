@@ -86,3 +86,25 @@ std::string Node::getExpressionType(SymbolTable *symbolTable) {
     std::string error = "expression types do not match";
     throw std::logic_error(error);
 };
+
+void Node::printLeftFromRight() {
+    if (_left == nullptr && _right == nullptr) {
+        if (!_lexicalValue.empty()) {
+            // Print identificators and constants.
+            std::cout << _lexicalValue << " ";
+        }
+    }
+    
+    if (_left != nullptr) {
+        _left->printLeftFromRight();
+    }
+
+    if (_left != nullptr || _right != nullptr) {
+        // Print operations.
+        std::cout << _lexicalValue << " ";
+    }
+    
+    if (_right != nullptr) {
+        _right->printLeftFromRight();
+    }
+}

@@ -20,6 +20,7 @@ public:
 
     std::string getExpressionType(SymbolTable *symbolTable);
     std::string code(TemporaryVariable *t);
+    void printLeftFromRight();
 };
 
 #endif

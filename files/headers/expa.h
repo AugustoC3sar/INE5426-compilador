@@ -11,12 +11,14 @@ public:
   std::string name;
   NonTerminal *parent;
   TemporaryVariable* _t;
+  std::vector<Node*> *_parserNodes;
 
-  AssignTreeSemanticAction(NonTerminal *p, TemporaryVariable *t)
+  AssignTreeSemanticAction(NonTerminal *p, TemporaryVariable *t, std::vector<Node*> *parserNodes)
   {
     name = "ASSIGN_TREE";
     parent = p;
     _t = t;
+    _parserNodes = parserNodes;
   }
 
   std::string value() override
@@ -28,6 +30,7 @@ public:
   {
     Item expression = parent->children.at(0);
     parent->node = expression.nonTerminal->node;
+    _parserNodes->push_back(parent->node);
 
     // Validates that all expressions arguments have the same type returning the expression type.
     if (parent->node != nullptr) {
@@ -42,9 +45,9 @@ public:
 class AssignTree : public Item
 {
 public:
-  AssignTree(NonTerminal *p,  TemporaryVariable *t)
+  AssignTree(NonTerminal *p,  TemporaryVariable *t, std::vector<Node*> *parserNodes)
   {
-    semanticAction = new AssignTreeSemanticAction(p, t);
+    semanticAction = new AssignTreeSemanticAction(p, t, parserNodes);
     type = SEMANTIC_ACTION;
   }
 };

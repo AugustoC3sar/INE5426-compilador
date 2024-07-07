@@ -131,6 +131,7 @@ class Parser
         std::unordered_map<std::string, std::unordered_map<std::string, int>> _parseTable;
         SymbolTable* _symbolTable;
         TemporaryVariable* t = new TemporaryVariable();
+        std::vector<Node*> expressionTrees;
 
     public:
         Parser(SymbolTable* table);
