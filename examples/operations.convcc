@@ -3,9 +3,8 @@ def pow(float base, int exponent, float retval)
   int i;
   float mult;
   mult = retval;
-  for (i = 0; i < exponent; i = i + 1){
+  for (i = 0; i < exponent; i = i + 1)
     mult = mult * base;
-  }
   print "Result:";
   print mult;
 }
@@ -17,9 +16,8 @@ def exp(int exponent, float retval)
   float mult;
   mult = retval;
   int i;
-  for (i = 0; i < exponent; i = i + 1){
+  for (i = 0; i < exponent; i = i + 1)
     mult = mult * euler_constant;
-  }
   print "Result:";
   print mult;
 }

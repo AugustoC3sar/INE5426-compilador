@@ -8,13 +8,11 @@ class NewScopeSemanticAction : public SemanticAction
 public:
   std::string name;
   NonTerminal *parent;
-  SymbolTable* symbolTable;
 
-  NewScopeSemanticAction(NonTerminal *p, SymbolTable *st)
+  NewScopeSemanticAction(NonTerminal *p)
   {
     name = "NEW_SCOPE";
     parent = p;
-    symbolTable = st;
     parent->scope = p->value();
     for (auto child : parent->children) {
       if (child.nonTerminal != nullptr) {
@@ -30,8 +28,8 @@ public:
 
   void execute()
   {
-    Item firstChild = parent->children.at(parent->children.size()-1);
-    SymbolTable* symbolTableCopy = symbolTable->newChildSymbolTable();
+    Item firstChild = parent->children.at(1);
+    SymbolTable* symbolTableCopy = parent->symbolTable->newChildSymbolTable();
     firstChild.nonTerminal->symbolTable = symbolTableCopy;
   }
 };
@@ -39,9 +37,9 @@ public:
 class NewScope : public Item
 {
 public:
-  NewScope(NonTerminal *p, SymbolTable *st)
+  NewScope(NonTerminal *p)
   {
-    semanticAction = new NewScopeSemanticAction(p, st);
+    semanticAction = new NewScopeSemanticAction(p);
     type = SEMANTIC_ACTION;
   }
 };
@@ -66,7 +64,8 @@ public:
   void execute()
   {
     if (parent->scope != "FORSTAT") {
-      throw "break outside for loop";
+      std::string error = "break outside for loop";
+      throw std::logic_error(error);
     }
   }
 };

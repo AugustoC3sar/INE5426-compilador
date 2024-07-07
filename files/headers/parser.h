@@ -3,6 +3,7 @@
 
 #include "token.h"
 #include "node.h"
+#include "temporaryVariable.h"
 
 #include <unordered_map>
 #include <string>
@@ -29,6 +30,9 @@ public:
   Node* leftNode;
   std::string operationValue;
   std::string scope;
+
+  std::string code;
+  std::string returnT;
 
   SymbolTable *symbolTable = nullptr;
 
@@ -126,6 +130,7 @@ class Parser
         std::vector<Item> _stack;
         std::unordered_map<std::string, std::unordered_map<std::string, int>> _parseTable;
         SymbolTable* _symbolTable;
+        TemporaryVariable* t = new TemporaryVariable();
 
     public:
         Parser(SymbolTable* table);

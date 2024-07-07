@@ -45,7 +45,7 @@ class Scanner
         bool isSignal(std::string token);
         bool isAtribuition(std::string token);
         bool shouldBreakToken(std::string token, std::string currentToken);
-        Token* _getToken(std::string token);
+        Token* _getToken(std::string token, int line, int column);
 
     public:
         Scanner() = default;

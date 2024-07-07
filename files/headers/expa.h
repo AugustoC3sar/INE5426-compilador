@@ -3,16 +3,20 @@
 
 #include <parser.h>
 
+#include <iostream>
+
 class AssignTreeSemanticAction : public SemanticAction
 {
 public:
   std::string name;
   NonTerminal *parent;
+  TemporaryVariable* _t;
 
-  AssignTreeSemanticAction(NonTerminal *p)
+  AssignTreeSemanticAction(NonTerminal *p, TemporaryVariable *t)
   {
     name = "ASSIGN_TREE";
     parent = p;
+    _t = t;
   }
 
   std::string value() override
@@ -28,6 +32,9 @@ public:
     // Validates that all expressions arguments have the same type returning the expression type.
     if (parent->node != nullptr) {
       parent->node->getExpressionType(parent->symbolTable);
+
+      parent->code = parent->node->code(_t);
+      parent->returnT = _t->currentT();
     }
   }
 };
@@ -35,9 +42,9 @@ public:
 class AssignTree : public Item
 {
 public:
-  AssignTree(NonTerminal *p)
+  AssignTree(NonTerminal *p,  TemporaryVariable *t)
   {
-    semanticAction = new AssignTreeSemanticAction(p);
+    semanticAction = new AssignTreeSemanticAction(p, t);
     type = SEMANTIC_ACTION;
   }
 };
