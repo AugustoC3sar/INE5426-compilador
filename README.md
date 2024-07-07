@@ -12,7 +12,7 @@ Disponibilizamos quatro exemplos de códigos na linguagem para testes:
 
 * `examples/baskhara.convcc`: Cálculo de baskhara com alguns testes.
 * `examples/fib.convcc`: Cálculo de sequência de fibonnaci.
-* `examples/geometry.convcc`: Alguns exemplos de cálculos de geometria.
+* `examples/geometry.convcc`: Alguns exemplos de cálculos de geometria com cosseno e seno.
 * `examples/sqrt.convcc`: Implementação do cálculo da raiz quadrada usando o método de Newton.
 
 Para rodar cada um, respectivamente, execute os comandos:
